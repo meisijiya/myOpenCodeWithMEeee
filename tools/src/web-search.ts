@@ -14,8 +14,9 @@
  *     "base_resp": {status_code, status_msg} }
  */
 import { tool } from "@opencode-ai/plugin";
-import { z } from "zod";
 import { readFile } from "fs/promises";
+
+const z = tool.schema;
 
 const DEFAULT_HOST = "https://api.minimaxi.com";
 
@@ -24,24 +25,21 @@ const DEFAULT_HOST = "https://api.minimaxi.com";
  * the same key/host the MiniMax MCP uses, no duplicate env config).
  */
 async function loadMiniMaxCreds(): Promise<{ key: string; host: string } | null> {
-  const candidates = [
-    `${process.env.HOME}/.config/opencode/opencode.json`,
-    `${process.env.HOME}/.config/opencode/oh-my-openagent.json`,
-  ];
-  for (const path of candidates) {
-    try {
-      const raw = await readFile(path, "utf-8");
-      const config = JSON.parse(raw);
-      const mcp = config?.mcp?.MiniMax;
-      if (mcp?.environment?.MINIMAX_API_KEY) {
-        return {
-          key: mcp.environment.MINIMAX_API_KEY,
-          host: mcp.environment.MINIMAX_API_HOST || DEFAULT_HOST,
-        };
-      }
-    } catch {
-      // try next candidate
+  // Search the user's opencode.json for the MiniMax MCP block. We re-use
+  // whatever credentials they already configured there — no duplicate config.
+  const configPath = `${process.env.HOME}/.config/opencode/opencode.json`;
+  try {
+    const raw = await readFile(configPath, "utf-8");
+    const config = JSON.parse(raw);
+    const mcp = config?.mcp?.MiniMax;
+    if (mcp?.environment?.MINIMAX_API_KEY) {
+      return {
+        key: mcp.environment.MINIMAX_API_KEY,
+        host: mcp.environment.MINIMAX_API_HOST || DEFAULT_HOST,
+      };
     }
+  } catch {
+    // opencode.json missing or unreadable — fall through to env-var check
   }
   // Fall back to env vars
   if (process.env.MINIMAX_API_KEY) {
@@ -92,6 +90,7 @@ export default tool({
   args: {
     query: z.string().describe("Search query (3-5 keywords works best; include date for time-sensitive topics)"),
     max_results: z.number().default(10).describe("Max results to return (default 10)"),
+    provider: z.string().optional().default("minimax").describe("Provider to use (default 'minimax'; reserved for future multi-provider support)"),
   },
   async execute(args) {
     const query = args.query as string;

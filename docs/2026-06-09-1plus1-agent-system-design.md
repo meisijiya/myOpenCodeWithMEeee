@@ -137,7 +137,7 @@ Two projects studied as design inspiration:
 | Hashline Edit | Custom tool | `~/.config/opencode/tools/hashline-edit.ts` | Replaces default `edit` with line#CID anchor system |
 | Task Dispatch | Custom tool | `~/.config/opencode/tools/task-dispatch.ts` | Background sub agent with task_id, output, cancel |
 | AST Search | Custom tool | `~/.config/opencode/tools/ast-search.ts` | tree-sitter-based structural code search |
-| Web Search | Custom tool | `~/.config/opencode/tools/web-search.ts` | Multi-provider search chain |
+| Web Search | Custom tool | `~/.config/opencode/tools/web-search.ts` | MiniMax search API (auto-discovers creds from opencode.json) |
 | Image Inspect | Custom tool | `~/.config/opencode/tools/image-inspect.ts` | Vision model image analysis |
 | Mermaid Render | Custom tool | `~/.config/opencode/tools/mermaid-render.ts` | Diagram to ASCII/PNG |
 | PR Reader | Custom tool | `~/.config/opencode/tools/pr-reader.ts` | GitHub PR/Issue content access |
@@ -443,18 +443,36 @@ User chose breadth-first over depth-first:
 }
 ```
 
-### 6.4 Web Search
+### 6.4 Web Search (MiniMax)
 
-**Reference**: oh-my-pi `src/web/` (14 providers chain)
+**Reference**: MiniMax MCP `web_search` tool + `minimax-coding-plan-mcp` Python server
 
-**Behavior**: Multi-provider fallback chain (Exa → Brave → Jina → Kimi → ZAI → Anthropic → Perplexity → Gemini → Codex → Tavily → Parallel → Kagi → Synthetic → SearXNG)
+**Behavior**: Proxies directly to MiniMax's `/v1/coding_plan/search` API. Auto-discovers credentials from `~/.config/opencode/opencode.json`'s `mcp.MiniMax.environment` block (the user already configures this for the MiniMax MCP — we reuse it, no duplicate config). Falls back to `MINIMAX_API_KEY` / `MINIMAX_API_HOST` env vars.
+
+**Why MiniMax (not a 14-provider chain)**: User explicitly chose to reuse their existing MiniMax MCP service for web search. Other providers (Brave/Exa/etc.) can be added later via the `provider` arg (already reserved in the schema for forward-compat).
 
 **Schema**:
 ```typescript
 {
   query: string,
-  provider?: string,      // pin to specific provider; default: "auto"
-  max_results?: number
+  max_results?: number,   // default 10
+  provider?: string,      // default "minimax" (reserved for future)
+}
+```
+
+**API**:
+```
+POST {MINIMAX_API_HOST}/v1/coding_plan/search
+Headers: Authorization: Bearer <key>, MM-API-Source: Minimax-MCP
+Body: { "q": <query>, "max_results": <n> }
+```
+
+**Response shape**:
+```typescript
+{
+  organic: [{ title, link, snippet, date }],
+  related_searches: [{ query }],
+  base_resp: { status_code, status_msg }
 }
 ```
 

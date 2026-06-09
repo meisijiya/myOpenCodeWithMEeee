@@ -12,8 +12,16 @@ test("description mentions MiniMax", async () => {
   expect(mod.default.description).toMatch(/MiniMax/i);
 });
 
+test("args include query, max_results, provider", async () => {
+  const mod = await import("./web-search");
+  const args = mod.default.args;
+  expect(args.query).toBeDefined();
+  expect(args.max_results).toBeDefined();
+  expect(args.provider).toBeDefined();
+});
+
 test("error when no credentials", async () => {
-  // Save and clear env
+  // Save and clear env + redirect HOME to a path that has no opencode config
   const savedKey = process.env.MINIMAX_API_KEY;
   const savedHome = process.env.HOME;
   delete process.env.MINIMAX_API_KEY;
@@ -22,7 +30,7 @@ test("error when no credentials", async () => {
   try {
     const mod = await import("./web-search");
     const result = await mod.default.execute(
-      { query: "test", max_results: 5 } as any,
+      { query: "test", max_results: 5, provider: "minimax" } as any,
       {} as any,
     );
     expect(result).toMatch(/Error: MiniMax credentials not found/);
