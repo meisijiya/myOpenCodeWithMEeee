@@ -66,9 +66,9 @@ if [[ -d "${REPO_DIR}/tools/dist" ]]; then
   done
 fi
 
-# Mirror plugin
+# Mirror plugin (built output lives under .opencode/plugins/)
 copy_file_if_exists \
-  "${REPO_DIR}/plugins/orchestrator.js" \
+  "${REPO_DIR}/.opencode/plugins/orchestrator.js" \
   "${TARGET_DIR}/plugins"
 
 echo ""

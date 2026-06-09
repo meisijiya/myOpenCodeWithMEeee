@@ -1,0 +1,17 @@
+{
+  "name": "@myopencodewithmeeee/orchestrator",
+  "version": "0.1.0",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "build": "bun build src/orchestrator.ts --target=bun --outfile=plugins/orchestrator.js",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@types/bun": "1.3.14",
+    "typescript": "5.9.3"
+  },
+  "dependencies": {
+    "@opencode-ai/plugin": "1.16.2"
+  }
+}
