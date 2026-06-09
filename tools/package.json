@@ -13,7 +13,6 @@
     "typescript": "5.9.3"
   },
   "dependencies": {
-    "@opencode-ai/plugin": "1.16.2",
-    "zod": "3.25.76"
+    "@opencode-ai/plugin": "1.16.2"
   }
 }
