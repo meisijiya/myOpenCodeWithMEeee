@@ -6,10 +6,12 @@
 
 ```bash
 # Install (mirrors files to ~/.config/opencode/)
-./install.sh
+bash install.sh
+# or: ./install.sh (after chmod +x)
 
 # Uninstall (removes from ~/.config/opencode/ but keeps this repo intact)
-./uninstall.sh
+bash uninstall.sh
+# or: ./uninstall.sh (after chmod +x)
 ```
 
 ## Structure
@@ -23,14 +25,17 @@ myOpenCodeWithMEeee/
 │   ├── src/                     # TypeScript source
 │   └── package.json
 ├── plugins/
-│   └── orchestrator.ts          # Hook plugin (Boulder + Keyword + karpathy)
+│   └── orchestrator.ts          # Hook plugin source (Boulder + Keyword)
+├── .opencode/
+│   └── plugins/                 # Per spec: project-level plugin mirror
 ├── skills/
 │   ├── karpathy-guidelines/     # 4 coding principles (verbatim import)
 │   ├── ultrawork/               # Full work mode
 │   ├── git-master/              # Atomic commits + rebase
 │   └── openspec-integration/    # OpenSpec routing bridge
 ├── docs/                        # Design spec + implementation plan
-└── install.sh                   # Mirrors files to ~/.config/opencode/
+├── install.sh                   # Mirrors files to ~/.config/opencode/
+└── uninstall.sh                 # Removes installed files
 ```
 
 ## Reference Documents

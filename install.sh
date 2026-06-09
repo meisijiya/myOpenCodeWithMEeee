@@ -11,14 +11,15 @@
 set -euo pipefail
 
 REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-TARGET_DIR="${HOME}/.config/opencode"
+TARGET_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/opencode"
+SKILLS=(karpathy-guidelines ultrawork git-master openspec-integration)
 
 echo "Installing myOpenCodeWithMEeee → ${TARGET_DIR}"
 echo ""
 
 # Sanity check
 if [[ ! -d "${REPO_DIR}/agents" ]]; then
-  echo "ERROR: ${REPO_DIR}/agents not found. Run this script from the repo root." >&2
+  echo "ERROR: ${REPO_DIR}/agents not found. This script must be run from inside the cloned repo." >&2
   exit 1
 fi
 
@@ -26,42 +27,71 @@ fi
 mkdir -p "${TARGET_DIR}/agents"
 mkdir -p "${TARGET_DIR}/tools"
 mkdir -p "${TARGET_DIR}/plugins"
-mkdir -p "${TARGET_DIR}/skills/karpathy-guidelines"
-mkdir -p "${TARGET_DIR}/skills/ultrawork"
-mkdir -p "${TARGET_DIR}/skills/git-master"
-mkdir -p "${TARGET_DIR}/skills/openspec-integration"
-
-# Mirror agents
-if [[ -d "${REPO_DIR}/agents" ]]; then
-  cp -v "${REPO_DIR}/agents/"*.md "${TARGET_DIR}/agents/" 2>/dev/null || echo "  (no agent .md files yet)"
-fi
-
-# Mirror skills
-for skill in karpathy-guidelines ultrawork git-master openspec-integration; do
-  if [[ -d "${REPO_DIR}/skills/${skill}" ]]; then
-    cp -v "${REPO_DIR}/skills/${skill}/SKILL.md" "${TARGET_DIR}/skills/${skill}/SKILL.md" 2>/dev/null || echo "  (no SKILL.md in ${skill} yet)"
-  fi
+for skill in "${SKILLS[@]}"; do
+  mkdir -p "${TARGET_DIR}/skills/${skill}"
 done
 
-# Mirror tools (built .js files)
+# Helper: copy a single source file to target dir, skipping if source missing
+# Usage: copy_file_if_exists <source> <target_dir>
+copy_file_if_exists() {
+  local src="$1"
+  local dst_dir="$2"
+  if [[ -f "${src}" ]]; then
+    cp -v "${src}" "${dst_dir}/"
+  fi
+}
+
+# Mirror agents (any .md in agents/)
+for src in "${REPO_DIR}/agents/"*.md; do
+  [[ -f "${src}" ]] || continue
+  cp -v "${src}" "${TARGET_DIR}/agents/"
+done
+
+# Mirror skills (SKILL.md from each skill dir)
+for skill in "${SKILLS[@]}"; do
+  copy_file_if_exists \
+    "${REPO_DIR}/skills/${skill}/SKILL.md" \
+    "${TARGET_DIR}/skills/${skill}"
+done
+
+# Mirror tools (built .js files in tools/dist/)
 if [[ -d "${REPO_DIR}/tools/dist" ]]; then
-  cp -v "${REPO_DIR}/tools/dist/"*.js "${TARGET_DIR}/tools/" 2>/dev/null || echo "  (no built tool .js files yet)"
+  for src in "${REPO_DIR}/tools/dist/"*.js; do
+    [[ -f "${src}" ]] || continue
+    cp -v "${src}" "${TARGET_DIR}/tools/"
+  done
 fi
 
 # Mirror plugin
-if [[ -f "${REPO_DIR}/plugins/orchestrator.js" ]]; then
-  cp -v "${REPO_DIR}/plugins/orchestrator.js" "${TARGET_DIR}/plugins/orchestrator.js"
-fi
+copy_file_if_exists \
+  "${REPO_DIR}/plugins/orchestrator.js" \
+  "${TARGET_DIR}/plugins"
 
 echo ""
 echo "✓ Install complete. Restart opencode to pick up changes."
 echo ""
-echo "Installed:"
-echo "  Agents:   ${TARGET_DIR}/agents/"
-ls -1 "${TARGET_DIR}/agents/" 2>/dev/null | sed 's/^/    /'
-echo "  Skills:   ${TARGET_DIR}/skills/"
-ls -1 "${TARGET_DIR}/skills/" 2>/dev/null | sed 's/^/    /'
-echo "  Tools:    ${TARGET_DIR}/tools/"
-ls -1 "${TARGET_DIR}/tools/"*.js 2>/dev/null | sed 's/^/    /'
-echo "  Plugins:  ${TARGET_DIR}/plugins/"
-ls -1 "${TARGET_DIR}/plugins/"*.js 2>/dev/null | sed 's/^/    /'
+echo "Installed locations:"
+
+# Listing helpers (tolerate empty dirs under set -e)
+list_dir() {
+  local d="$1"
+  if [[ -d "${d}" ]] && [[ -n "$(ls -A "${d}" 2>/dev/null)" ]]; then
+    ls -1 "${d}" | sed 's/^/    /'
+  else
+    echo "    (empty)"
+  fi
+}
+
+echo "  Agents:"
+list_dir "${TARGET_DIR}/agents" | sed 's/^/  /'
+echo "  Skills:"
+for skill in "${SKILLS[@]}"; do
+  if [[ -d "${TARGET_DIR}/skills/${skill}" ]] && [[ -n "$(ls -A "${TARGET_DIR}/skills/${skill}" 2>/dev/null)" ]]; then
+    echo "    ${skill}/"
+    ls -1 "${TARGET_DIR}/skills/${skill}" | sed 's/^/      /'
+  fi
+done
+echo "  Tools:"
+list_dir "${TARGET_DIR}/tools"*.js 2>/dev/null | sed 's/^/  /' || echo "    (none built yet)"
+echo "  Plugins:"
+list_dir "${TARGET_DIR}/plugins" | sed 's/^/  /'
