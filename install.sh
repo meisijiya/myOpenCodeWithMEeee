@@ -27,8 +27,11 @@ fi
 mkdir -p "${TARGET_DIR}/agents"
 mkdir -p "${TARGET_DIR}/tools"
 mkdir -p "${TARGET_DIR}/plugins"
+# Only create skill dirs that have a SKILL.md to install (avoid empty dirs)
 for skill in "${SKILLS[@]}"; do
-  mkdir -p "${TARGET_DIR}/skills/${skill}"
+  if [[ -f "${REPO_DIR}/skills/${skill}/SKILL.md" ]]; then
+    mkdir -p "${TARGET_DIR}/skills/${skill}"
+  fi
 done
 
 # Helper: copy a single source file to target dir, skipping if source missing
