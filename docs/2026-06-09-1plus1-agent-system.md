@@ -192,7 +192,6 @@ cat > ~/.config/opencode/agents/sisyphus.md <<'AGENT_EOF'
 name: sisyphus
 description: 主开发者助手，能写代码，必要时委派子 agent
 mode: primary
-model: inherit
 temperature: 0.1
 permission:
   edit: ask
@@ -332,7 +331,6 @@ cat > ~/.config/opencode/agents/oracle.md <<'AGENT_EOF'
 name: oracle
 description: 广度优先万能顾问 - 探索代码 / 查文档 / 分析架构 / 调试建议 (只读)
 mode: subagent
-model: inherit
 temperature: 0.1
 permission:
   edit: deny

@@ -2,7 +2,6 @@
 name: oracle
 description: 广度优先万能顾问 - 探索代码 / 查文档 / 分析架构 / 调试建议 (只读)
 mode: subagent
-model: inherit
 temperature: 0.1
 permission:
   edit: deny

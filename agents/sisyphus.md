@@ -2,7 +2,6 @@
 name: sisyphus
 description: 主开发者助手，能写代码，必要时委派子 agent
 mode: primary
-model: inherit
 temperature: 0.1
 permission:
   edit: ask

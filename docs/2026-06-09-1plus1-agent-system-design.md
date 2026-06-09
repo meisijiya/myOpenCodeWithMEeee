@@ -161,7 +161,7 @@ Two projects studied as design inspiration:
 name: sisyphus
 description: 主开发者助手，能写代码，必要时委派子 agent
 mode: primary
-model: <inherited from UI>
+model: <inherited from global config; omit this field>
 temperature: 0.1
 permission:
   edit: ask
@@ -279,7 +279,7 @@ Borrowed from omO's `sisyphus-dynamic-prompt-{role,exploration,execution,style}.
 name: oracle
 description: 广度优先万能顾问 - 探索代码 / 查文档 / 分析架构 / 调试建议 (只读)
 mode: subagent
-model: <inherited>
+model: <inherited from global config; omit this field>
 temperature: 0.1
 permission:
   edit: deny

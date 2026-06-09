@@ -15,7 +15,7 @@ This project is a **drop-in addition** to your existing opencode setup. It does 
 | **Orchestrator hook plugin** | This project, registered in your `opencode.json` | `bash install.sh` (auto-registers) |
 | **Hashline Edit + Task Dispatch tools** | This project, mirrored to `~/.config/opencode/tools/` | `bash install.sh` |
 
-Agents use `model: inherit` so they pick up whatever provider you've connected in opencode. The orchestrator plugin re-injects karpathy-guidelines + project `AGENTS.md` into every LLM call's system prompt — it doesn't add or replace any model configuration.
+Agents **omit the `model` field** entirely, so they pick up whatever provider/model is globally configured in opencode (primary agents use the global model; subagents inherit the primary agent's model). The orchestrator plugin re-injects karpathy-guidelines + project `AGENTS.md` into every LLM call's system prompt — it doesn't add or replace any model configuration.
 
 ## Quick Start
 
@@ -55,8 +55,8 @@ It does **not** touch: providers, MCPs, other plugins, or anything else in your 
 ```
 myOpenCodeWithMEeee/
 ├── agents/
-│   ├── sisyphus.md              # Main agent (4-segment XML prompt, model: inherit)
-│   └── oracle.md                # Sub agent (breadth-first read-only consultant, model: inherit)
+│   ├── sisyphus.md              # Main agent (4-segment XML prompt, model: omitted = uses global)
+│   └── oracle.md                # Sub agent (breadth-first read-only consultant, model: omitted = inherits)
 ├── tools/                       # Custom opencode tools (TypeScript + Bun)
 │   ├── src/
 │   │   ├── hashline-tag.ts      # FNV-1a CID computation
