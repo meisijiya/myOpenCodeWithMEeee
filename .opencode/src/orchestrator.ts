@@ -1,160 +1,141 @@
 /**
- * Orchestrator Plugin for opencode
+ * Orchestrator Plugin for opencode 1.16.2
  *
  * Implements:
- * - Boulder Continuation: prevent premature session idle when todos remain
- * - Keyword Detector: detect ultrawork / ulw / search / analyze keywords
- * - Rule Injector: load karpathy-guidelines + AGENTS.md on session start
- * - Compact Re-inject: re-inject karpathy after context compaction
+ * - karpathy-guidelines + project AGENTS.md injection via
+ *   `experimental.chat.system.transform` (the closest equivalent to a
+ *   "session.start" hook — the system prompt is rebuilt per LLM call, so
+ *   we re-inject every time).
+ * - Keyword detection (ultrawork / ulw / search) via `chat.message`,
+ *   injecting a synthetic system reminder into the message parts.
+ * - karpathy re-injection on compaction via `experimental.session.compacting`
+ *   so principles survive context compression.
  *
- * Reference: omO src/hooks/todo-continuation-enforcer/ + keyword-detector/
+ * Note: opencode 1.16.2 does NOT expose `session.start`, `message.user`,
+ * `session.idle`, or `session.compact` events — those were plan
+ * assumptions. The plugin loader silently ignores unknown keys, so the
+ * previous version did nothing at runtime. This rewrite uses the actual
+ * `experimental.*` hooks defined in
+ * `node_modules/@opencode-ai/plugin/dist/index.d.ts`.
  *
- * ------------------------------------------------------------------
- * API MISMATCH (IMPORTANT)
- * ------------------------------------------------------------------
- * The plan heredoc uses event names that DO NOT exist in the
- * @opencode-ai/plugin 1.16.2 Hooks interface (verified against
- * node_modules/@opencode-ai/plugin/dist/index.d.ts and the opencode
- * dev branch packages/plugin/src/index.ts):
- *
- *   Plan event        Real Hooks equivalent
- *   --------------    -----------------------------------------------
- *   session.start     experimental.chat.system.transform
- *   message.user      chat.message
- *   session.idle      experimental.chat.messages.transform
- *   session.compact   experimental.session.compacting
- *
- * We preserve the plan's structure (event names, input/output shape) and
- * cast the returned object to `any` so TypeScript accepts the unknown
- * keys. The plugin loads without error; the four handlers will NOT fire
- * at runtime because the keys are not recognized by the opencode plugin
- * loader. A follow-up task should rewrite the handlers against the real
- * API. See the report for the recommended rewrite.
- *
- * Per the task spec's instruction: "If you encounter... API differences
- * (e.g., ctx not available) → use `any` with comment". This file is the
- * minimal-surface implementation; the report flags the runtime gap.
- * ------------------------------------------------------------------
+ * Boulder-style autocontinue (preventing premature session idle while
+ * todos remain) is deferred: `experimental.compaction.autocontinue` would
+ * be the closest hook, but it does not expose todo state to plugins, and
+ * opencode has no general "session.idle" equivalent. Until opencode ships
+ * a suitable hook, the keyword-triggered work mode is the primary
+ * discipline mechanism.
  */
 
 import type { Plugin } from "@opencode-ai/plugin";
 
-const MAX_BOULDER_CONTINUATIONS = 3;
+const KARPATHY_PATH = `${process.env.HOME}/.config/opencode/skills/karpathy-guidelines/SKILL.md`;
+
+let karpathyContent: string | null = null;
+
+async function loadKarpathy(): Promise<string | null> {
+  if (karpathyContent !== null) return karpathyContent;
+  try {
+    const text = await Bun.file(KARPATHY_PATH).text();
+    karpathyContent = text.length > 0 ? text : "";
+  } catch {
+    karpathyContent = "";
+  }
+  return karpathyContent || null;
+}
+
+async function loadProjectAgents(directory: string): Promise<string | null> {
+  try {
+    const text = await Bun.file(`${directory}/AGENTS.md`).text();
+    return text.length > 0 ? text : null;
+  } catch {
+    return null;
+  }
+}
 
 export const OrchestratorPlugin: Plugin = async (ctx) => {
-  let boulderCount = 0;
-  let karpathyInjected = false;
-
   return {
     /**
-     * On session start: inject karpathy-guidelines + AGENTS.md
+     * Inject karpathy-guidelines + project AGENTS.md into the system prompt
+     * for every LLM call. The system prompt is rebuilt per call, so this
+     * hook effectively replaces a missing "session.start" event.
      */
-    "session.start": async (input: any, output: any) => {
-      const karpathyPath = `${process.env.HOME}/.config/opencode/skills/karpathy-guidelines/SKILL.md`;
-      const projectAgentsMd = `${ctx.directory}/AGENTS.md`;
-
+    "experimental.chat.system.transform": async (_input, output) => {
       const injections: string[] = [];
 
-      try {
-        const karpathy = await Bun.file(karpathyPath).text();
-        injections.push(`[karpathy-guidelines 4 原则]\n${karpathy}\n`);
-        karpathyInjected = true;
-      } catch (err) {
-        // karpathy skill not found — skip silently
+      const karpathy = await loadKarpathy();
+      if (karpathy) {
+        injections.push(
+          `[karpathy-guidelines 4 原则 - 元规则，覆盖所有工作流]\n${karpathy}\n[end karpathy]`,
+        );
       }
 
-      try {
-        const projectMd = await Bun.file(projectAgentsMd).text();
-        injections.push(`[项目级 AGENTS.md]\n${projectMd}\n`);
-      } catch (err) {
-        // No project AGENTS.md — skip
+      const projectAgents = await loadProjectAgents(ctx.directory);
+      if (projectAgents) {
+        injections.push(
+          `[项目级 AGENTS.md]\n${projectAgents}\n[end AGENTS.md]`,
+        );
       }
 
       if (injections.length > 0) {
-        output.context = output.context || [];
-        output.context.push(...injections);
+        output.system = output.system || [];
+        output.system.push(...injections);
       }
     },
 
     /**
-     * On user message: detect keywords (ultrawork / search / analyze)
+     * Detect keywords in user messages and inject a synthetic system
+     * reminder into the message parts. ultrawork / ulw → activate full
+     * work mode; search → suggest delegating to an oracle sub-agent.
      */
-    "message.user": async (input: any, output: any) => {
-      const text = input.text || "";
+    "chat.message": async (_input, output) => {
+      const text =
+        output.parts
+          ?.map((p) => (typeof p === "string" ? p : (p as any)?.text ?? ""))
+          .join(" ") || "";
 
-      // ultrawork / ulw → activate full work mode
+      const reminders: string[] = [];
+
       if (/\b(ultrawork|ulw)\b/i.test(text)) {
-        output.context = output.context || [];
-        output.context.push(
-          `\n[ultrawork mode activated]\n` +
-          `工作协议已激活：\n` +
-          `1. 不停止直到 todo 全部完成\n` +
-          `2. 并行执行所有独立操作\n` +
-          `3. 持续检查 karpathy 4 原则\n` +
-          `4. 失败时立即报告，不掩饰\n`
+        reminders.push(
+          `[ultrawork mode activated]\n` +
+            `工作协议已激活：\n` +
+            `1. 不停止直到 todo 全部完成\n` +
+            `2. 并行执行所有独立操作\n` +
+            `3. 持续检查 karpathy 4 原则\n` +
+            `4. 失败时立即报告，不掩饰\n`,
         );
       }
 
-      // search / 搜索 → emphasize delegation to sub agent
       if (/\b(search|搜索|找|查)\b/i.test(text)) {
-        output.context = output.context || [];
-        output.context.push(
-          `\n[search hint]\n考虑委派 oracle 子 agent 做并行搜索，避免主上下文污染。\n`
+        reminders.push(
+          `[search hint]\n考虑委派 oracle 子 agent 做并行搜索，避免主上下文污染。\n`,
         );
+      }
+
+      if (reminders.length > 0) {
+        output.parts = output.parts || [];
+        output.parts.push({
+          type: "text",
+          text: reminders.join("\n"),
+          synthetic: true,
+        } as any);
       }
     },
 
     /**
-     * On session idle: Boulder continuation if todos remain
+     * When compaction is about to run, re-inject karpathy into the
+     * compaction context so its principles survive compression.
      */
-    "session.idle": async (input: any, output: any) => {
-      if (boulderCount >= MAX_BOULDER_CONTINUATIONS) {
-        // Force user intervention after 3 continuations
+    "experimental.session.compacting": async (_input, output) => {
+      const karpathy = await loadKarpathy();
+      if (karpathy) {
         output.context = output.context || [];
         output.context.push(
-          `\n[Boulder] 已连续续接 ${MAX_BOULDER_CONTINUATIONS} 次。请检查 todo 状态并明确报告阻塞原因。\n`
-        );
-        return;
-      }
-
-      const todos = input.todos || [];
-      const incomplete = todos.filter((t: any) => t.status !== "completed");
-
-      if (incomplete.length > 0) {
-        boulderCount++;
-        const todoList = incomplete
-          .map((t: any, i: number) => `  ${i + 1}. ${t.content}`)
-          .join("\n");
-
-        output.context = output.context || [];
-        output.context.push(
-          `\n[Boulder Continuation #${boulderCount}]\n` +
-          `你刚才停止了，但还有 ${incomplete.length} 个 todo 未完成：\n` +
-          `${todoList}\n\n` +
-          `请继续完成它们。如果遇到无法解决的问题，明确报告并更新 todo 状态。\n`
+          `[karpathy-guidelines (re-injected pre-compaction)]\n${karpathy}`,
         );
       }
     },
-
-    /**
-     * On session compact: re-inject karpathy principles (prevent loss)
-     */
-    "session.compact": async (input: any, output: any) => {
-      if (karpathyInjected) {
-        try {
-          const karpathy = await Bun.file(
-            `${process.env.HOME}/.config/opencode/skills/karpathy-guidelines/SKILL.md`
-          ).text();
-          output.context = output.context || [];
-          output.context.push(
-            `\n[karpathy-guidelines 重新注入 (post-compact)]\n${karpathy}\n`
-          );
-        } catch (err) {
-          // Skip if not found
-        }
-      }
-    },
-  } as any;
+  };
 };
 
 export default OrchestratorPlugin;
