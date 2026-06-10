@@ -171,7 +171,7 @@ rtk gain        # 查看 token 节省统计
 |------|------|------|
 | **OpenSpec CLI** | 多 change 并行追踪、spec 智能合并、change DAG | `npm i -g @fission-ai/openspec@latest` |
 | **MiniMax CLI (`mmx`)** | 多模态（图像/视频/语音/音乐）+ 网络搜索——任何模型都能调 | `npm i -g mmx-cli && mmx auth login` |
-| **Context7 CLI (`ctx7`)** | 库文档查询（替代自建 context7-docs 工具） | `npm i -g ctx7 && npx ctx7 setup --opencode` |
+| **Context7 CLI (`ctx7`)** | 库文档查询（替代自建 context7-docs 工具）— **免费层：1000 次/月**，预算规则见 `source-driven-development` skill | `npm i -g ctx7 && npx ctx7 setup --opencode` |
 | **Playwright CLI (`playwright-cli`)** | 浏览器自动化（替代自建 playwright-browser 工具） | `npm i -g @playwright/cli@latest && playwright-cli install --skills` |
 
 ### 本项目自带的 6 个 Skill（`bash install.sh` 自动装）
@@ -453,6 +453,49 @@ bash install.sh   # 重新镜像到 ~/.config/opencode/
 | `/opsx:archive` | 归档完成的 change | Sisyphus |
 
 **Hephaestus 全部绕过 OpenSpec**——CRUD 不需要规约。
+
+### 🛡️ 为什么我们不全面依赖 OpenSpec
+
+OpenSpec 是我们架构中**三层正交**之一。我们**不依赖**它，而是**共存**。
+
+```
+┌──────────────────────────────────────────────────────────────┐
+│ 第1层：调度（我们的 3 个 agent）                              │
+│  Sisyphus / Lyra / Hephaestus — 意图路由 + 委派              │
+│  "谁做什么？"                                                 │
+├──────────────────────────────────────────────────────────────┤
+│ 第2层：工作流（我们的 8 个 skill + Superpowers）              │
+│  karpathy / grill-with-docs / diagnose / interview-me / ...  │
+│  Superpowers（14 skills, opencode 插件）                     │
+│  "我们怎么干活？"                                             │
+│  → **99% 任务走这层**                                        │
+├──────────────────────────────────────────────────────────────┤
+│ 第3层：应用（OpenSpec，可选）                                │
+│  /opsx:propose / :apply / :sync / :archive                    │
+│  openspec-propose / openspec-apply-change / ...                │
+│  "我们在造什么？"                                             │
+│  → **~1% 任务**：复杂多 spec 变更 + 审计                     │
+└──────────────────────────────────────────────────────────────┘
+```
+
+**为什么这样设计**：
+
+1. **无单点故障**——OpenSpec 出问题只影响第 3 层。99% 工作仍走 1+2 层
+2. **无命名冲突**——我们的 `openspec-integration` skill 跟项目级 5 个 `openspec-*` skill **不同名**，共存无冲突
+3. **无默认漂移**——第 2 层是默认。OpenSpec 是**触发型**（关键词 OR 语义）
+4. **逃生舱口**——切到 `build`/`plan`（opencode 出厂）完全绕过 OpenSpec
+
+### OpenSpec 实际触发频次
+
+| 任务类型 | % | 哪层 |
+|---------|---|------|
+| Daily CRUD（增删改查）| 60% | 第 2 层（Superpowers）|
+| 调研/简单实现 | 25% | 第 2 层（karpathy + source-driven）|
+| 跨文件实现 | 10% | 第 1 层（Lyra）|
+| 困难 bug | 3% | 第 1 层（Lyra + diagnose）|
+| **多 spec 变更 + 审计** | **1%** | **第 3 层（OpenSpec）**|
+
+即使 5 个 `openspec-*` skill 每次 LLM 调用都加载，*操作本身*（触发后）< 1% 工作量。token 预算由第 2 层主导。
 
 ### OpenSpec 双层触发
 

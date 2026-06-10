@@ -173,7 +173,7 @@ Without these, Sisyphus still works but:
 |-----------|-----|---------|
 | **OpenSpec CLI** | Multi-change parallel tracking, spec smart merge, change DAG | `npm i -g @fission-ai/openspec@latest` |
 | **MiniMax CLI (`mmx`)** | Multimodal (image/video/speech/music) + web search — works with any model | `npm i -g mmx-cli && mmx auth login` |
-| **Context7 CLI (`ctx7`)** | Library documentation queries (replaces self-built `context7-docs` tool) | `npm i -g ctx7 && npx ctx7 setup --opencode` |
+| **Context7 CLI (`ctx7`)** | Library documentation queries (replaces self-built `context7-docs` tool) — **free tier: 1000 calls/month**, see `source-driven-development` skill for budget rules | `npm i -g ctx7 && npx ctx7 setup --opencode` |
 | **Playwright CLI (`playwright-cli`)** | Browser automation (replaces self-built `playwright-browser` tool) | `npm i -g @playwright/cli@latest && playwright-cli install --skills` |
 
 ### Skills Already Provided by This Project (6)
@@ -461,6 +461,49 @@ bash install.sh   # Re-mirror to ~/.config/opencode/
 | `/opsx:archive` | Archive completed change | Sisyphus |
 
 **Hephaestus bypasses OpenSpec entirely** — CRUD doesn't need specs.
+
+### 🛡️ Why We Don't Lean Fully Into OpenSpec
+
+OpenSpec is one of three **orthogonal layers** in our architecture. We don't depend on it; we coexist with it.
+
+```
+┌──────────────────────────────────────────────────────────────┐
+│ Layer 1: Scheduling (our 3 agents)                            │
+│  Sisyphus / Lyra / Hephaestus — intent routing + delegation   │
+│  "Who does what?"                                             │
+├──────────────────────────────────────────────────────────────┤
+│ Layer 2: Workflow (our 8 skills + Superpowers)                 │
+│  karpathy / grill-with-docs / diagnose / interview-me / ...   │
+│  Superpowers (14 skills, opencode plugin)                     │
+│  "How do we work?"                                            │
+│  → DEFAULT for 99% of tasks                                    │
+├──────────────────────────────────────────────────────────────┤
+│ Layer 3: Application (OpenSpec, optional)                      │
+│  /opsx:propose / :apply / :sync / :archive                    │
+│  openspec-propose / openspec-apply-change / ...                │
+│  "What are we building?"                                      │
+│  → ~1% of tasks: complex multi-spec changes + audit            │
+└──────────────────────────────────────────────────────────────┘
+```
+
+**Why this matters:**
+
+1. **No single point of failure** — if OpenSpec breaks or changes, only Layer 3 is affected. 99% of work still flows through Layers 1+2.
+2. **No name conflict** — our `openspec-integration` skill is distinct from the 5 `openspec-*` skills OpenSpec generates per-project. They coexist without colliding.
+3. **No default-drift** — Layer 2 is the default. OpenSpec is opt-in (keyword OR semantic trigger).
+4. **Escape hatch** — switch to `build`/`plan` (opencode factory) to fully bypass OpenSpec.
+
+### When Does OpenSpec Trigger? (realistic frequency)
+
+| Task Type | % | Which Layer |
+|-----------|---|-------------|
+| Daily CRUD (read/edit/write) | 60% | Layer 2 (Superpowers) |
+| Research / simple impl | 25% | Layer 2 (karpathy + source-driven) |
+| Cross-file implementation | 10% | Layer 1 (Lyra) |
+| Hard bugs | 3% | Layer 1 (Lyra + diagnose) |
+| **Multi-spec change + audit** | **1%** | **Layer 3 (OpenSpec)** |
+
+Even if the 5 `openspec-*` skills load on every LLM call, the *operations* (when triggered) are <1% of work. Token budget is dominated by Layer 2.
 
 ### OpenSpec Two-Layer Trigger
 
