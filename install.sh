@@ -116,6 +116,56 @@ else
   echo "    ${OPENCODE_CONFIG}"
 fi
 
+# Auto-register Context7 + Playwright MCPs (idempotent)
+# Context7: remote MCP server (URL-based)
+# Playwright: local MCP server via npx
+if [[ -f "${OPENCODE_CONFIG}" ]]; then
+  MCP_OUTPUT="$(python3 - "${OPENCODE_CONFIG}" <<'PY_EOF' 2>&1
+import json, sys
+
+config_path = sys.argv[1]
+with open(config_path, "r", encoding="utf-8") as f:
+    config = json.load(f)
+
+mcps = config.get("mcp", {})
+if not isinstance(mcps, dict):
+    print(f"WARN: existing 'mcp' field is not a dict ({type(mcps).__name__}); skipping MCP auto-registration")
+    sys.exit(0)
+
+added = []
+
+# Context7: remote MCP server (URL-based SSE)
+if "Context7" not in mcps:
+    mcps["Context7"] = {
+        "type": "remote",
+        "url": "https://mcp.context7.com/sse",
+        "enabled": True,
+    }
+    added.append("Context7")
+
+# Playwright: local MCP server via npx
+if "Playwright" not in mcps:
+    mcps["Playwright"] = {
+        "type": "local",
+        "command": ["npx", "-y", "@playwright/mcp"],
+        "enabled": True,
+    }
+    added.append("Playwright")
+
+if added:
+    config["mcp"] = mcps
+    with open(config_path, "w", encoding="utf-8") as f:
+        json.dump(config, f, indent=2, ensure_ascii=False)
+        f.write("\n")
+    for name in added:
+        print(f"added: mcp.{name}")
+else:
+    print("already-registered: mcp.Context7, mcp.Playwright")
+PY_EOF
+  )"
+  echo "opencode.json (MCPs): ${MCP_OUTPUT}"
+fi
+
 echo ""
 echo "✓ Install complete. Restart opencode to pick up changes."
 echo ""

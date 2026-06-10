@@ -8,7 +8,7 @@
 # - Existing opencode plugins (rtk.ts, etc.)
 # - Existing AGENTS.md
 # - Existing tools that we did not create (e.g., the user may have their own)
-# - Any providers / MCPs the user added via /connect
+# - Existing MCPs that were added before install.sh (e.g., MiniMax via /connect)
 #
 # Idempotent: safe to run multiple times.
 
@@ -39,25 +39,19 @@ rm_target_dir() {
 
 # Our specific agents
 rm_target "agents/sisyphus.md"
-rm_target "agents/oracle.md"
+rm_target "agents/lyra.md"
+rm_target "agents/hephaestus.md"
 
 # Our specific skills
 rm_target_dir "skills/karpathy-guidelines"
-rm_target_dir "skills/ultrawork"
-rm_target_dir "skills/git-master"
 rm_target_dir "skills/openspec-integration"
+rm_target_dir "skills/grill-with-docs"
+rm_target_dir "skills/diagnose"
+rm_target_dir "skills/to-issues"
 
 # Our specific tools (only those we created)
 rm_target "tools/hashline-edit.js"
 rm_target "tools/task-dispatch.js"
-rm_target "tools/ast-search.js"
-rm_target "tools/web-search.js"
-rm_target "tools/image-inspect.js"
-rm_target "tools/mermaid-render.js"
-rm_target "tools/pr-reader.js"
-rm_target "tools/atomic-commit.js"
-rm_target "tools/context7-docs.js"
-rm_target "tools/playwright-browser.js"
 
 # Our specific plugin file
 rm_target "plugins/orchestrator.js"
@@ -92,8 +86,44 @@ with open(config_path, "w", encoding="utf-8") as f:
     f.write("\n")
 print(f"unregistered: {plugin_entry}")
 PY_EOF
-)"
+  )"
   echo "opencode.json: ${DEREGISTER_OUTPUT}"
+
+  # Unregister Context7 + Playwright MCPs (only if we added them)
+  MCP_DEREG_OUTPUT="$(python3 - "${OPENCODE_CONFIG}" <<'PY_EOF' 2>&1
+import json, sys
+
+config_path = sys.argv[1]
+try:
+    with open(config_path, "r", encoding="utf-8") as f:
+        config = json.load(f)
+except (json.JSONDecodeError, OSError) as e:
+    print(f"WARN: could not read {config_path}: {e}")
+    sys.exit(0)
+
+mcps = config.get("mcp", {})
+if not isinstance(mcps, dict):
+    print(f"WARN: 'mcp' field is not a dict; skipping")
+    sys.exit(0)
+
+removed = []
+for name in ["Context7", "Playwright"]:
+    if name in mcps:
+        del mcps[name]
+        removed.append(name)
+
+if removed:
+    config["mcp"] = mcps
+    with open(config_path, "w", encoding="utf-8") as f:
+        json.dump(config, f, indent=2, ensure_ascii=False)
+        f.write("\n")
+    for name in removed:
+        print(f"unregistered: mcp.{name}")
+else:
+    print("not-registered: mcp.Context7, mcp.Playwright")
+PY_EOF
+  )"
+  echo "opencode.json (MCPs): ${MCP_DEREG_OUTPUT}"
 else
   echo "opencode.json: not found (nothing to unregister)"
 fi
