@@ -163,6 +163,35 @@ rtk gain        # 查看 token 节省统计
 
 Provider / API Key 通过 opencode 的 `/connect` 命令配置（TUI 内），或者直接在 `opencode.json` 的 `provider` 段配置。本项目**不**管理 provider 配置——复用你已有的 opencode 环境。
 
+### 推荐使用 Sisyphus 而非 build
+
+安装后，opencode 默认提供两个 primary agent：**build** 和 **plan**。装了我们项目后，多了第三个 **Sisyphus**（也是 primary）。
+
+**首次启动 opencode 时**（按 **Tab** 循环切换 primary agent）：
+
+```
+┌─ build (opencode 原生)         ← 全功能但无 3 档路由
+├─ plan (opencode 原生)          ← 只读规划
+├─ Sisyphus (我们项目)           ← ★ 推荐入口
+└─ (其他 built-in subagents)
+```
+
+| Agent | 何时用 |
+|-------|--------|
+| **Sisyphus** | 99% 任务——架构、委派、跨文件、复杂实现 |
+| **build** | 只想跑单个 shell 命令/快速 read 文件，不需要 Sisyphus 的 3 档路由 |
+| **plan** | 只做只读分析，零修改 |
+
+**快捷切换**：在 TUI 里按 **Tab**（或 `switch_agent` keybind）循环 Sisyphus 和 build。
+
+**@ 委派子 agent**：
+```
+@lyra 帮我实现这个 feature
+@hephaestus 创建 5 个 CRUD 文件
+```
+
+也可以在对话里直接让 Sisyphus 委派（按它的 intent_gate 路由表自动选择）。
+
 ---
 
 ## 🏗️ 架构
@@ -297,6 +326,7 @@ install.sh 只安装**存在**的文件。要跳过：
 cd your-project
 cat > AGENTS.md <<'EOF'
 # My Project Rules
+
 ## 构建命令
 - `bun install` 安装依赖
 - `bun test` 跑测试
@@ -306,10 +336,22 @@ cat > AGENTS.md <<'EOF'
 - src/components/ - React 组件
 - src/api/ - 后端 API 路由
 - tests/ - 单元测试
+
+## Skill 路由（项目级）
+本项目用 Sisyphus（不是 build）。默认工作流：
+- 启动需求 → Superpowers `brainstorming`
+- 写代码 → `lyra` subagent（mid-tier）
+- 重复性任务 → `hephaestus` subagent（low-tier）
+- 复杂变更 → OpenSpec `/opsx:propose`
+- 困难 bug → Superpowers `systematic-debugging` 或 `diagnose` skill
 EOF
 ```
 
 **加载规则**：opencode 从 cwd 向上扫到 git worktree，匹配到的第一个 `AGENTS.md` 优先；找不到时回退到 `~/.config/opencode/AGENTS.md`。
+
+**全局 vs 项目的分工**：
+- 全局 AGENTS.md：**个人行为偏好**（语言/系统/注释风格/Emoji）
+- 项目级 AGENTS.md：**项目架构/构建命令/项目级 Skill 路由**
 
 #### 2. 项目级 `opencode.json`（合并而非替换）
 在项目根创建 `opencode.json`，**与全局 `~/.config/opencode/opencode.json` 合并加载**：
