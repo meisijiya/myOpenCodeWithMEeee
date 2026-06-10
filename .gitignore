@@ -14,3 +14,10 @@ dist/
 # Local dev files
 .env
 .env.local
+
+# OpenSpec auto-generated (per-project, run `openspec init` to regenerate)
+.opencode/skills/openspec-*/
+.opencode/commands/opsx-*
+
+# OpenSpec workspace (per-project change artifacts)
+openspec/

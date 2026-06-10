@@ -34,6 +34,61 @@ bash uninstall.sh   # 移除所有上述文件 + 清理插件注册 + MCP 注册
 
 ---
 
+## 📋 前置依赖
+
+本项目依赖以下外部组件，需在 `bash install.sh` **之前**安装：
+
+### 1. opencode（必须）
+
+```bash
+# 官方安装方式（任选一种）
+npm install -g @opencode-ai/opencode
+# 或
+curl -fsSL https://opencode.ai/install.sh | bash
+```
+
+### 2. Superpowers 流程编排 skill 体系（强烈推荐）
+
+Superpowers 提供 14 个流程编排 skill（brainstorming → writing-plans → subagent-driven-dev → review → finish），Sisyphus 的 `<openspec_protocol>` 路由依赖它做默认工作流。
+
+```bash
+# 方式 A：opencode 插件安装（推荐）
+opencode plugin install superpowers
+
+# 方式 B：手动 clone
+git clone https://github.com/obra/superpowers.git \
+  ~/.config/opencode/superpowers
+```
+
+> 如果不装 Superpowers，Sisyphus 会跳过这些 skill，用 opencode 内置工具退化工作。
+
+### 3. OpenSpec CLI（可选——需要规约驱动变更时）
+
+OpenSpec 是项目级规约中心。当你需要**多 change 并行跟踪**、**spec 智能合并**、或**需求变更追踪**时才需要。日常 CRUD / 调研 / 简单实现**不需要**。
+
+```bash
+npm install -g @fission-ai/openspec@latest
+```
+
+**按需初始化**（在需要规约驱动的项目里跑，不是全局）：
+
+```bash
+cd your-project
+openspec init --tools opencode
+```
+
+`openspec init` 会在项目目录下生成 `.opencode/skills/openspec-*`（5 个 skill）和 `.opencode/commands/opsx-*`（5 个 command）。**这些是项目级自动生成物，我们不绑进仓库**——用户按需在自己的项目里跑。
+
+### 检查清单
+
+```bash
+opencode --version              # 确认 opencode 已安装
+ls ~/.cache/opencode/packages/  # 确认 Superpowers 已安装
+openspec --version              # 确认 openspec CLI 可用（可选）
+```
+
+---
+
 ## ⚙️ 模型配置（必须手工配）
 
 安装完后，编辑 `~/.config/opencode/opencode.json`，添加 3 档模型：
