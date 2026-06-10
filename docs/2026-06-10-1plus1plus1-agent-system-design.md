@@ -237,7 +237,13 @@ permission:
   read: allow
   webfetch: allow
   websearch: allow
-  task: allow       # can dispatch to sub agents
+  # 第 1 层（主 agent）：可创建第 2 层子 agent
+  # 显式 allow 列表，deny 通配符兜底
+  # 深度=3 约束：主 → 子 → 叶子（Hephaestus）
+  task:
+    "*": deny           # 默认禁止调任何子 agent
+    lyra: allow         # 显式允许调 Lyra
+    hephaestus: allow   # 显式允许调 Hephaestus
   skill: allow
 ---
 
@@ -306,8 +312,13 @@ OpenSpec：绕过（CRUD 不需要 spec）
 ## 后台任务
 使用 background: true + task_id，可续接。
 
+## 嵌套规则：深度=3（主 → 子 → 叶子）
+- Sisyphus (主) 可调 Lyra + Hephaestus
+- Lyra (子) 只能调 Hephaestus
+- Hephaestus (叶子) 不能再调任何子 agent（`task: deny` 是 opencode 强制保证）
+
 ## Lyra 可以进一步委派 Hephaestus
-复杂实现中如果涉及重复性子任务，Lyra 自行委派给 Hephaestus。
+复杂实现中如果涉及重复性子任务，Lyra 自行委派给 Hephaestus。Hephaestus 完成任务后直接返回 Lyra。
 </delegation_protocol>
 
 <mcp_routing>
@@ -525,18 +536,29 @@ Reference: [Pi Subagents 笔记](https://github.com/mattpocock/skills) — light
 
 Pi's `allowed_subagents` frontmatter field lets each agent declare which sub-agents it can spawn. opencode 1.16.2 implements this via `permission.task` with glob patterns (last-rule-wins).
 
-**Examples** (see §4.2 and §4.3 above):
-- **Sisyphus** (primary): no need to call sub-agents from frontmatter perspective (still has `task: allow` for the primary's tool access)
-- **Lyra** (mid): can only call Hephaestus
+**Strict depth=3 rule** (per user feedback): 主 → 子 → 叶子，共 3 层。
+
+**Examples** (see §4.1, §4.2, §4.3 above):
+
+- **Sisyphus** (primary, 第1层): can dispatch to both Lyra and Hephaestus
+  ```yaml
+  task:
+    "*": deny           # 默认禁止
+    lyra: allow         # 显式允许调 Lyra
+    hephaestus: allow   # 显式允许调 Hephaestus
+  ```
+- **Lyra** (mid, 第2层): can only call Hephaestus (叶子)
   ```yaml
   task:
     "*": deny
     hephaestus: allow
   ```
-- **Hephaestus** (low): cannot call any sub-agent (terminal worker)
+- **Hephaestus** (low, 第3层 / 叶子): cannot call any sub-agent
   ```yaml
   task: deny
   ```
+
+**Hard guarantee**: Hephaestus `task: deny` → opencode **removes the Task tool description entirely** for Hephaestus. The model physically cannot spawn children.
 
 **Effect**: When the model tries to call an unallowed sub-agent, opencode **removes it from the Task tool description entirely**. The model never sees the option.
 
@@ -781,6 +803,7 @@ myOpenCodeWithMEeee/
 | 2026-06-10 | Matt Pocock skills: 3 imports (grill-with-docs, diagnose, to-issues) | "Skills are brought in" principle |
 | 2026-06-10 | Prompt innovation is the true differentiator | User's "拿来主义 + prompt 创新" principle |
 | 2026-06-10 | Adopt Pi Subagents: `permission.task` for nested agent control | opencode 1.16.2 native equivalent of Pi's `allowed_subagents`; prevents infinite recursion |
+| 2026-06-10 | Strict depth=3 nesting rule: 主 → 子 → 叶子 | User requirement: no infinite recursion; Hephaestus is the terminal leaf with `task: deny` (hard guarantee via opencode) |
 | 2026-06-10 | Adopt Pi Subagents: bash safe-glob in Hephaestus | opencode glob patterns match Pi's "replace Worker bash" goal; no user-prompting needed |
 
 ---

@@ -360,7 +360,13 @@ permission:
   read: allow
   webfetch: allow
   websearch: allow
-  task: allow
+  # 嵌套控制：深度=3 严格规则（主→子→叶子）
+  # 第1层（主 agent）：可创建第2层子 agent
+  # 显式 allow 列表 + deny 通配符兜底，防止误调其他 agent
+  task:
+    "*": deny
+    lyra: allow
+    hephaestus: allow
   skill: allow
 ---
 
