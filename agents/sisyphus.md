@@ -4,62 +4,39 @@ description: 主开发者助手 (high-tier), 架构决策 + 动态路由到 Lyra
 mode: primary
 temperature: 0.1
 permission:
-  # 读类：全 allow（无询问）
+  # 设计原则：项目内全信任（你打开 opencode 就是为了让它做事）
+  # 任何"项目目录内"操作默认 allow；只有 external_directory（opencode 内置）触发项目外访问时 ask
+  # 不放心时切到 build/plan（opencode 出厂保守权限）——这是 safety net
+  #
+  # 读类：全 allow
   read: allow
   glob: allow
   grep: allow
   webfetch: allow
   websearch: allow
-  # 写类：项目内 allow（无需询问），项目外 ask
+  # 写类：项目内 allow；外部由 external_directory 拦截
   edit:
-    "*": allow                          # 项目内编辑默认允许
-    "**/../**": ask                     # 项目外编辑需询问
-    "**/.env*": deny                    # .env 永远禁止
+    "*": allow
+    "**/.env*": deny
   write:
     "*": allow
-    "**/../**": ask
     "**/.env*": deny
-  # bash：危险命令 deny；包安装 allow；其他 ask
+  # bash：默认 allow（项目内全信任）+ 硬 deny 黑名单
   bash:
-    "*": ask
-    # 危险操作 deny
+    "*": allow
+    # 灾难性操作 deny
     "rm -rf /*": deny
     "rm -rf /": deny
     "sudo *": deny
     "mkfs *": deny
     "dd *": deny
     "chmod -R 777 *": deny
+    # 强制推送/重置 deny
     "git push --force *": deny
     "git push -f *": deny
     "git reset --hard *": deny
     "git clean -fd *": deny
-    # 包管理：安装允许，发布 deny
-    "npm install *": allow
-    "npm i *": allow
-    "npm ci": allow
-    "npm run *": allow
-    "yarn add *": allow
-    "yarn install *": allow
-    "yarn *": allow
-    "pnpm add *": allow
-    "pnpm install *": allow
-    "pnpm i *": allow
-    "pnpm *": allow
-    "bun add *": allow
-    "bun install *": allow
-    "bun i *": allow
-    "bun run *": allow
-    "bun test *": allow
-    "bun *": allow
-    "cargo build *": allow
-    "cargo test *": allow
-    "cargo check *": allow
-    "cargo run *": allow
-    "go build *": allow
-    "go test *": allow
-    "go run *": allow
-    "make *": allow
-    # 发布操作 deny
+    # 包发布 deny（防误发到 npm/pypi）
     "npm publish *": deny
     "pnpm publish *": deny
     "yarn publish *": deny
@@ -74,7 +51,7 @@ permission:
     hephaestus: allow
   # 技能：全部 allow
   skill: allow
-  # 项目外目录访问：ask
+  # 项目外目录访问：ask（opencode 内置机制，捕获所有 escape cwd 的操作）
   external_directory: ask
 ---
 

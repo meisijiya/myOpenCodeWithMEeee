@@ -4,24 +4,26 @@ description: 主 agent 助手 (mid-tier), 纯净上下文代码协作 + 研究
 mode: subagent
 temperature: 0.2
 permission:
+  # 设计原则：项目内全信任（你打开 opencode 就是为了让它做事）
+  # 任何"项目目录内"操作默认 allow；只有 external_directory（opencode 内置）触发项目外访问时 ask
+  # 不放心时切到 build/plan（opencode 出厂保守权限）——这是 safety net
+  #
   # 读类：全 allow
   read: allow
   grep: allow
   glob: allow
   webfetch: allow
   websearch: allow
-  # 写类：项目内 allow，项目外 ask
+  # 写类：项目内 allow；外部由 external_directory 拦截
   edit:
     "*": allow
-    "**/../**": ask
     "**/.env*": deny
   write:
     "*": allow
-    "**/../**": ask
     "**/.env*": deny
-  # bash：危险 deny；包管理 allow；其他 ask
+  # bash：默认 allow（项目内全信任）+ 硬 deny 黑名单
   bash:
-    "*": ask
+    "*": allow
     "rm -rf /*": deny
     "rm -rf /": deny
     "sudo *": deny
@@ -32,31 +34,6 @@ permission:
     "git push -f *": deny
     "git reset --hard *": deny
     "git clean -fd *": deny
-    "npm install *": allow
-    "npm i *": allow
-    "npm ci": allow
-    "npm run *": allow
-    "yarn add *": allow
-    "yarn install *": allow
-    "yarn *": allow
-    "pnpm add *": allow
-    "pnpm install *": allow
-    "pnpm i *": allow
-    "pnpm *": allow
-    "bun add *": allow
-    "bun install *": allow
-    "bun i *": allow
-    "bun run *": allow
-    "bun test *": allow
-    "bun *": allow
-    "cargo build *": allow
-    "cargo test *": allow
-    "cargo check *": allow
-    "cargo run *": allow
-    "go build *": allow
-    "go test *": allow
-    "go run *": allow
-    "make *": allow
     "npm publish *": deny
     "pnpm publish *": deny
     "yarn publish *": deny

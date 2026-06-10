@@ -4,28 +4,28 @@ description: 重复性 worker (low-tier), CRUD / 原子重构 / 测试脚手架
 mode: subagent
 temperature: 0.3
 permission:
+  # 设计原则：项目内全信任（worker 主要做 CRUD/批处理）
+  # 任何"项目目录内"操作默认 allow；只有 external_directory（opencode 内置）触发项目外访问时 ask
+  # 不放心时切到 build/plan（opencode 出厂保守权限）——这是 safety net
+  #
   # 读类：全 allow
   read: allow
   grep: allow
   glob: allow
   webfetch: ask
   websearch: deny
-  # 写类：项目内 allow（与其他 agent 对齐），项目外 ask
+  # 写类：项目内 allow；外部由 external_directory 拦截
   edit:
     "*": allow
-    "**/../**": ask
     "**/.env*": deny
   write:
     "*": allow
-    "**/../**": ask
     "**/.env*": deny
   # 嵌套控制：worker 不再委派（Pi Subagents 的 allowed_subagents 思想）
   task: deny
   skill: allow
   external_directory: ask
-  # bash 安全 glob（Pi Subagents 的"替换 Worker bash"思想）：
-  # - 默认 allow 保持高效（Hephaestus 是低档 worker，文件操作多）
-  # - 显式 deny 危险命令（rm -rf /, git push --force, mkfs, dd 等）
+  # bash：worker 友好——默认 allow + 黑名单 deny
   bash:
     "*": allow
     "rm -rf /*": deny
@@ -38,33 +38,6 @@ permission:
     "mkfs *": deny
     "dd *": deny
     "chmod -R 777 *": deny
-    # 包管理：允许（即使是低档 worker 也需要装包）
-    "npm install *": allow
-    "npm i *": allow
-    "npm ci": allow
-    "npm run *": allow
-    "yarn add *": allow
-    "yarn install *": allow
-    "yarn *": allow
-    "pnpm add *": allow
-    "pnpm install *": allow
-    "pnpm i *": allow
-    "pnpm *": allow
-    "bun add *": allow
-    "bun install *": allow
-    "bun i *": allow
-    "bun run *": allow
-    "bun test *": allow
-    "bun *": allow
-    "cargo build *": allow
-    "cargo test *": allow
-    "cargo check *": allow
-    "cargo run *": allow
-    "go build *": allow
-    "go test *": allow
-    "go run *": allow
-    "make *": allow
-    # 发布一律 deny（即使是 worker 也不能发布）
     "npm publish *": deny
     "pnpm publish *": deny
     "yarn publish *": deny

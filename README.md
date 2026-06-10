@@ -329,56 +329,68 @@ You can also let Sisyphus delegate directly in conversation (it auto-selects bas
 
 ---
 
-## 🛡️ Permission Strategy (Reduce Prompting)
+## 🛡️ Permission Strategy: Trust Project, Ask Beyond
 
-Following the official permissions documentation ([opencode permissions](https://opencode.ai/docs/zh-cn/permissions/)), we configured **fine-grained glob rules**. The principle: **project-internal defaults to allow, project-external ask, dangerous operations deny**.
+Following the official permissions documentation ([opencode permissions](https://opencode.ai/docs/zh-cn/permissions/)) and inspired by [oh-my-opencode-slim](https://github.com/alvinunreal/oh-my-opencode-slim)'s role-based permission tiers, we configured **fine-grained glob rules** with a clear principle:
 
-### Three-Axis Strategy
+> **Project-internal = full trust (max allow). Project-external = ask. Dangerous operations = hard deny.**
+>
+> **Safety net**: opencode's default `build`/`plan` agents use opencode's factory-conservative permissions. Switch to them when you want extra caution.
 
-| Dimension | Rule | Example |
-|-----------|------|---------|
-| **Scope** | Project-internal allow / project-external ask / `.env*` deny | `edit: { "*": allow, "**/../**": ask, "**/.env*": deny }` |
-| **Command Type** | Dangerous deny / package mgmt allow / publish deny / other ask | `rm -rf /*` deny; `npm install` allow; `npm publish` deny |
-| **Agent Gradient** | Differentiate by agent role | Hephaestus `bash: *: allow` (worker needs many commands); Sisyphus/Lyra `bash: *: ask` (conservative) |
+### Core Design Principle
 
-### Detailed Matrix
+You opened this project **so that opencode can work on it**. The project directory is by definition the trust zone. So:
+
+- Anything **inside cwd** → no asking
+- Anything **outside cwd** → opencode's `external_directory` mechanism asks
+- A few **hard-deny** operations (catastrophic / privilege escalation / accidental publish) are blocked at the prompt level
+
+If you're ever worried an agent is doing something risky, **switch to `build` or `plan` agents** — they have opencode's default cautious permissions. This is your escape hatch.
+
+### Permission Matrix
 
 | Operation | Sisyphus | Lyra | Hephaestus |
-|-----------|----------|------|-----------|
+|-----------|:--------:|:----:|:----------:|
 | `read / grep / glob / webfetch / websearch` | ✅ allow | ✅ allow | ✅ allow (websearch deny) |
 | `edit / write` project-internal | ✅ allow | ✅ allow | ✅ allow |
-| `edit / write` project-external | ⚠️ ask | ⚠️ ask | ⚠️ ask |
+| `edit / write` project-external (via `external_directory`) | ⚠️ ask | ⚠️ ask | ⚠️ ask |
 | `edit / write` `.env*` | ❌ deny | ❌ deny | ❌ deny |
-| `bash` package install (`npm install`/`bun add`/`cargo build`/...) | ✅ allow | ✅ allow | ✅ allow |
-| `bash` package publish (`npm publish`/`cargo publish`/...) | ❌ deny | ❌ deny | ❌ deny |
+| `bash` project-internal (default) | ✅ **allow** | ✅ **allow** | ✅ allow |
 | `bash` dangerous (`rm -rf /`, `sudo`, `mkfs`, `dd`, `chmod -R 777`) | ❌ deny | ❌ deny | ❌ deny |
-| `bash` other (`git status`/`ls`/`cd`/...) | ⚠️ ask | ⚠️ ask | ✅ allow (worker-friendly) |
-| `task` delegation | lyra/hephaestus | hephaestus | ❌ deny |
-| `external_directory` | ⚠️ ask | ⚠️ ask | ⚠️ ask |
+| `bash` git force push / hard reset / clean -fd | ❌ deny | ❌ deny | ❌ deny |
+| `bash` package publish (`npm/pnpm/yarn/cargo publish`) | ❌ deny | ❌ deny | ❌ deny |
+| `task` delegation | lyra/hephaestus | hephaestus | ❌ deny (leaf) |
+| `external_directory` (project-external access) | ⚠️ ask | ⚠️ ask | ⚠️ ask |
+| `doom_loop` (3x identical call) | ⚠️ ask (default) | ⚠️ ask (default) | ⚠️ ask (default) |
 
-### Design Intent
+### What Changed (vs. v1)
 
-- **Sisyphus / Lyra stay cautious**: bash unknown commands default to `ask` to avoid misoperation
-- **Hephaestus runs many commands**: workers mainly do CRUD, `bash: *: allow` reduces prompting
-- **Package management whitelist**: `npm/yarn/pnpm/bun install` all allow (high frequency in dev), `publish` all deny (prevent accidental release)
-- **Dangerous command blacklist**: `rm -rf /` catastrophic delete, `sudo` privilege escalation, `mkfs` format, `dd` disk wipe — all hard deny
-- **`.env` always forbidden**: 3 agents all have `read/edit/write: *.env*: deny` (default behavior, but explicitly declared)
+| Aspect | v1 (older) | v2 (current) |
+|--------|------------|--------------|
+| `bash` default for Sisyphus/Lyra | `ask` (too cautious) | **`allow`** (project trust) |
+| Project-external `edit`/`write` | Custom `**/../**` glob (leaky) | `external_directory: ask` (opencode native) |
+| Safety mechanism | Multiple ask prompts | Switch agent to `build`/`plan` |
+
+### Design Intent (insights from omo-slim)
+
+- **Role-based permission tiers**: Different agents have different default trust levels. omo-slim does this with read-only agents (`explorer`/`librarian`/`oracle`/`observer`) vs read-write agents (`designer`/`fixer`). We do the same: Hephaestus is most permissive (worker needs many commands), Sisyphus is mid (default allow + hard denies), and `build`/`plan` are the most conservative (opencode factory defaults).
+- **Don't make the agent cautious — make the safety net accessible**: The user can always switch to a more cautious agent. Don't punish normal flow with constant prompts.
+- **Hard denies are irreplaceable**: Even the most permissive agent must have hard `rm -rf /`/`sudo`/`npm publish` denies. These are the only rules that truly cannot be overridden.
 
 ### Pattern Matching Example
 
 ```yaml
 # How these glob patterns work:
 bash:
-  "*": ask                           # Default: all unmatched commands ask
-  "rm -rf /*": deny                  # Catastrophic delete deny
-  "sudo *": deny                     # Privilege escalation deny
-  "npm install *": allow             # Package install allow
-  "npm publish *": deny              # Publish deny (more specific overrides wildcard)
-  "git *": allow                     # Git read operations allow
-  "git push --force *": deny         # Force push deny
+  "*": allow                          # Default: all bash commands allow (project-internal)
+  "rm -rf /*": deny                   # Hard deny
+  "sudo *": deny                      # Hard deny
+  "git push --force *": deny          # Hard deny
+  "npm publish *": deny               # Hard deny
+external_directory: ask              # Any escape-cwd operation asks
 ```
 
-**Last-rule-wins**: In each permission block, **the last matching rule takes priority**. So conventionally put `"*": ask` first, specific rules after.
+**Last-rule-wins**: In each permission block, **the last matching rule takes priority**. So put `"*": allow` first, specific denys after.
 
 ### Customization
 
