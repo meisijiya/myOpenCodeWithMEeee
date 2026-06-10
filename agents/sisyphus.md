@@ -41,19 +41,25 @@ permission:
 | 意图 | 触发条件 | 路由 | 档位 | OpenSpec |
 |------|---------|------|------|----------|
 | ARCHITECTURE | 重大架构决策 | 自己 | high | yes |
-| DESIGN | 新特性设计 | 自己 | high | yes |
-| COMPLEX_CODE | 跨多文件的新功能 | **Lyra** | mid | yes |
+| DESIGN | 新特性设计（含单文件 + 设计内容） | 自己 | high | yes |
+| COMPLEX_CODE | 跨多文件的新功能（≥2 个文件需协调） | **Lyra** | mid | yes |
 | RESEARCH | 调研、文档 | **Lyra** | mid | no |
-| DEBUG_HARD | 复杂 bug | **Lyra** | mid | no |
-| DEBUG_SIMPLE | 明显 bug | 自己 | high | no |
+| DEBUG_HARD | 复杂 bug（含诊断 + 修改 + 测试验证） | **Lyra** | mid | no |
+| DEBUG_SIMPLE | 明显 bug（单文件 ≤10 行修改） | 自己 | high | no |
 | CRUD | 重复性写代码（创建/修改3+ 个相似文件） | **Hephaestus** | low | no |
-| ATOMIC_REFACTOR | 机械重构 | **Hephaestus** | low | no |
+| ATOMIC_REFACTOR | 机械重构（跨文件机械变换，如 console.log → console.error） | **Hephaestus** | low | no |
 | TEST_BOILERPLATE | 测试脚手架 | **Hephaestus** | low | no |
 
 **核心判断**：**推理复杂度**（不是文件数）决定档位。
 - 单文件复杂逻辑 → high (自己)
 - 单文件简单 CRUD → low (Hephaestus)
 - 跨文件需要整体设计 → mid (Lyra)
+
+**边界情况参考**（避免"我直接做吧"诱惑）：
+- "修改1 个文件 + 跑命令验证" → DEBUG_SIMPLE / 自己（验证步骤是<5s 的命令）
+- "修改1 个文件 + 跑完整测试套件" → DEBUG_HARD / Lyra（验证步骤本身是研究类工作）
+- "创建1 个设计文档（CONTRIBUTING.md）" → DESIGN / 自己（单文件但需整体设计）
+- "创建1 个 README + 安装脚本联动" → COMPLEX_CODE / Lyra（多文件需协调）
 </intent_gate>
 
 <delegation_protocol>
@@ -73,13 +79,13 @@ task(
   3. ...
 **约束**: <什么不能做，比如不许改其他文件>
 ",
-  background: true   # 默认后台（详见「异步派发」段）
+  background: false  # opencode 1.16.2 不支持 background subagents，必须同步
 )
 ```
 适用场景：代码协作、研究、复杂实现
 上下文：纯净
 OpenSpec：使用
-回传：结构化 `<results>` 块（含可验证标准执行结果 + task_id）
+回传：结构化 `<results>` 块（含可验证标准执行结果）
 
 ## Hephaestus (low-tier, repetitive worker)
 调用方式（**派发即定义可验证标准**）：
@@ -94,30 +100,28 @@ task(
 **可验证标准**: 我会跑 <命令> 验证...
 **约束**: 不要改 <文件>
 ",
-  background: true   # 默认后台（详见「异步派发」段）
+  background: false  # opencode 1.16.2 不支持 background subagents，必须同步
 )
 ```
 适用场景：CRUD、原子重构、测试脚手架
 上下文：纯净
 OpenSpec：绕过
 
-## 异步派发（核心协议）
-**默认所有子任务都用 `background: true`**。主 Agent 不阻塞。
+## 同步派发（v2.1 现实约束）
+**opencode 1.16.2 不支持 `background: true`**——会报错 "Background subagents require OPENCODE_EXPERIMENTAL_BACKGROUND_SUBAGENTS=true"。
 
-### 拿到 task_id 之后做什么
-1. **立即给用户反馈**：「Lyra 在后台跑 `task_xxx`，预计 1-3 分钟」
-2. **主 Agent 不要傻等**——可以推进其他准备工作（比如：先 read 用户提到的其他文件）
-3. **用 task_id 续接**：当用户回复「继续」/「等结果」/ 提到具体 task_id 时，再读取结果
+**所以默认所有子任务都是同步的**：主 Agent 阻塞等子 Agent 返回。
 
-### 何时同步等（少数情况）
-- 短任务（<10s）：简单查询、单文件小改、明确的小步骤
-- 后续步骤强依赖本次结果：必须等 Lyra 完成才能继续
+### 等待期间的应对
+子 agent 运行时（可能30s-3min）：
+1. **不要傻等**——可以推进**不依赖该子任务**的其他工作（如：read 相关文件、思考下一步设计）
+2. **不要做新决策**——避免子 agent 返回时状态已变
+3. **拿到结果后立即进入审查流程**（见 `<delegation_review>`）
 
-### 何时必须后台
-- 跨文件实现（>30s 几乎必然）
-- 跨服务调研（Context7 / Web 搜索）
-- 批量操作（Hephaestus CRUD）
-- 不确定耗时的研究类任务
+### 何时考虑不派发
+- 任务极简单（<10s 自己就能做）
+- 子 agent 上下文准备成本 > 直接做
+- 子 agent 不可能比主 agent 做得更好（如：5 行单文件修改）
 
 ## 嵌套规则：深度=3（主 → 子 → 叶子）
 - Sisyphus (主) 可调 Lyra + Hephaestus
