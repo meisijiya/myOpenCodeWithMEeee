@@ -676,6 +676,62 @@ cp ~/.config/opencode/agents/sisyphus.md .opencode/agents/sisyphus.md
 
 ---
 
+## 📐 压缩策略（340K 触发点）
+
+> **为什么**：1M 上下文模型在 ~340K token 之后**注意力涣散**。长上下文 = 贵 + 差。我们在 340K 附近压缩。
+
+**参考**：AI 注意力 U 形曲线研究——见 [压缩策略文档](docs/2026-06-11-compaction-strategy-340k.md)
+
+### opencode 1.16.2 Schema（已对照 `https://opencode.ai/config.json` 验证）
+
+`compaction` 块有 **5 个官方字段**。**没有"compaction threshold"字段**——触发由内部计算：
+
+```
+触发点 ≈ 模型上下文 - reserved - preserve_recent_tokens
+```
+
+### 我们的默认配置
+
+```jsonc
+{
+  "compaction": {
+    "auto": true,                  // 自动触发
+    "prune": true,                 // 修剪旧工具输出
+    "reserved": 100000,            // ⬇ 从 300K（原本吃了 30% 窗口）
+    "preserve_recent_tokens": 40000,  // ⬇ 从 64K
+    "tail_turns": 1                // ⬇ 从默认 2
+  },
+  "agent": {
+    "compaction": {
+      "prompt": "激进压缩：30K 输出，仅保留关键信息..."
+    }
+  }
+}
+```
+
+### 各模型触发点
+
+| 模型 | 上下文 | 触发点 | 说明 |
+|------|-------|--------|------|
+| **MiniMax-M3**（Sisyphus）| 512K | **~372K** | ✅ 接近 340K 目标 |
+| **deepseek-v4-flash**（Lyra/Hephaestus）| 1M | ~860K | 激进 prompt 让 session 远离 860K |
+
+Sisyphus 主 agent **372K 触发 ≈ 340K 目标**——你指定的甜点。
+
+1M 模型 schema 极限 ≈ 860K。我们用 **激进压缩 prompt** 解决：压缩后 30K，需要 5 倍时间才涨回去。
+
+### 为什么重要
+
+| 不调 | 调了 |
+|------|------|
+| 触发点 ~636K（1M 模型）| 触发点 ~860K + 压缩后保持短 |
+| 1M session = 10x 成本（vs 100K）| 30K 压缩后 = 3x 成本 |
+| 400K 后注意力涣散 | 全程注意力保真 |
+
+完整细节见 [压缩策略文档](docs/2026-06-11-compaction-strategy-340k.md)。
+
+---
+
 ## 🔍 验证
 
 ```bash

@@ -688,6 +688,62 @@ cp ~/.config/opencode/agents/sisyphus.md .opencode/agents/sisyphus.md
 
 ---
 
+## 📐 Compaction Strategy (340K Trigger)
+
+> **Why**: 1M context models suffer attention decay past ~340K tokens. Long context = expensive + bad. We compact around that threshold.
+
+**Reference**: AI attention U-curve study — see [Compaction Strategy doc](docs/2026-06-11-compaction-strategy-340k.md)
+
+### opencode 1.16.2 Schema (verified against `https://opencode.ai/config.json`)
+
+The `compaction` block has **5 official fields**. There is **no "compaction threshold" field** — trigger is internal:
+
+```
+trigger ≈ model_context - reserved - preserve_recent_tokens
+```
+
+### Our Default Config
+
+```jsonc
+{
+  "compaction": {
+    "auto": true,                  // automatic trigger
+    "prune": true,                 // drop old tool outputs
+    "reserved": 100000,            // ⬇ from 300K (was eating 30% of window)
+    "preserve_recent_tokens": 40000,  // ⬇ from 64K
+    "tail_turns": 1                // ⬇ from default 2
+  },
+  "agent": {
+    "compaction": {
+      "prompt": "Aggressive compactor: 30K output, keep only essentials..."
+    }
+  }
+}
+```
+
+### Trigger Point Per Model
+
+| Model | Context | Trigger | Notes |
+|-------|---------|---------|-------|
+| **MiniMax-M3** (Sisyphus) | 512K | **~372K** | ✅ Matches 340K target |
+| **deepseek-v4-flash** (Lyra/Hephaestus) | 1M | ~860K | Aggressive prompt keeps session far below 860K |
+
+For Sisyphus (primary), **372K trigger ≈ 340K target** — your specified sweet spot.
+
+For 1M models, schema can't trigger below ~860K. We use **aggressive compaction prompt** as workaround: compresses session to 30K, so it takes 5x longer to grow back.
+
+### Why This Matters
+
+| Without Compaction Tuning | With Our Defaults |
+|---------------------------|-------------------|
+| Trigger at ~636K (1M model) | Trigger at ~860K + session stays short after |
+| 1M-token session = **10x cost** vs 100K | 30K post-compact = **3x cost** |
+| Attention decay past 400K | Attention fidelity throughout |
+
+See [Compaction Strategy doc](docs/2026-06-11-compaction-strategy-340k.md) for full details.
+
+---
+
 ## 🔍 Verification
 
 ```bash

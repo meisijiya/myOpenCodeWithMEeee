@@ -135,6 +135,54 @@ else
 fi
 
 
+# Apply compaction strategy (340K trigger) — only if user doesn't have a 'compaction' block
+# This is a non-destructive merge: if the user has any custom compaction settings,
+# we keep them. If not, we apply our optimized 340K-trigger defaults.
+COMPACTION_TEMPLATE="${REPO_DIR}/templates/opencode-compaction.jsonc"
+if [[ -f "${OPENCODE_CONFIG}" ]] && [[ -f "${COMPACTION_TEMPLATE}" ]]; then
+  COMPACTION_OUTPUT="$(python3 - "${OPENCODE_CONFIG}" "${COMPACTION_TEMPLATE}" <<'PY_EOF' 2>&1
+import json, sys
+
+config_path, template_path = sys.argv[1], sys.argv[2]
+with open(config_path, "r", encoding="utf-8") as f:
+    config = json.load(f)
+with open(template_path, "r", encoding="utf-8") as f:
+    template = json.load(f)
+
+# Skip if user already has a 'compaction' block — respect their settings
+if "compaction" in config:
+    print("already-configured: compaction (skipped — using existing settings)")
+    sys.exit(0)
+
+# Apply compaction block
+config["compaction"] = template["compaction"]
+
+# Apply agent.compaction prompt (only if user doesn't have one)
+agents = config.setdefault("agent", {})
+ac = agents.get("compaction")
+if not (isinstance(ac, dict) and "prompt" in ac):
+    # Merge: keep any existing agent.compaction fields, add prompt
+    if not isinstance(ac, dict):
+        ac = {}
+    ac["prompt"] = template["agent"]["compaction"]["prompt"]
+    agents["compaction"] = ac
+    print("merged: agent.compaction.prompt added")
+
+# Preserve formatting
+with open(config_path, "w", encoding="utf-8") as f:
+    json.dump(config, f, indent=2, ensure_ascii=False)
+    f.write("\n")
+print("applied: compaction block (340K trigger strategy)")
+PY_EOF
+)"
+  echo "compaction: ${COMPACTION_OUTPUT}"
+else
+  if [[ ! -f "${OPENCODE_CONFIG}" ]]; then
+    echo "compaction: skipped (no opencode.json yet)"
+  fi
+fi
+
+
 # Check CLI availability (recommended, not required)
 echo ""
 echo "🔧 推荐的 CLI 工具（按需安装）："

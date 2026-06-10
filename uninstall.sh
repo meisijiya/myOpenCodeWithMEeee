@@ -95,6 +95,56 @@ else
   echo "opencode.json: not found (nothing to unregister)"
 fi
 
+# Remove compaction block (only if it matches our template — preserve user's custom settings)
+if [[ -f "${OPENCODE_CONFIG}" ]]; then
+  REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+  COMPACTION_TEMPLATE="${REPO_DIR}/templates/opencode-compaction.jsonc"
+  if [[ -f "${COMPACTION_TEMPLATE}" ]]; then
+    REMOVE_COMPACTION_OUTPUT="$(python3 - "${OPENCODE_CONFIG}" "${COMPACTION_TEMPLATE}" <<'PY_EOF' 2>&1
+import json, sys
+
+config_path, template_path = sys.argv[1], sys.argv[2]
+try:
+    with open(config_path, "r", encoding="utf-8") as f:
+        config = json.load(f)
+    with open(template_path, "r", encoding="utf-8") as f:
+        template = json.load(f)
+except (json.JSONDecodeError, OSError) as e:
+    print(f"WARN: could not read files: {e}")
+    sys.exit(0)
+
+removed = False
+
+# Remove compaction block if it matches our template (deep equal)
+user_compaction = config.get("compaction")
+if user_compaction == template.get("compaction"):
+    del config["compaction"]
+    removed = True
+    print("removed: compaction block (matched our template)")
+
+# Remove agent.compaction.prompt if it matches our template prompt
+ac = config.get("agent", {}).get("compaction")
+template_prompt = template.get("agent", {}).get("compaction", {}).get("prompt")
+if isinstance(ac, dict) and ac.get("prompt") == template_prompt:
+    del ac["prompt"]
+    # If agent.compaction is now empty, remove it entirely
+    if not ac:
+        del config["agent"]["compaction"]
+    removed = True
+    print("removed: agent.compaction.prompt (matched our template)")
+
+if not removed:
+    print("preserved: compaction block (user-customized, not removed)")
+else:
+    with open(config_path, "w", encoding="utf-8") as f:
+        json.dump(config, f, indent=2, ensure_ascii=False)
+        f.write("\n")
+PY_EOF
+)"
+    echo "compaction: ${REMOVE_COMPACTION_OUTPUT}"
+  fi
+fi
+
 echo ""
 echo "✓ Uninstall complete. Restart opencode to apply changes."
 echo "Note: your providers, MCPs (from /connect), and personal AGENTS.md are preserved."
