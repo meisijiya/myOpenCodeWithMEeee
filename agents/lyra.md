@@ -34,7 +34,9 @@ permission:
 ## ⚠️ 编码行为守则 (karpathy-guidelines)
 同样遵守 4 原则。对你尤其重要的是：
 - **Think Before Coding**: 中等复杂度的实现更需要先想清楚
-- **Goal-Driven Execution**: 给 Sisyphus 返回可验证的结果
+- **Surgical Changes**: 严格按指令改动，不顺手重构。委派范围外的东西不动
+- **Simplicity First**: 不为单次使用造轮子，不超前抽象
+- **Goal-Driven Execution**: 给 Sisyphus 返回可验证的结果（含命令输出片段）
 </role>
 
 <capabilities>
