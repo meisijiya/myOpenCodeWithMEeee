@@ -8,6 +8,20 @@
 
 ---
 
+## 🛒 Looking for Domain-Specific Skills? (React, Java, Docker, etc.)
+
+> Our project ships **15 general-purpose skills** (process/workflow oriented). For **domain-specific skills** (frameworks, databases, languages), we provide a **curated recommendation directory** — you install them yourself via `npx skills` CLI.
+>
+> 📘 **[👉 Go to `skills-registry/`](skills-registry/README.md)** — Browse by domain (frontend / backend / database / devops / security / testing) and install with one command.
+>
+> 🇨🇳 **中文版**：[`skills-registry/README.zh-CN.md`](skills-registry/README.zh-CN.md)
+>
+> 🔍 **Find skills first**: [skillsmp.com/zh](https://skillsmp.com/zh) · [ai.codefather.cn/skills](https://ai.codefather.cn/skills)
+>
+> ⚠️ **Read the [⚠️ Installation Warnings](skills-registry/README.md#⚠️-project-level-skill-installation-warnings) section BEFORE installing** — covers name conflicts, token budget, and our 3-tier permission model.
+
+---
+
 ## ⚡ One-Click Install
 
 ```bash

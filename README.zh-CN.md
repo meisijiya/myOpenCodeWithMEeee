@@ -8,6 +8,20 @@
 
 ---
 
+## 🛒 找领域专用 Skill？（React / Java / Docker 等）
+
+> 我们项目自带 **15 个通用 skill**（流程/工作流导向）。**领域专用 skill**（框架、数据库、语言）我们提供**精选推荐目录**——你用 `npx skills` CLI 自己装。
+>
+> 📘 **[👉 跳到 `skills-registry/`](skills-registry/README.zh-CN.md)** — 按领域浏览（前端 / 后端 / 数据库 / 运维 / 安全 / 测试），一行命令装。
+>
+> 🇺🇸 **English**: [`skills-registry/README.md`](skills-registry/README.md)
+>
+> 🔍 **先去市场找**: [skillsmp.com/zh](https://skillsmp.com/zh) · [ai.codefather.cn/skills](https://ai.codefather.cn/skills)
+>
+> ⚠️ **装前必读 [⚠️ 安装警告](skills-registry/README.zh-CN.md#⚠️-项目级-skill-安装警告)** — 涵盖重名冲突、token 预算、我们的三层权限模型。
+
+---
+
 ## ⚡ 一键安装
 
 ```bash
