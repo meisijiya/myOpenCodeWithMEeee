@@ -12,7 +12,7 @@ set -euo pipefail
 
 REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 TARGET_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/opencode"
-SKILLS=(diagnose grill-with-docs handoff interview-me karpathy-guidelines mmx-cli-usage openspec-integration source-driven-development tdd to-issues zoom-out)
+SKILLS=(caveman diagnose git-workflow-and-versioning grill-with-docs handoff incremental-implementation interview-me karpathy-guidelines mmx-cli-usage openspec-integration prototype source-driven-development tdd to-issues zoom-out)
 
 echo "Installing myOpenCodeWithMEeee → ${TARGET_DIR}"
 echo ""

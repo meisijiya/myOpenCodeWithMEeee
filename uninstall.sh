@@ -43,16 +43,20 @@ rm_target "agents/lyra.md"
 rm_target "agents/hephaestus.md"
 
 # Our specific skills
+rm_target_dir "skills/caveman"
 rm_target_dir "skills/diagnose"
+rm_target_dir "skills/git-workflow-and-versioning"
 rm_target_dir "skills/grill-with-docs"
+rm_target_dir "skills/handoff"
+rm_target_dir "skills/incremental-implementation"
 rm_target_dir "skills/interview-me"
 rm_target_dir "skills/karpathy-guidelines"
 rm_target_dir "skills/mmx-cli-usage"
 rm_target_dir "skills/openspec-integration"
+rm_target_dir "skills/prototype"
 rm_target_dir "skills/source-driven-development"
-rm_target_dir "skills/to-issues"
-rm_target_dir "skills/handoff"
 rm_target_dir "skills/tdd"
+rm_target_dir "skills/to-issues"
 rm_target_dir "skills/zoom-out"
 
 # Our specific tools (only those we created)
