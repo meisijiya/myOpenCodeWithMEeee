@@ -51,6 +51,9 @@ rm_target_dir "skills/mmx-cli-usage"
 rm_target_dir "skills/openspec-integration"
 rm_target_dir "skills/source-driven-development"
 rm_target_dir "skills/to-issues"
+rm_target_dir "skills/handoff"
+rm_target_dir "skills/tdd"
+rm_target_dir "skills/zoom-out"
 
 # Our specific tools (only those we created)
 rm_target "tools/hashline-edit.js"

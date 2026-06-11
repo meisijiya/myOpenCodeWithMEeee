@@ -21,7 +21,7 @@ bash install.sh
 | 自动化项 | 详情 |
 |---------|------|
 | **3 agents** | `sisyphus.md` / `lyra.md` / `hephaestus.md` → `~/.config/opencode/agents/` |
-| **8 skills** | karpathy-guidelines / openspec-integration / grill-with-docs / diagnose / to-issues / mmx-cli-usage / interview-me / source-driven-development |
+| **11 skills** | karpathy-guidelines / openspec-integration / grill-with-docs / diagnose / to-issues / mmx-cli-usage / interview-me / source-driven-development / tdd / handoff / zoom-out |
 | **2 tools** | `hashline-edit.js` / `task-dispatch.js` → `~/.config/opencode/tools/` |
 | **1 plugin** | `orchestrator.js` 自动注册到 `opencode.json` 的 `plugin` 数组 |
 | **AGENTS.md 模板** | 仅在你**没有**全局 `~/.config/opencode/AGENTS.md` 时拷贝模板（**不覆盖**已有个人配置） |
@@ -135,12 +135,12 @@ rtk gain        # 查看 token 节省统计
 
 ### ⚠️ 关于 mattpocock/skills
 
-我们的 `grill-with-docs`、`diagnose`、`to-issues` 是从 [mattpocock/skills](https://github.com/mattpocock/skills) **原样导入**的（verbatim import）——只取了项目实际需要的 3 个，不是全量 11 个。**不要**另外跑 mattpocock 的官方 setup 脚本，否则同名 skill 会冲突，opencode 按文件系统遍历顺序去重，结果不可预测。
+我们的 `grill-with-docs`、`diagnose`、`to-issues`、`tdd`、`handoff`、`zoom-out` 是从 [mattpocock/skills](https://github.com/mattpocock/skills) **原样导入**的（verbatim import）——只取了项目实际需要的 6 个，不是全量 11 个。**不要**另外跑 mattpocock 的官方 setup 脚本，否则同名 skill 会冲突，opencode 按文件系统遍历顺序去重，结果不可预测。
 
 | 方式 | 效果 |
 |------|------|
-| ✅ 用我们的 `install.sh` | 恰好 3 个，无冲突 |
-| ❌ 额外跑 mattpocock 官方 setup | 3 个重名 skill，不确定哪个生效 |
+| ✅ 用我们的 `install.sh` | 恰好 6 个，无冲突 |
+| ❌ 额外跑 mattpocock 官方 setup | 6 个重名 skill，不确定哪个生效 |
 
 ---
 
@@ -174,7 +174,7 @@ rtk gain        # 查看 token 节省统计
 | **Context7 CLI (`ctx7`)** | 库文档查询（替代自建 context7-docs 工具）— **免费层：1000 次/月**，预算规则见 `source-driven-development` skill | `npm i -g ctx7 && npx ctx7 setup --opencode` |
 | **Playwright CLI (`playwright-cli`)** | 浏览器自动化（替代自建 playwright-browser 工具） | `npm i -g @playwright/cli@latest && playwright-cli install --skills` |
 
-### 本项目自带的 6 个 Skill（`bash install.sh` 自动装）
+### 本项目自带的 11 个 Skill（`bash install.sh` 自动装）
 
 | Skill | 类型 | 触发 |
 |-------|------|------|
@@ -186,6 +186,9 @@ rtk gain        # 查看 token 节省统计
 | `mmx-cli-usage` | 自研（mmx CLI 使用指南） | 需要多模态/搜索时 |
 | `interview-me` | 从 addyosmani/agent-skills 原样导入 | 需求不明（缺 who/why/success/constraint）|
 | `source-driven-development` | 轻量复刻 addyosmani skill | 框架/API 决策需要官方文档验证（用 ctx7 CLI）|
+| `handoff` | 从 mattpocock/skills 原样导入（`SKILL.md` 15 行）| 将当前对话压缩为交接文档给下一个 agent |
+| `tdd` | 从 mattpocock/skills 原样导入（`SKILL.md` + 5 个子文件）| 红-绿-重构循环的测试驱动开发 |
+| `zoom-out` | 从 mattpocock/skills 原样导入（`SKILL.md` 7 行）| 放大视野，获取更广上下文和高层视角 |
 
 ### 一键验证
 
@@ -441,6 +444,9 @@ bash install.sh   # 重新镜像到 ~/.config/opencode/
 | **to-issues** | mattpocock/skills | 把 plan/spec 拆成独立 issues | Sisyphus |
 | **interview-me** | addyosmani/agent-skills（原样导入）| 需求不明确（缺 who/why/success/constraint）—— 一次问一个问题直到 95% 置信度 | Sisyphus |
 | **source-driven-development** | addyosmani/agent-skills（轻量复刻）| 框架/API 决策需要官方文档验证（用 ctx7 CLI）| Lyra（实现时）|
+| **handoff** | mattpocock/skills（原样导入）| 将当前对话压缩为交接文档给下一个 agent | Sisyphus / Lyra |
+| **tdd** | mattpocock/skills（原样导入）| 红-绿-重构循环的测试驱动开发 | Sisyphus / Lyra |
+| **zoom-out** | mattpocock/skills（原样导入）| 放大视野，获取更广上下文和高层视角 | 全部 |
 
 ### OpenSpec 集成（项目级规约驱动）
 
@@ -464,7 +470,7 @@ OpenSpec 是我们架构中**三层正交**之一。我们**不依赖**它，而
 │  Sisyphus / Lyra / Hephaestus — 意图路由 + 委派              │
 │  "谁做什么？"                                                 │
 ├──────────────────────────────────────────────────────────────┤
-│ 第2层：工作流（我们的 8 个 skill + Superpowers）              │
+│ 第2层：工作流（我们的 11 个 skill + Superpowers）              │
 │  karpathy / grill-with-docs / diagnose / interview-me / ...  │
 │  Superpowers（14 skills, opencode 插件）                     │
 │  "我们怎么干活？"                                             │
@@ -542,7 +548,7 @@ OpenSpec 是我们架构中**三层正交**之一。我们**不依赖**它，而
 | 组件 | 类型 | 数量 | 来源 |
 |------|------|------|------|
 | Agents | `.md` prompt 文件 | **3** | 自研 |
-| Skills | `SKILL.md` 文件 | **6** | 2 自研 + 4 外部导入 |
+| Skills | `SKILL.md` 文件 | **11** | 3 自研 + 8 外部导入（6 来自 mattpocock + 1 来自 addyosmani + 1 轻量复刻 addyosmani） |
 | Tools | TypeScript → `.js` | **2** | 自研（hashline-edit + task-dispatch） |
 | Plugin | `orchestrator.js` | **1** | 自研 |
 | CLIs | npm -g | **3** | mmx-cli (MiniMax 多模态+搜索) + ctx7 (库文档) + playwright-cli (浏览器自动化) |
@@ -763,7 +769,7 @@ myOpenCodeWithMEeee/
 │   ├── sisyphus.md         # primary (high-tier) — 7 XML segments + 9-row routing
 │   ├── lyra.md             # subagent (mid-tier) — can delegate to Hephaestus
 │   └── hephaestus.md       # subagent (low-tier) — task:deny, bash safe-glob
-├── skills/                 # 8 个 skill（SKILL.md）
+├── skills/                 # 11 个 skill（SKILL.md）
 │   ├── karpathy-guidelines/      # 4 大 karpathy 原则（自动注入）
 │   ├── openspec-integration/     # OpenSpec ↔ Superpowers 路由桥
 │   ├── grill-with-docs/          # 来自 mattpocock
@@ -771,7 +777,10 @@ myOpenCodeWithMEeee/
 │   ├── to-issues/                # 来自 mattpocock
 │   ├── mmx-cli-usage/            # mmx CLI 指南
 │   ├── interview-me/            # 来自 addyosmani（原样，一次一问）
-│   └── source-driven-development/ # 轻量复刻 addyosmani skill
+│   ├── source-driven-development/ # 轻量复刻 addyosmani skill
+│   ├── handoff/                  # 来自 mattpocock（SKILL.md 15 行）
+│   ├── tdd/                      # 来自 mattpocock（SKILL.md + 5 个子文件）
+│   └── zoom-out/                 # 来自 mattpocock（SKILL.md 7 行）
 ├── tools/                  # 2 个自研工具
 │   ├── src/                # TypeScript 源码 + 测试
 │   └── dist/               # 构建产物（gitignored）

@@ -21,7 +21,7 @@ bash install.sh
 | Automated Item | Details |
 |---------------|---------|
 | **3 agents** | `sisyphus.md` / `lyra.md` / `hephaestus.md` → `~/.config/opencode/agents/` |
-| **8 skills** | karpathy-guidelines / openspec-integration / grill-with-docs / diagnose / to-issues / mmx-cli-usage / interview-me / source-driven-development |
+| **11 skills** | karpathy-guidelines / openspec-integration / grill-with-docs / diagnose / to-issues / mmx-cli-usage / interview-me / source-driven-development / tdd / handoff / zoom-out |
 | **2 tools** | `hashline-edit.js` / `task-dispatch.js` → `~/.config/opencode/tools/` |
 | **1 plugin** | `orchestrator.js` auto-registered to `opencode.json`'s `plugin` array |
 | **AGENTS.md template** | Only copied if you don't have a global `~/.config/opencode/AGENTS.md` (**never overwrites** your personal config) |
@@ -135,12 +135,12 @@ After initialization, the agent's bash commands are automatically rewritten:
 
 ### ⚠️ About mattpocock/skills
 
-Our `grill-with-docs`, `diagnose`, `to-issues` are **verbatim imports** from [mattpocock/skills](https://github.com/mattpocock/skills) — only the 3 we actually need, not the full 11. **Do not** also run mattpocock's official setup script, otherwise same-named skills will conflict, and opencode will dedupe based on file system traversal order, with unpredictable results.
+Our `grill-with-docs`, `diagnose`, `to-issues`, `tdd`, `handoff`, `zoom-out` are **verbatim imports** from [mattpocock/skills](https://github.com/mattpocock/skills) — only the 6 we actually need, not the full 11. **Do not** also run mattpocock's official setup script, otherwise same-named skills will conflict, and opencode will dedupe based on file system traversal order, with unpredictable results.
 
 | Method | Effect |
 |--------|--------|
-| ✅ Use our `install.sh` | Exactly 3 skills, no conflict |
-| ❌ Also run mattpocock official setup | 3 same-name skills, unknown which wins |
+| ✅ Use our `install.sh` | Exactly 6 skills, no conflict |
+| ❌ Also run mattpocock official setup | 6 same-name skills, unknown which wins |
 
 ---
 
@@ -176,7 +176,7 @@ Without these, Sisyphus still works but:
 | **Context7 CLI (`ctx7`)** | Library documentation queries (replaces self-built `context7-docs` tool) — **free tier: 1000 calls/month**, see `source-driven-development` skill for budget rules | `npm i -g ctx7 && npx ctx7 setup --opencode` |
 | **Playwright CLI (`playwright-cli`)** | Browser automation (replaces self-built `playwright-browser` tool) | `npm i -g @playwright/cli@latest && playwright-cli install --skills` |
 
-### Skills Already Provided by This Project (6)
+### Skills Already Provided by This Project (11)
 
 After `bash install.sh`, these skills are mirrored to `~/.config/opencode/skills/`:
 
@@ -190,6 +190,9 @@ After `bash install.sh`, these skills are mirrored to `~/.config/opencode/skills
 | `mmx-cli-usage` | Self-built (mmx guide) | Multimodal / search needs |
 | `interview-me` | Imported from addyosmani/agent-skills | Underspecified ask (missing who/why/success/constraint) |
 | `source-driven-development` | Lightweight re-implementation of addyosmani skill | Framework/API decision needs official doc verification (use ctx7 CLI) |
+| `handoff` | Verbatim from mattpocock/skills (`SKILL.md` 15 lines) | Compact conversation into handoff document for next agent |
+| `tdd` | Verbatim from mattpocock/skills (`SKILL.md` + 5 sub-files) | Test-driven development with red-green-refactor loop |
+| `zoom-out` | Verbatim from mattpocock/skills (`SKILL.md` 7 lines) | Zoom out for broader context and higher-level perspective |
 
 ### Quick Verification
 
@@ -449,6 +452,9 @@ bash install.sh   # Re-mirror to ~/.config/opencode/
 | **to-issues** | mattpocock/skills | Break down plan/spec into independent issues | Sisyphus |
 | **interview-me** | addyosmani/agent-skills (verbatim) | Underspecified ask (missing who/why/success/constraint) — interview one-question-at-a-time to 95% confidence | Sisyphus |
 | **source-driven-development** | addyosmani/agent-skills (lightweight re-implementation) | Framework/API decision needs official doc verification via `ctx7` CLI | Lyra (during implementation) |
+| **handoff** | mattpocock/skills (verbatim) | Compact conversation into handoff document for next agent | Sisyphus / Lyra |
+| **tdd** | mattpocock/skills (verbatim) | Test-driven development with red-green-refactor loop | Sisyphus / Lyra |
+| **zoom-out** | mattpocock/skills (verbatim) | Zoom out for broader context and higher-level perspective | All |
 
 ### OpenSpec Integration (Project-Level Spec-Driven)
 
@@ -472,7 +478,7 @@ OpenSpec is one of three **orthogonal layers** in our architecture. We don't dep
 │  Sisyphus / Lyra / Hephaestus — intent routing + delegation   │
 │  "Who does what?"                                             │
 ├──────────────────────────────────────────────────────────────┤
-│ Layer 2: Workflow (our 8 skills + Superpowers)                 │
+│ Layer 2: Workflow (our 11 skills + Superpowers)                 │
 │  karpathy / grill-with-docs / diagnose / interview-me / ...   │
 │  Superpowers (14 skills, opencode plugin)                     │
 │  "How do we work?"                                            │
@@ -550,7 +556,7 @@ The **full workflow foundation** of this project. Superpowers provides end-to-en
 | Component | Type | Count | Source |
 |-----------|------|-------|--------|
 | Agents | `.md` prompt files | **3** | Self-built |
-| Skills | `SKILL.md` files | **8** | 3 self-built + 5 imported (3 from mattpocock + 1 from addyosmani + 1 re-implemented from addyosmani) |
+| Skills | `SKILL.md` files | **11** | 3 self-built + 8 imported (6 from mattpocock + 1 from addyosmani + 1 re-implemented from addyosmani) |
 | Tools | TypeScript → `.js` | **2** | Self-built (hashline-edit + task-dispatch) |
 | Plugin | `orchestrator.js` | **1** | Self-built |
 | CLIs | npm -g | **3** | mmx-cli (MiniMax multimodal+search) + ctx7 (lib docs) + playwright-cli (browser automation) |
@@ -775,7 +781,7 @@ myOpenCodeWithMEeee/
 │   ├── sisyphus.md         # primary (high-tier) — 7 XML segments + 9-row routing
 │   ├── lyra.md             # subagent (mid-tier) — can delegate to Hephaestus
 │   └── hephaestus.md       # subagent (low-tier) — task:deny, bash safe-glob
-├── skills/                 # 8 skills (SKILL.md)
+├── skills/                 # 11 skills (SKILL.md)
 │   ├── karpathy-guidelines/      # 4 karpathy principles (auto-injected)
 │   ├── openspec-integration/     # OpenSpec ↔ Superpowers routing bridge
 │   ├── grill-with-docs/          # from mattpocock
@@ -783,7 +789,10 @@ myOpenCodeWithMEeee/
 │   ├── to-issues/                # from mattpocock
 │   ├── mmx-cli-usage/            # mmx CLI guide
 │   ├── interview-me/            # from addyosmani (verbatim, 1Q-at-a-time)
-│   └── source-driven-development/ # lightweight re-impl of addyosmani skill
+│   ├── source-driven-development/ # lightweight re-impl of addyosmani skill
+│   ├── handoff/                  # from mattpocock (SKILL.md 15 lines)
+│   ├── tdd/                      # from mattpocock (SKILL.md + 5 sub-files)
+│   └── zoom-out/                 # from mattpocock (SKILL.md 7 lines)
 ├── tools/                  # 2 self-built tools
 │   ├── src/                # TypeScript source + tests
 │   └── dist/               # Build artifacts (gitignored)
