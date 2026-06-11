@@ -1,12 +1,6 @@
 ---
 name: interview-me
 description: Extracts what the user actually wants instead of what they think they should want. Achieves this through one-question-at-a-time interview until ~95% confidence about the underlying intent. Use when an ask is underspecified ("build me X" without "for whom" or "why now"), when the user explicitly invokes ("interview me", "grill me", "are we sure?", "stress-test my thinking"), or when you catch yourself silently filling in ambiguous requirements before any plan, spec, or code exists.
-license: MIT
-metadata:
-  source: "addyosmani/agent-skills"
-  sourceUrl: "https://github.com/addyosmani/agent-skills/blob/main/skills/interview-me/SKILL.md"
-  trigger: "Sisyphus sees underspecified ask (no 'who'/'why'/'success'/'constraint' OR user says 'interview me'/'grill me')"
-  importedBy: "myOpenCodeWithMEeee v2.x"
 ---
 
 # Interview Me
@@ -120,7 +114,7 @@ Including "Out of scope" is non-negotiable. Half of misalignment is silent disag
 
 The gate is an explicit "yes." The following are **not** yes:
 
-- "Whatever you think." → The user is delegating, which means they don't have 95% confidence either. Re-ask with two concrete options framed as a choice.
+- "Whatever you think is best." → The user is delegating, which means they don't have 95% confidence either. Re-ask with two concrete options framed as a choice.
 - "Sounds good." → Ambiguous. Ask: "Anything you'd refine?" Silence isn't confirmation.
 - "Sure, let's go." → Often a polite exit, not an endorsement. Same follow-up.
 - Silence followed by "okay let's start." → The user has given up on the interview, not converged. Stop and ask whether you've missed something.
@@ -166,7 +160,7 @@ HYPOTHESIS: You want a way to answer "how are we doing?" in standup, and "dashbo
 CONFIDENCE: ~30% — missing: who it's for, what "metrics" are, and what success looks like
 
 Q:     When you say "how are we doing?", who's asking — you alone, the engineering team in standup, or up the chain (e.g., your manager, an exec, a board)?
-GUESS: engineering team in standup, because "we" usually scales that way and standups are where this question gets asked. If it's for execs the metrics and the framing change a lot.
+GUESS: engineering team in standup, because "we" usually scopes that way and standups are where this question gets asked. If it's for execs the metrics and the framing change a lot.
 
 User: It's actually for me. I keep losing track of which experiments are running and what their early signal looks like.
 
