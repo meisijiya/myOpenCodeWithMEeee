@@ -456,6 +456,70 @@ bash install.sh   # 重新镜像到 ~/.config/opencode/
 | **tdd** | mattpocock/skills（原样导入）| 红-绿-重构循环的测试驱动开发 | Sisyphus / Lyra |
 | **zoom-out** | mattpocock/skills（原样导入）| 放大视野，获取更广上下文和高层视角 | 全部 |
 
+### 用户面 Skills：`handoff` 和 `zoom-out`
+
+这两个 skill 是**给用户用的，不是给 agent 系统用的**。它们桥接"你的 session"和"agent 的心智模型"。
+
+#### `handoff` — 跨 session 续接
+
+**功能**：把当前对话压缩为交接文档，让新 session（或不同设备）能从你离开的地方继续。
+
+**何时用**（用户主动触发）:
+- 🌙 **长任务**：昨晚开个头，今天要继续
+- 📱 **跨设备**：PC 切到手机（或反过来）
+- 🔄 **切换工具**：opencode TUI → Web UI / IDE 插件
+- 👥 **交接给同事**：另一个开发者要接手
+
+**何时不要用**（反模式）:
+- ❌ **子 agent 委派** — 那是 Sisyphus → Lyra → Hephaestus，用 `<delegation_protocol>`（不是 handoff）
+- ❌ **当前 session 内总结** — 直接让 agent 总结就行
+- ❌ **"保存我的工作"** — 那用 git commit（`git-workflow-and-versioning`）
+
+**用法**:
+```bash
+/handoff "手机端继续 auth 重构，看 src/auth/refresh.js"
+# 或
+/handoff
+```
+
+agent 写入交接文档到 OS 临时目录（Linux 上如 `/tmp/handoff-...md`），含:
+- 任务状态（进行中 / 阻塞 / 完成）
+- 关键文件路径和决策
+- **建议下个 session 调用的 skill**
+- 敏感信息已脱敏
+
+#### `zoom-out` — 3 万英尺看代码
+
+**功能**：当你不熟代码时，agent 给出高层地图：模块、调用方、领域术语。
+
+**何时用**（用户主动触发 — `disable-model-invocation: true`）:
+- 🆕 **新项目入门**：刚 clone 仓库
+- 🔍 **review PR**：批准前要全局
+- 🐛 **跨模块 bug 调试**：看清系统边界
+- 🤔 **"X 怎么工作的？"**：通用代码理解
+
+**何时不要用**:
+- ❌ **自动触发** — 永远不会（设计上）
+- ❌ **单函数深挖** — 直接读代码
+- ❌ **外部 API 查文档** — 用 `source-driven-development`
+
+**用法**:
+```
+你：auth flow 看不懂。zoom out 一下。
+agent: [auth 模块、调用方、领域术语地图]
+```
+
+#### 为什么这俩特别
+
+| 维度 | handoff | zoom-out |
+|------|---------|----------|
+| 触发 | **必须用户触发** | **必须用户触发** |
+| 为什么 | session 是用户驱动的 | 代码理解是用户驱动的 |
+| 自动触发风险 | 开了会刷屏 agent 输出 | 开了会污染响应 |
+| 3 agent 集成 | ❌ 无（仅用户）| ⚠️ 跨 agent 可用，但不自动 |
+
+两者都带 `disable-model-invocation: true`（或用 user-named action）—— agent 永远不会主动用。
+
 ### OpenSpec 集成（项目级规约驱动）
 
 | Command | 功能 | 谁用 |

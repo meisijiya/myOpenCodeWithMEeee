@@ -464,6 +464,70 @@ bash install.sh   # Re-mirror to ~/.config/opencode/
 | **tdd** | mattpocock/skills (verbatim) | Test-driven development with red-green-refactor loop | Sisyphus / Lyra |
 | **zoom-out** | mattpocock/skills (verbatim) | Zoom out for broader context and higher-level perspective | All |
 
+### User-Facing Skills: `handoff` and `zoom-out`
+
+These two skills are **for the user, not the agent system**. They bridge the gap between your sessions and the agent's mental model.
+
+#### `handoff` — Cross-Session Continuity
+
+**What it does**: Compact the current conversation into a handoff document so a fresh session (or different device) can pick up where you left off.
+
+**When to use it** (user-triggered):
+- 🌙 **Long tasks**: You started something last night, need to continue tomorrow
+- 📱 **Cross-device**: Switching from PC to phone (or vice versa)
+- 🔄 **Switching tools**: Moving from opencode TUI to web UI / IDE plugin
+- 👥 **Handing off to a human**: Another developer needs to take over
+
+**When NOT to use it** (anti-patterns):
+- ❌ **Subagent delegation** — that's Sisyphus → Lyra → Hephaestus, which uses `<delegation_protocol>` (not handoff)
+- ❌ **Task summaries in current session** — just ask the agent to summarize
+- ❌ **"Save my work"** — git commits handle that (`git-workflow-and-versioning`)
+
+**Usage**:
+```bash
+/handoff "continue auth refactor on phone, check src/auth/refresh.js"
+# or
+/handoff
+```
+
+The agent writes a handoff doc to OS temp dir (e.g., `/tmp/handoff-...md` on Linux) with:
+- Task state (in-progress / blocked / done)
+- Key file paths and decisions
+- **Suggested skills** for the next session to invoke
+- Redacted sensitive info
+
+#### `zoom-out` — Code Comprehension from 30,000 Feet
+
+**What it does**: When you're staring at unfamiliar code, the agent gives a high-level map: modules, callers, the domain vocabulary.
+
+**When to use it** (user-triggered only — `disable-model-invocation: true`):
+- 🆕 **New to a codebase**: Just opened an unfamiliar project
+- 🔍 **Reviewing a PR**: Want context before approving
+- 🐛 **Debugging a cross-module bug**: Need to see the system boundary
+- 🤔 **"How does X work?"**: General code understanding
+
+**When NOT to use it**:
+- ❌ **Auto-triggered** — never, by design (the agent won't proactively use it)
+- ❌ **Single function deep-dive** — that's just reading the code
+- ❌ **External API lookup** — that's `source-driven-development`
+
+**Usage**:
+```
+You: I don't understand how the auth flow works. Zoom out.
+Agent: [map of auth modules, callers, domain terms]
+```
+
+#### Why These Two Are Special
+
+| Aspect | handoff | zoom-out |
+|--------|---------|----------|
+| Trigger | **User must invoke** | **User must invoke** |
+| Why | Sessions are user-driven | Code understanding is user-driven |
+| Auto-trigger risk | Could spam agent output if always on | Would clutter response if always on |
+| 3-agent integration | ❌ None (user-only) | ⚠️ Can be asked across agents, but not auto |
+
+Both have `disable-model-invocation: true` (or are user-named actions) — the agent will never proactively use them.
+
 ### OpenSpec Integration (Project-Level Spec-Driven)
 
 | Command | Function | Who Uses |
