@@ -8,6 +8,10 @@
  *
  * Note: opencode's built-in `task` tool handles the actual delegation. This
  * tool just normalizes the call and provides explicit defaults.
+ *
+ * Background subagents: opencode 1.16.2+ supports background:true natively
+ * (returns task_id immediately; main agent can keep working). We default to
+ * background=true to enable parallel/fire-and-forget delegation by default.
  */
 import { tool } from "@opencode-ai/plugin";
 
@@ -22,8 +26,11 @@ const TaskDispatchSchema = z.object({
   prompt: z.string().describe("Full task description with context"),
   background: z
     .boolean()
-    .default(false)
-    .describe("If true, return task_id immediately for fire-and-forget"),
+    .default(true)
+    .describe(
+      "If true (default since opencode 1.16.2), return task_id immediately and let the subagent run in the background. " +
+        "Set false to block until the subagent finishes.",
+    ),
   timeout_ms: z
     .number()
     .optional()
@@ -55,7 +62,8 @@ export default tool({
   description:
     "Dispatch a task to a sub-agent (oracle/lyra/hephaestus) OR proxy an MCP tool call. " +
     "Use 'mcp:<server>:<tool>' format for MCP proxy (e.g., 'mcp:MiniMax:web_search'). " +
-    "Returns task result, MCP result, or task_id (if background=true).",
+    "Defaults to background=true (opencode 1.16.2+): returns a task_id immediately and the subagent runs in parallel. " +
+    "Set background=false to block and wait for the result inline.",
   args: {
     subagent_type: TaskDispatchSchema.shape.subagent_type,
     description: TaskDispatchSchema.shape.description,

@@ -12699,11 +12699,11 @@ var init_task_dispatch = __esm(() => {
     subagent_type: z.string().default("oracle").describe("Subagent type (oracle, lyra, hephaestus, or mcp:<server>:<tool>)"),
     description: z.string().describe("3-5 word task description"),
     prompt: z.string().describe("Full task description with context"),
-    background: z.boolean().default(false).describe("If true, return task_id immediately for fire-and-forget"),
+    background: z.boolean().default(true).describe("If true (default since opencode 1.16.2), return task_id immediately and let the subagent run in the background. " + "Set false to block until the subagent finishes."),
     timeout_ms: z.number().optional().describe("Optional timeout in milliseconds (default: no timeout)")
   });
   task_dispatch_default = tool({
-    description: "Dispatch a task to a sub-agent (oracle/lyra/hephaestus) OR proxy an MCP tool call. " + "Use 'mcp:<server>:<tool>' format for MCP proxy (e.g., 'mcp:MiniMax:web_search'). " + "Returns task result, MCP result, or task_id (if background=true).",
+    description: "Dispatch a task to a sub-agent (oracle/lyra/hephaestus) OR proxy an MCP tool call. " + "Use 'mcp:<server>:<tool>' format for MCP proxy (e.g., 'mcp:MiniMax:web_search'). " + "Defaults to background=true (opencode 1.16.2+): returns a task_id immediately and the subagent runs in parallel. " + "Set background=false to block and wait for the result inline.",
     args: {
       subagent_type: TaskDispatchSchema.shape.subagent_type,
       description: TaskDispatchSchema.shape.description,
