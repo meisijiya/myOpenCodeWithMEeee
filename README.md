@@ -403,6 +403,17 @@ The `task` tool is opencode's built-in. We wrap it in `task-dispatch` to:
 
 See `agents/sisyphus.md` and `agents/lyra.md` `<delegation_protocol>` blocks for decision trees.
 
+### Spec & protocol
+
+The 4-mode decision tree + agent permission constraints are formalized in the **OpenSpec spec**: `openspec/specs/async-delegation/spec.md` (canonical source). This README is the use-case reference; the spec is the policy.
+
+**What `task-dispatch` does NOT do** (kept out of scope to stay "lightweight"):
+- ❌ No `inject: "immediate" | "deferred" | "file"` field — would be a false promise (opencode 1.17.4 task tool doesn't support deferred inject; this may land in 1.18+)
+- ❌ No `retry: number` field — parent agent decides retry strategy on error
+- ❌ No "delegation monitor" tool — use opencode's built-in session list (`/sessions` or `ctrl+x l`)
+
+**Enforcement**: `task` permission in `agents/sisyphus.md` and `agents/lyra.md` is tightened to `{ "*": "deny" }` — agents MUST go through `task-dispatch`, not opencode's built-in `task` tool directly.
+
 ---
 
 ## 🌟 Inspiration & Provenance

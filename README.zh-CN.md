@@ -397,6 +397,17 @@ task-dispatch({ subagent_type: "lyra", mode: "continuation",
 
 决策树见 `agents/sisyphus.md` 和 `agents/lyra.md` 的 `<delegation_protocol>` 段。
 
+### 规范 & 协议
+
+4 mode 决策树 + agent 权限约束已规范化为 **OpenSpec spec**：`openspec/specs/async-delegation/spec.md`（权威来源）。本 README 是 use case 参考，spec 是政策层。
+
+**`task-dispatch` 不做的事**（保持轻量化，故意不做）：
+- ❌ 没有 `inject: "immediate" | "deferred" | "file"` 字段 — 假承诺（opencode 1.17.4 task 工具不支持 deferred inject；可能 1.18+ 才有）
+- ❌ 没有 `retry: number` 字段 — 由父 agent 收到错误后自己决定重试策略
+- ❌ 没有 "delegation monitor" 工具 — 用 opencode 内置 session 列表（`/sessions` 或 `ctrl+x l`）就够
+
+**强制约束**：`agents/sisyphus.md` 和 `agents/lyra.md` 的 `task` permission 收紧为 `{ "*": "deny" }` — 强制走 `task-dispatch`，不直接调 opencode 内置 `task` 工具。
+
 ---
 
 ## 🌟 灵感与出处
