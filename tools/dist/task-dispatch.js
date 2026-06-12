@@ -12691,6 +12691,9 @@ function parseSubagentType(value) {
   }
   return { kind: "agent", agent: value };
 }
+function modeToBackground(mode) {
+  return mode !== "sync";
+}
 var z, TaskDispatchSchema, task_dispatch_default;
 var init_task_dispatch = __esm(() => {
   init_dist();
@@ -12699,24 +12702,31 @@ var init_task_dispatch = __esm(() => {
     subagent_type: z.string().default("oracle").describe("Subagent type (oracle, lyra, hephaestus, or mcp:<server>:<tool>)"),
     description: z.string().describe("3-5 word task description"),
     prompt: z.string().describe("Full task description with context"),
-    background: z.boolean().default(true).describe("If true (default since opencode 1.16.2), return task_id immediately and let the subagent run in the background. " + "Set false to block until the subagent finishes."),
-    timeout_ms: z.number().optional().describe("Optional timeout in milliseconds (default: no timeout)")
+    mode: z.enum(["background", "sync", "continuation"]).default("background").describe("Delegation mode (opencode 1.16.2+ required for background/continuation): " + "'background'=fire-and-forget (default; results auto-injected when done); " + "'sync'=block until subagent finishes; " + "'continuation'=resume prior subagent session (requires task_id)."),
+    task_id: z.string().optional().describe("Required for mode=continuation; pass the prior task_id to resume that subagent session."),
+    timeout_ms: z.number().optional().describe("Optional timeout in milliseconds (default: no timeout). Only applies to mode=sync.")
   });
   task_dispatch_default = tool({
-    description: "Dispatch a task to a sub-agent (oracle/lyra/hephaestus) OR proxy an MCP tool call. " + "Use 'mcp:<server>:<tool>' format for MCP proxy (e.g., 'mcp:MiniMax:web_search'). " + "Defaults to background=true (opencode 1.16.2+): returns a task_id immediately and the subagent runs in parallel. " + "Set background=false to block and wait for the result inline.",
+    description: "Dispatch a task to a sub-agent (oracle/lyra/hephaestus) OR proxy an MCP tool call. " + "Use 'mcp:<server>:<tool>' format for MCP proxy (e.g., 'mcp:MiniMax:web_search'). " + "mode=background (default; opencode 1.16.2+): subagent runs in parallel, results auto-injected. " + "mode=sync: block until subagent finishes. " + "mode=continuation: resume prior subagent session via task_id.",
     args: {
       subagent_type: TaskDispatchSchema.shape.subagent_type,
       description: TaskDispatchSchema.shape.description,
       prompt: TaskDispatchSchema.shape.prompt,
-      background: TaskDispatchSchema.shape.background,
+      mode: TaskDispatchSchema.shape.mode,
+      task_id: TaskDispatchSchema.shape.task_id,
       timeout_ms: TaskDispatchSchema.shape.timeout_ms
     },
     async execute(args) {
       const subagentType = args.subagent_type;
       const description = args.description;
       const prompt = args.prompt;
-      const background = args.background ?? false;
+      const mode = args.mode ?? "background";
+      const taskId = args.task_id;
       const timeoutMs = args.timeout_ms;
+      if (mode === "continuation" && !taskId) {
+        return "Error: mode=continuation requires task_id (pass the prior task_id to resume).";
+      }
+      const background = modeToBackground(mode);
       let parsed;
       try {
         parsed = parseSubagentType(subagentType);
@@ -12730,6 +12740,7 @@ var init_task_dispatch = __esm(() => {
           tool: parsed.mcpTool,
           description,
           prompt,
+          mode,
           note: "MCP proxy: this tool normalizes the call. Use the MCP tool directly via " + "`mcp__<server>__<tool>` syntax in your tool calls."
         }, null, 2);
       }
@@ -12738,7 +12749,9 @@ var init_task_dispatch = __esm(() => {
         subagent_type: parsed.agent,
         description,
         prompt,
+        mode,
         background,
+        ...taskId ? { task_id: taskId } : {},
         timeout_ms: timeoutMs ?? null,
         note: "Agent dispatch: this tool normalizes the call. " + "opencode's built-in task tool handles the actual sub-agent invocation."
       }, null, 2);
