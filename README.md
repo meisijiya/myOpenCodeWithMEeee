@@ -335,11 +335,11 @@ We apply insights from [BV1v9ER68EJE](https://www.bilibili.com/video/BV1v9ER68EJ
 
 | Insight | Applied |
 |---------|--------|
-| **U-shape attention curve** (>50% context → only end matters) | `<style_guide>` is the LAST segment in all 3 agent prompts; **HTML comment block at tail** of all 3 agents (Sisyphus: 5 rules / Lyra: 4 / Hephaestus: 4) is the high-attention "anchor" |
+| **U-shape attention curve** (entire context window → START + END high attention) | **Correction**: U-shape is about the **whole LLM context window** (system prompt + conversation + tool results), not the agent prompt's internal structure. **System prompt region** = "start" high-attention zone (includes all 3 agent prompts). **Recent conversation** = "end" high-attention zone. **Mid-context** = low attention (early conversation gets squeezed here). HTML tail blocks live in the start zone (stable), not the end zone |
 | **Hard constraints (never/always/must/绝对不要)** | Rewrote all 3 agents' `style_guide` with strong vocabulary + 反例/正例; tail HTML blocks use `**bold**` emphasis + parenthetical rationale |
 | **Skill files ≤ 300-500 lines** | All skills under 250 lines; **Sisyphus.md now 253 lines** (down from 363 — 148 lines of hardcoded protocol moved to superpowers skill injection) |
 | **Solutions 1+2+3+4** (AGENTS.md + Scan + Hooks + SubAgent isolation) | All present: orchestrator plugin (`experimental.chat.system.transform`) is our "Hook"; subagent isolation is core to 1+1+1 architecture; **responsibility-proximity principle** (each agent declares its own `<responsibility_boundary>` block — no external AGENTS.md) |
-| **Anti-compaction-passive** (don't wait for quality to drop) | **Real failure case**: Sisyphus 363-line prompt got 148-line protocol swallowed mid-prompt; used `task-dispatch` tool instead of `task` tool. Fix: sink protocol to superpowers skill (real-time injection), keep only hard constraints in U型注意力 tail |
+| **Anti-compaction-passive** (don't wait for quality to drop) | **Real failure case**: Sisyphus 363-line prompt became hard to maintain. Sisyphus used `task-dispatch` tool instead of `task` tool — **NOT because protocol was "swallowed" by U-shape attention** (the protocol WAS visible in the mid-prompt block), but because of a **layering violation** (Sisyphus decided on its own to use a non-standard tool, ignoring the explicit protocol). Fix: sink protocol to superpowers skill (real-time injection) for **clean architecture**, not to dodge U-shape swallowing |
 | **Soft constraints = no constraints** | `bash: *: allow` (project-internal trust) + hard deny blacklists (not "尽量") |
 | **Responsibility-proximity principle** (NEW) | Each agent's "I am" declaration lives **inside** its own prompt (`<responsibility_boundary>` block). External doc references risk being swallowed by U型注意力 — self-contained is the only reliable position |
 | **Mechanism-vs-decoration layering** (NEW) | Sisyphus prompt = **Static layer** (route judgment / style / hard constraints) + **Dynamic layer** (delegation protocol injected by superpowers skill). Static is short, high-signal, lives at tail |
@@ -478,6 +478,8 @@ To change an agent's permissions, edit the corresponding `agents/<name>.md` fron
 ```bash
 bash install.sh   # Re-mirror to ~/.config/opencode/
 ```
+
+---
 
 ---
 
