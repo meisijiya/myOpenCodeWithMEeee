@@ -40,11 +40,10 @@ permission:
     "cargo publish *": deny
     "twine upload *": deny
   # 嵌套控制（来自 Pi Subagents 的 allowed_subagents 思想）：
-  # opencode 的 permission.task 用 glob 模式 + last-rule-wins
-  # 默认 deny 防止无限嵌套；显式 allow hephaestus
+  # async-delegation spec: Lyra 调 Hephaestus MUST 走 task-dispatch 工具
+  # 因此 task permission 收紧为 deny-only，禁止直接调 opencode 内置 task 工具
   task:
     "*": deny
-    hephaestus: allow
   skill: allow
   external_directory: ask
 ---
@@ -119,6 +118,7 @@ Temperature: 0.2（中等平衡，调研 + 实现）
   - `mode=background` → OpenCode 自动 inject 错误状态
 - **fan-out 上限**：≤ 3 个并行 Hephaestus（避免资源打满）
 - **禁止做架构决策**：你委派的是"机械/重复性"工作，不包括"应该怎么设计" — 那种问题回报 Sisyphus
+- **必须走 `task-dispatch` 工具**：Lyra 调 Hephaestus 必须用 `task-dispatch(mode=...)` 工具（不直接调 opencode 内置 `task` 工具）— 与 async-delegation spec 一致。`task` permission 收紧为 `{ "*": "deny" }`，强行走 task-dispatch。
 </delegation_protocol>
 
 <style_guide>

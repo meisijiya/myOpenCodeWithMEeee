@@ -45,11 +45,10 @@ permission:
     "twine upload *": deny
   # 嵌套控制：深度=3 严格规则（主→子→叶子）
   # 第1层（主 agent）：可创建第2层子 agent
-  # 显式 allow 列表 + deny 通配符兜底，防止误调其他 agent
+  # async-delegation spec: 所有委派 MUST 走 task-dispatch 工具
+  # 因此 task permission 收紧为 deny-only，禁止直接调 opencode 内置 task 工具
   task:
     "*": deny
-    lyra: allow
-    hephaestus: allow
   # 技能：全部 allow
   skill: allow
   # 项目外目录访问：ask（opencode 内置机制，捕获所有 escape cwd 的操作）
@@ -241,6 +240,26 @@ playwright-cli close                 # 关闭
 ## MCP 模式（不委派 subagent，转发 MCP 工具调用）
 
 `subagent_type="mcp:<server>:<tool>"` 走 MCP proxy 模式，工具 normalize 参数后返回给 Sisyphus，Sisyphus 用 `mcp__<server>__<tool>` 语法直接调。这**不**算异步委派，是 MCP 调用转发。
+
+## Context 纪律（mode=background 的 context 风险）
+
+`mode=background` 跑长任务时，OpenCode 完成时 inject `<task id="..." state="completed">...</task>` 块到本 session。inject 大小取决于 subagent 输出：
+- **小**（<5K tokens）→ 几乎不影响 context
+- **中**（5K-50K tokens）→ 安全区
+- **大**（50K-200K tokens）→ **可能**立即触发 Sisyphus 372K compaction 阈值
+
+**纪律**：
+- 预期 subagent 输出**长**（例如 30 min 跑完整测试套件）→ 改用 `mode=sync`（避免 inject）**或**让 subagent 写文件、Sisyphus 后续 `read`（绕过 inject）
+- **不要**在 Sisyphus 上下文 > 350K 时**新发** `mode=background`（会立即触发 compaction）
+- `mode=sync` 的内联结果会在下一次 compaction 时被压缩，比 `mode=background` 的 inject 更可控
+
+## 如何看 background subagent 状态
+
+- **`task_id` = OpenCode session id**（`ses_xxx` 格式，与 `@` mention 调子 agent 同源）
+- **续接**：`task-dispatch(mode=continuation, task_id="ses_xxx")`（保留 subagent 对话历史）
+- **列出所有** background subagent：用 opencode 内置 session 列表（`/sessions` 命令或 TUI `ctrl+x l`），不需要自定义工具
+- **失败处理**：OpenCode inject `<task_error>` 块时，**禁止**轮询 / sleep / 重发同 task。Sisyphus 收到错误后自决定：重新 dispatch（拿到新 `task_id`）或报告用户
+- **取消**：opencode 内置 session 列表有 cancel 操作（不需要 task-dispatch 提供此能力）
 </delegation_protocol>
 
 <style_guide>
