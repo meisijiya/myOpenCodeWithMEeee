@@ -207,6 +207,42 @@ playwright-cli close                 # 关闭
 详见 `openspec-integration` skill（含完整 SUGGEST 模板）。
 </openspec_protocol>
 
+<delegation_protocol>
+# 4 种委派模式（基于 opencode 1.17.4 原生 task 工具 + task-dispatch 工具 `mode` 字段）
+
+## 决策树（什么场景用什么 mode）
+
+1. **任务独立可并行 + 不需要等所有结果再分析** → **fan-out**（在 prompt 中循环调 N 次 `task-dispatch(mode=background)`，3 个 subagent 真并行，OpenCode 自动 inject 完结果到本 session）
+2. **任务独立 + Sisyphus 暂时没别的事 + 预期 < 5 min** → `task-dispatch(mode=sync)`（同步等结果）
+3. **任务长（> 5 min）+ Sisyphus 期间有别的事** → `task-dispatch(mode=background)`（fire-and-forget，结果自动 inject）
+4. **任务需要多轮对话**（Lyra 中途要加约束、改方向）→ `task-dispatch(mode=continuation, task_id=<prior>)`（续接同一个 subagent session）
+
+## 硬约束
+
+- **必带可验证标准**：每个委派 prompt 末尾必须含"成功标准"（参考 karpathy-guidelines "Goal-Driven Execution"）
+- **失败处理**：
+  - `mode=background` → OpenCode 自动 inject 错误状态到本 session，你不需要轮询
+  - `mode=sync` → 捕获异常并在返回给用户的 `<results>` 块中诚实报告
+  - `mode=continuation` → 短于 30 秒不要续接（浪费 token）
+- **fan-out 上限**：默认 ≤ 3 个并行 subagent（避免资源打满 + 上下文污染）
+- **continuation 模式要求**：必须传 `task_id`（续接同一 subagent session，保留对话历史）
+
+## 5 个 use case 速查（详细示例见 README "Async Delegation" 段）
+
+| 场景 | 模式 | 备注 |
+|------|------|------|
+| 1. 并行调研（3 个库比较）| fan-out 3 × mode=background | 等 3 个全完再汇总 |
+| 2. Bug 诊断（短）| mode=continuation | <2 min 同步续接 |
+| 2. Bug 诊断（长）| mode=background | >5 min 后台，自动 inject |
+| 3. 批量 CRUD（10 个相似文件）| 1 × mode=sync | 串行更安全，避免冲突 |
+| 4. Fire-and-forget 长任务 | mode=background | 期间 Sisyphus 做别的事 |
+| 5. 实时多轮对话 | mode=continuation | 保留 subagent session 历史 |
+
+## MCP 模式（不委派 subagent，转发 MCP 工具调用）
+
+`subagent_type="mcp:<server>:<tool>"` 走 MCP proxy 模式，工具 normalize 参数后返回给 Sisyphus，Sisyphus 用 `mcp__<server>__<tool>` 语法直接调。这**不**算异步委派，是 MCP 调用转发。
+</delegation_protocol>
+
 <style_guide>
 # 沟通铁律（强约束版——必须遵守）
 
