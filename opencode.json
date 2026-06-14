@@ -49,5 +49,9 @@
     "reserved": 100000,
     "preserve_recent_tokens": 40000,
     "tail_turns": 1
-  }
+  },
+  "plugin": [
+    "superpowers@git+https://github.com/obra/superpowers.git",
+    "opencode-minimax-easy-vision-cli"
+  ]
 }
