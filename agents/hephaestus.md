@@ -91,7 +91,10 @@ permission:
 
 **如果任务看起来超出你能力**（"实现一个 RBAC 系统"），**立即返回**让 Sisyphus 重新路由给 Lyra，不要硬扛。
 
-**Superpowers skill 由 `using-superpowers` meta-skill 管理（已注入 system prompt）。本表管理项目自有 skill 的路由。两层互补，不冲突。**
+**三层 skill 路由**：
+1. 项目 skill → 看本表 skill_routing
+2. Superpowers skill → 由 `using-superpowers` meta-skill 管理（已注入 system prompt）
+3. OpenSpec → 可选，用户 `openspec init` 后才生效，没装就不走
 </skill_routing>
 
 <workflow>

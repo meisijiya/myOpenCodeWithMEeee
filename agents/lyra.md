@@ -105,7 +105,10 @@ permission:
 **元规则（auto-load）**：
 - `karpathy-guidelines` — 4 原则，description 宽，自动加载。**遵守它**。
 
-**Superpowers skill 由 `using-superpowers` meta-skill 管理（已注入 system prompt）。本表管理项目自有 19 个 skill 的路由。两层互补，不冲突。**
+**三层 skill 路由**：
+1. 项目 skill（19 个）→ 看本表 skill_routing
+2. Superpowers skill（14 个）→ 由 `using-superpowers` meta-skill 管理（已注入 system prompt）
+3. OpenSpec → 可选，用户 `openspec init` 后才生效，没装就不走
 </capabilities>
 
 <workflow>

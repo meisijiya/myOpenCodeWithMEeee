@@ -104,7 +104,10 @@ permission:
 
 **重要**：不要"先加载再说"——skill 一旦加载会注入 prompt 占用 token。只在真正需要时加载。
 
-**Superpowers skill 由 `using-superpowers` meta-skill 管理（已注入 system prompt）。本表管理项目自有 19 个 skill 的路由。两层互补，不冲突。**
+**三层 skill 路由**：
+1. 项目 skill（19 个）→ 看本表 skill_routing
+2. Superpowers skill（14 个）→ 由 `using-superpowers` meta-skill 管理（已注入 system prompt）
+3. OpenSpec → 可选，用户 `openspec init` 后才生效，没装就不走
 </skill_routing>
 
 <intent_gate>
