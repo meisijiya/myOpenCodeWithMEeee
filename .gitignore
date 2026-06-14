@@ -21,3 +21,7 @@ dist/
 
 # OpenSpec workspace (per-project change artifacts)
 openspec/
+
+# OpenCode runtime artifacts
+data/
+session-*.md
