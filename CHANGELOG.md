@@ -1,7 +1,80 @@
 # Changelog
 
-> **myOpenCodeWithMEeee** — 定制化 1+1+1 (主 Agent + 助手 + Worker) 三档分级 Agent 系统 for opencode。  
-> 从 v1 (Sisyphus + Oracle, 9 自建工具) 演进至 v2 (Sisyphus + Lyra + Hephaestus, 2 自建工具 + 3 MCP)。
+> **myOpenCodeWithMEeee** — 定制化多 Agent 协作系统 for opencode。  
+> 从 v1 (Sisyphus + Oracle, 9 自建工具) 演进至 v2 (Sisyphus + Lyra + Hephaestus, 2 自建工具 + 3 MCP)，再到 v2.2 (7 Agents + 20 Commands + 项目记忆系统)。
+
+## [v2.2] — 2026-06-15
+
+### 🎯 优化方向
+
+本次更新聚焦于**工程化协作**和**Token 效率优化**，引入细分领域 Agent、Command 系统、项目记忆系统，并对 Agent Prompt 进行大幅精简。
+
+### 🤖 Agents (3 → 7)
+
+- **新增 4 个细分领域 Agent**：
+  - `update` — 项目元信息整理（CONTEXT.md / ADR / AGENTS.md），single-writer 原则
+  - `architect` — 架构设计 + 领域建模 + ADR 起草
+  - `planner` — 实现计划 + 任务拆分 + 需求澄清
+  - `reviewer` — 代码审查 + 质量把关 + 接收反馈求证
+- **Sisyphus 原子任务编排模式**：大任务拆分为原子任务（单文件 + 明确边界 + 可验证标准），逐个委派、逐个审查、及时纠正
+- **Agent Prompt 精简**：
+  - `sisyphus.md`: 491 → 244 行 (-50%)
+  - `lyra.md`: 177 → 125 行 (-29%)
+  - `hephaestus.md`: 133 → 112 行 (-16%)
+  - **总计**: 801 → 481 行 (-40%, -320 行)
+- **项目级 vs 用户级配置边界**：所有 Agent 明确"用户级配置（`~/.config/opencode/`）只读，项目级配置（项目根目录）可写"
+
+### 📝 Commands (0 → 20)
+
+新增 20 个快捷命令，覆盖常用工作流：
+- **流程类**：`/plan`, `/tdd`, `/code-review`, `/brainstorm`, `/diagnose`, `/verify`
+- **实现类**：`/interview`, `/grill`, `/to-issues`, `/triage`, `/improve-arch`, `/prototype`
+- **元信息类**：`/setup`, `/updateProjectMeta`, `/handoff`, `/zoom-out`
+- **工具类**：`/caveman`, `/git-workflow`, `/finish-branch`, `/write-skill`, `/mmx`
+
+### 🧠 项目记忆系统
+
+- **跨 Session 持久化**：`CONTEXT.md`（术语）/ `AGENTS.md`（约定）/ `docs/adr/`（决策）
+- **工作流**：`/setup` 初始化 → 开发中 `/updateProjectMeta` 记录 → 关闭 Session 前保存 → 下次 Session 自动恢复
+- **最佳实践**：关闭 Session 前执行 `/updateProjectMeta`，保存关键信息
+
+### ⚙️ Compaction 优化（512K 模型适配）
+
+- `reserved`: 100K → 50K（Agent Prompt 已精简 40%）
+- `preserve_recent_tokens`: 40K → 50K（保留更多最近上下文）
+- `tail_turns`: 1 → 2（更好的多步骤跟踪）
+- **触发点**: 372K → 422K（512K 模型优化）
+- **收益**：多出 50K tokens 用于实际对话，延长 Session 长度
+
+### 📚 文档
+
+- **VIBECODING.md**：操作手册（498 行），包含 20 Commands 使用指南、19 Skills 路由表、三层 Skill 路由说明、决策流程图、反模式清单
+- **OPTIMIZATION.md**：Token 优化路线图，记录已完成优化（短期/中期）和未来优化方向（长期：词级 Skill 加载）
+- **README.md**：更新 Compaction 配置章节、新增"项目记忆"章节
+
+### 🔧 清理
+
+- **删除过时文档**：`docs/` 5 个 v0 设计文档（171K）
+- **删除死代码**：`tools/` 整个目录（950K）
+- **删除运行时产物**：`data/` + `session-*.md`（300K）
+- **删除弃用 Plugin**：`.opencode/src/orchestrator.ts` + `.opencode/plugins/orchestrator.js`
+- **删除过时索引**：`skills-registry/` 12 个文件（56K）
+- **删除弃用分支**：`archive/memory-plugin-v1-beta`, `v2-long-term-memory`, `v3-long-term-memory`
+- **总计**：31 文件，-32,500 行
+
+### 📊 统计摘要
+
+| 类别 | 变更数 |
+|------|-------|
+| 🤖 Agents | 7 |
+| 📝 Commands | 20 |
+| 🧠 项目记忆 | 3 文件 |
+| ⚙️ Compaction | 3 配置项 |
+| 📚 文档 | 3 文件 |
+| 🔧 清理 | 31 文件 |
+| **总计** | **67** |
+
+---
 
 ## [v2] — 2026-06-10
 

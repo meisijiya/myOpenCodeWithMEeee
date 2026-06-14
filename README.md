@@ -32,7 +32,7 @@ bash install.sh
 |---------------|---------|
 | **7 agents** | `sisyphus.md` / `lyra.md` / `hephaestus.md` / `update.md` / `architect.md` / `planner.md` / `reviewer.md` → `~/.config/opencode/agents/` |
 | **19 skills** | caveman / diagnose / git-workflow-and-versioning / grill-with-docs / handoff / improve-codebase-architecture / incremental-implementation / interview-me / karpathy-guidelines / mmx-cli-usage / openspec-integration / prototype / setup-matt-pocock-skills / source-driven-development / tdd / to-issues / triage / update-project-meta / zoom-out |
-| **20 commands** | brainstorm / caveman / code-review / diagnose / finish-branch / git-workflow / grill / handoff / improve-arch / interview / mmx / plan / prototype / tdd / to-issues / triage / updateProjectMeta / verify / write-skill / zoom-out → `~/.config/opencode/commands/` |
+| **21 commands** | brainstorm / caveman / code-review / diagnose / finish-branch / git-workflow / grill / handoff / improve-arch / interview / mmx / plan / prototype / **setup** / tdd / to-issues / triage / updateProjectMeta / verify / write-skill / zoom-out → `~/.config/opencode/commands/` |
 | **0 tools** | (None — all custom tools retired; CLI-based workflow instead) |
 | **0 plugins** | (None — karpathy-guidelines auto-loaded via prompt injection; no runtime plugin needed) |
 | **AGENTS.md template** | Only copied if you don't have a global `~/.config/opencode/AGENTS.md` (**never overwrites** your personal config) |
@@ -213,7 +213,7 @@ After `bash install.sh`, these skills are mirrored to `~/.config/opencode/skills
 | `tdd` | Verbatim from mattpocock/skills (`SKILL.md` + 5 sub-files) | Test-driven development with red-green-refactor loop |
 | `zoom-out` | Verbatim from mattpocock/skills (`SKILL.md` 7 lines) | Zoom out for broader context and higher-level perspective |
 
-> See `VIBECODING.md` for the full operator's manual: when to invoke each skill, which agent owns it, and how it maps to the 20 commands.
+> See `VIBECODING.md` for the full operator's manual: when to invoke each skill, which agent owns it, and how it maps to the 21 commands.
 
 ### Quick Verification
 
@@ -735,7 +735,7 @@ These domain skills are **complementary knowledge** — they don't overlap with 
 | Plugins | Runtime hook | **0** | (Retired in v2.2; karpathy-guidelines auto-loaded via meta-skill injection) |
 | CLIs | npm -g | **3** | mmx-cli (MiniMax multimodal+search) + ctx7 (lib docs) + playwright-cli (browser automation) |
 
-> The 20 commands are the **user-facing entry points** — see [`VIBECODING.md`](./VIBECODING.md) for the full command catalog.
+> The 21 commands are the **user-facing entry points** — see [`VIBECODING.md`](./VIBECODING.md) for the full command catalog.
 
 ---
 
@@ -1005,7 +1005,7 @@ for cmd in mmx ctx7 playwright-cli; do
   command -v $cmd && echo "  ✅ $cmd" || echo "  ⬜ $cmd"
 done
 
-# Confirm 7 agents + 19 skills + 20 commands are mirrored
+# Confirm 7 agents + 19 skills + 21 commands are mirrored
 ls ~/.config/opencode/agents/     # should list 7 .md files
 ls ~/.config/opencode/skills/     # should list 19 directories
 ls ~/.config/opencode/commands/   # should list 20 .md files
@@ -1139,7 +1139,7 @@ myOpenCodeWithMEeee/
 │   └── opencode-compaction.jsonc # 340K-trigger compaction defaults
 ├── scripts/                # Helper scripts
 │   └── update-skills.sh    # Upstream drift checker
-├── install.sh              # One-click install (idempotent) — 7 agents + 19 skills + 20 commands
+├── install.sh              # One-click install (idempotent) — 7 agents + 19 skills + 21 commands
 ├── uninstall.sh            # One-click uninstall
 ├── CHANGELOG.md            # Changelog
 ├── CONTRIBUTING.md         # Contribution guide
