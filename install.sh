@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# install.sh — Mirror myOpenCodeWithMEeee files to ~/.config/opencode/
+# install.sh — Mirror ohMeisijiyaCode files to ~/.config/opencode/
 #
 # This script copies (not symlinks) so that:
 # 1. The repo is self-contained
@@ -14,7 +14,7 @@ REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 TARGET_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/opencode"
 SKILLS=(caveman diagnose git-workflow-and-versioning grill-with-docs handoff improve-codebase-architecture incremental-implementation interview-me karpathy-guidelines mmx-cli-usage openspec-integration prototype setup-matt-pocock-skills source-driven-development tdd to-issues triage update-project-meta zoom-out)
 
-echo "Installing myOpenCodeWithMEeee → ${TARGET_DIR}"
+echo "Installing ohMeisijiyaCode → ${TARGET_DIR}"
 echo ""
 
 # Sanity check
@@ -329,3 +329,12 @@ echo "  AGENTS.md (global):"
 if [[ -f "${GLOBAL_AGENTS}" ]]; then
   echo "    $(basename "${GLOBAL_AGENTS}")  ← $(wc -l < "${GLOBAL_AGENTS}" | tr -d ' ') lines"
 fi
+
+# Optional: enable async delegation (background subagents) via env var.
+# opencode reads OPENCODE_EXPERIMENTAL at startup; without it,
+# task-dispatch(mode=background) will fail at runtime.
+# We do NOT modify the user's shell init — just remind them.
+echo ""
+echo "💡 To enable async delegation (background subagents), set:"
+echo "    export OPENCODE_EXPERIMENTAL=true"
+echo "  Add to your shell init (~/.bashrc / ~/.zshrc) or project .env."
