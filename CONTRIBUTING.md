@@ -34,9 +34,9 @@ Feature request 请注明使用场景和期望的交互方式。
 
 详见 [`skills/karpathy-guidelines/SKILL.md`](skills/karpathy-guidelines/SKILL.md)
 
-### OpenSpec 工作流
+### OpenSpec 工作流（可选）
 
-复杂变更必须走 OpenSpec 流程：
+复杂变更可以选择走 OpenSpec 流程（需先 `openspec init`）：
 
 - **`/opsx:propose`** — 提案阶段，输出变更设计文档
 - **`/opsx:explore`** — 探索现有代码约束和影响范围
@@ -44,17 +44,27 @@ Feature request 请注明使用场景和期望的交互方式。
 - **`/opsx:sync`** — 同步实现与文档
 - **`/opsx:archive`** — 完成后归档，形成可追溯记录
 
+未安装 OpenSpec 时，日常 CRUD / 简单实现直接走 Superpowers 工作流即可。
+
 详见 [`skills/openspec-integration/SKILL.md`](skills/openspec-integration/SKILL.md)
 
 ### 子 Agent 路由约束
 
-修改 agent 定义时，严格遵循 3 层路由表：
+修改 agent 定义时，严格遵循 3 层嵌套规则（主→子→叶子）和 7 agent 路由表：
 
 | Agent | 档位 | 职责 | 委派权限 |
 |-------|------|------|----------|
-| Sisyphus | high | 架构决策、路由委派 | 可调 Lyra + Hephaestus |
-| Lyra | mid | 跨文件实现、研究 | 可调 Hephaestus |
+| Sisyphus | high | 主编排者：路由委派 + 原子任务拆分 | 可调 Lyra / Hephaestus / update / architect / planner / reviewer |
+| Lyra | mid | 跨文件实现、研究 | 可调 Hephaestus / update / architect / planner / reviewer |
 | Hephaestus | low | CRUD、重构、测试脚手架 | 不可委派（叶子节点） |
+| update | high | 项目元信息 single-writer（CONTEXT.md / ADR / AGENTS.md） | 不可委派（叶子节点） |
+| architect | high | 架构设计 + 领域建模 + ADR 起草 | 不可委派（叶子节点） |
+| planner | high | 实现计划 + 任务拆分 + 需求澄清 | 不可委派（叶子节点） |
+| reviewer | high | 代码审查 + 质量把关 + 接收反馈求证 | 不可委派（叶子节点） |
+
+**项目级 vs 用户级配置**：
+- **项目级**（可以改）：项目根目录的文件
+- **用户级**（**只读**）：`~/.config/opencode/` 下的所有文件，改前必须询问用户
 
 ### 提交信息规范
 
