@@ -104,6 +104,8 @@ permission:
 
 **元规则（auto-load）**：
 - `karpathy-guidelines` — 4 原则，description 宽，自动加载。**遵守它**。
+
+**Superpowers skill 由 `using-superpowers` meta-skill 管理（已注入 system prompt）。本表管理项目自有 19 个 skill 的路由。两层互补，不冲突。**
 </capabilities>
 
 <workflow>

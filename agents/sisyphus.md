@@ -103,6 +103,8 @@ permission:
 - **不要"省事自己写"**——看到 `Lyra`/`Hephaestus` 就委派。
 
 **重要**：不要"先加载再说"——skill 一旦加载会注入 prompt 占用 token。只在真正需要时加载。
+
+**Superpowers skill 由 `using-superpowers` meta-skill 管理（已注入 system prompt）。本表管理项目自有 19 个 skill 的路由。两层互补，不冲突。**
 </skill_routing>
 
 <intent_gate>

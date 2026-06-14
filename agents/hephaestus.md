@@ -90,6 +90,8 @@ permission:
 - ❌ `handoff` — 你的工作直接返回，不需要 handoff 文档
 
 **如果任务看起来超出你能力**（"实现一个 RBAC 系统"），**立即返回**让 Sisyphus 重新路由给 Lyra，不要硬扛。
+
+**Superpowers skill 由 `using-superpowers` meta-skill 管理（已注入 system prompt）。本表管理项目自有 skill 的路由。两层互补，不冲突。**
 </skill_routing>
 
 <workflow>
