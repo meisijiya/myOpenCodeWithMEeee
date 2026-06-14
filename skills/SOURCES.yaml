@@ -13,11 +13,11 @@
 # ============================================================
 
 version: 1
-last_audit: 2026-06-11
+last_audit: 2026-06-14
 
 skills:
 
-  # ===== Self-built (3) =====
+  # ===== Self-built (4) =====
   - name: karpathy-guidelines
     type: self
     note: "Sisyphus auto-injects this on every LLM call. Imported from multica-ai/andrej-karpathy-skills but customized for our 1+1+1 system."
@@ -30,7 +30,18 @@ skills:
     type: self
     note: "How to use MiniMax CLI for multimodal + search via bash."
 
-  # ===== Matt Pocock (8) =====
+  - name: update-project-meta
+    type: self
+    note: |
+      Maintain project-level docs (CONTEXT.md, AGENTS.md, docs/adr/NNNN-xxx.md).
+      Single-writer principle. Requires setup-matt-pocock-skills to have been
+      run first (except for CONTEXT.md and ADR writes, which work standalone).
+      disable-model-invocation: true — only invoked when the user explicitly asks
+      to "记录这个决策" / "加个术语" / "add ADR" / etc.
+      Workspace-isolated: writes only to the current opencode session's project
+      root (verified via `pwd` / `git rev-parse --show-toplevel`).
+
+  # ===== Matt Pocock (11) =====
   - name: grill-with-docs
     type: verbatim
     source_repo: mattpocock/skills
@@ -110,6 +121,46 @@ skills:
     license: MIT
     imported_at: 2026-06-11
     lines: 30
+
+  - name: triage
+    type: verbatim
+    source_repo: mattpocock/skills
+    source_path: skills/engineering/triage/SKILL.md
+    source_url: https://github.com/mattpocock/skills/blob/main/skills/engineering/triage/SKILL.md
+    license: MIT
+    imported_at: 2026-06-14
+    sub_files:
+      - AGENT-BRIEF.md
+      - OUT-OF-SCOPE.md
+    lines: 154
+
+  - name: improve-codebase-architecture
+    type: verbatim
+    source_repo: mattpocock/skills
+    source_path: skills/engineering/improve-codebase-architecture/SKILL.md
+    source_url: https://github.com/mattpocock/skills/blob/main/skills/engineering/improve-codebase-architecture/SKILL.md
+    license: MIT
+    imported_at: 2026-06-14
+    sub_files:
+      - LANGUAGE.md
+      - HTML-REPORT.md
+      - INTERFACE-DESIGN.md
+    lines: 169
+
+  - name: setup-matt-pocock-skills
+    type: verbatim
+    source_repo: mattpocock/skills
+    source_path: skills/engineering/setup-matt-pocock-skills/SKILL.md
+    source_url: https://github.com/mattpocock/skills/blob/main/skills/engineering/setup-matt-pocock-skills/SKILL.md
+    license: MIT
+    imported_at: 2026-06-14
+    sub_files:
+      - issue-tracker-github.md
+      - issue-tracker-gitlab.md
+      - issue-tracker-local.md
+      - triage-labels.md
+      - domain.md
+    note: "disable-model-invocation: true. Scaffold the per-repo config that triage / improve-codebase-architecture / grill-with-docs depend on."
 
   # ===== Addy Osmani (3) =====
   - name: git-workflow-and-versioning
