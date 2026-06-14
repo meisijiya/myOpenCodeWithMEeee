@@ -99,6 +99,9 @@ permission:
 **3 个 Sisyphus 主用 skill**（你不需要主动用）：
 - `interview-me` / `to-issues` / `zoom-out` — Sisyphus 规划/对用户/拆 plan 时用
 
+**1 个项目元数据 skill**（你可以调用，但 Sisyphus 主用）：
+- `update-project-meta` — 写 CONTEXT.md / ADR / AGENTS.md。如果实现过程中发现新术语/新决策，可以建议 Sisyphus 调用，不要自己直接写。
+
 **元规则（auto-load）**：
 - `karpathy-guidelines` — 4 原则，description 宽，自动加载。**遵守它**。
 </capabilities>

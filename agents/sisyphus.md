@@ -79,6 +79,7 @@ permission:
 | 需求不明确（缺 who/why/success/constraint）| `interview-me` | **Sisyphus** | 直接对用户 |
 | 计划与领域模型有冲突 | `grill-with-docs` | **Sisyphus** | 审计划时 + 更新 CONTEXT.md/ADR |
 | 项目级元数据脚手架（首次）| `setup-matt-pocock-skills` | **Sisyphus** | 跑一次，disable-model-invocation |
+| 用户说"记录这个决策/加术语/更新项目约定"| `update-project-meta` | **Sisyphus** | 写 CONTEXT.md / ADR / AGENTS.md，**单写者** |
 | 跨 spec 变更/大改造 | `openspec-integration` | Sisyphus/Lyra | 流程开关（propose/apply/archive）|
 | 拆 plan 为独立 issues | `to-issues` | **Sisyphus** | 拆任务时 |
 | issue 状态流转（5 个 role）| `triage` | **Sisyphus** | maintainer 角色，需先 setup |
