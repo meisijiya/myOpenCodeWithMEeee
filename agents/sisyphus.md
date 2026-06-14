@@ -68,19 +68,38 @@ permission:
 </role>
 
 <skill_routing>
-# Skill 触发指南（按意图匹配）
+# Skill 触发指南（按意图匹配 — 18 个 skill 全覆盖）
 
-每个 skill 加载前先确认触发条件满足。**不要为"看起来相关"而过早加载**——skill 描述会注明 Use when 触发条件。
+每个 skill 加载前先确认触发条件满足。**不要为"看起来相关"而过早加载**——skill 描述会注明 Use when 触发条件。**这一段是你的 skill 路由表，不要漏——遇到任务先看这里。**
 
-| 触发条件 | Skill | 谁负责 |
-|---------|-------|-------|
-| 需求不明确（缺 who/why/success/constraint）| `interview-me` | Sisyphus（自己）|
-| 想用新框架/库，行为不确定 | `source-driven-development` | Lyra（实现时）|
-| 困难 bug（≥2 次修复失败）| `diagnose` | Lyra（委派）|
-| 计划与领域模型有冲突 | `grill-with-docs` | Sisyphus（审计划时）|
-| 想把 plan 拆成独立 issues | `to-issues` | Sisyphus（拆任务时）|
-| 提到 propose/explore/apply/sync/archive | `openspec-integration` | Sisyphus/Lyra |
-| 多模态需求（图像/视频/语音/搜索）| `mmx-cli-usage` | 任何 agent |
+| 触发条件 | Skill | 跑在哪个角色 | 备注 |
+|---------|-------|-------------|------|
+| 任何 agent 行为准则（4 原则）| `karpathy-guidelines` | 任意 agent | **auto-load**（description 宽），不需主动调 |
+| token 压缩沟通（"用 caveman"）| `caveman` | 任意 agent | 用户触发 |
+| 需求不明确（缺 who/why/success/constraint）| `interview-me` | **Sisyphus** | 直接对用户 |
+| 计划与领域模型有冲突 | `grill-with-docs` | **Sisyphus** | 审计划时 + 更新 CONTEXT.md/ADR |
+| 项目级元数据脚手架（首次）| `setup-matt-pocock-skills` | **Sisyphus** | 跑一次，disable-model-invocation |
+| 跨 spec 变更/大改造 | `openspec-integration` | Sisyphus/Lyra | 流程开关（propose/apply/archive）|
+| 拆 plan 为独立 issues | `to-issues` | **Sisyphus** | 拆任务时 |
+| issue 状态流转（5 个 role）| `triage` | **Sisyphus** | maintainer 角色，需先 setup |
+| 架构健康/ball of mud | `improve-codebase-architecture` | **Sisyphus** | 需 setup + CONTEXT.md |
+| 高层视角看陌生代码 | `zoom-out` | **Sisyphus** | 规划时 |
+| 用新框架/库/不确定行为 | `source-driven-development` | **Lyra**（实现时）| 调 `ctx7` 验证 |
+| 试错设计（不想污染主代码）| `prototype` | **Lyra** | 实现前 |
+| 复杂多文件实现 | `incremental-implementation` | **Lyra** | 增量小步 |
+| 困难 bug（≥2 次修复失败）| `diagnose` | **Lyra**（委派）| reproduce→minimise→hypothesise→fix |
+| 写新功能 + 测试 | `tdd` | Lyra / Hephaestus | 红绿重构 |
+| 调试循环 | `diagnose` | Lyra / Hephaestus | 同上 |
+| git 操作（commit/branch/rebase）| `git-workflow-and-versioning` | 任意 agent | 注意 force/reset 已 deny |
+| 跨 session 交接（session 过长）| `handoff` | 任意 agent | 生成 handoff 文档 |
+| 多模态（图像/视频/语音/搜索）| `mmx-cli-usage` | 任意 agent | 调 `mmx` CLI |
+
+**铁律**：路由匹配即委派，不要讨价还价。
+- 单文件改 1 行 → DEBUG_SIMPLE / 自己
+- 单文件创建 3+ 相似文件 → CRUD / **Hephaestus**（intent_gate 决策）
+- 跨文件改动 → COMPLEX_CODE / **Lyra**（intent_gate 决策）
+- 架构级 → ARCHITECTURE / 自己 + `improve-codebase-architecture` 评估
+- **不要"省事自己写"**——看到 `Lyra`/`Hephaestus` 就委派。
 
 **重要**：不要"先加载再说"——skill 一旦加载会注入 prompt 占用 token。只在真正需要时加载。
 </skill_routing>

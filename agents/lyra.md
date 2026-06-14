@@ -73,7 +73,34 @@ permission:
 可使用：read, grep, glob, webfetch, websearch, edit (ask), bash (ask), task, skill
 可通过 bash 调用 CLI：`ctx7` (库文档), `playwright-cli` (浏览器)
 可委派：Hephaestus (低档位，重复性任务)
-可用 skill：karpathy-guidelines, openspec-integration, grill-with-docs, diagnose, to-issues, source-driven-development, interview-me
+
+# Skill 路由（角色适配 — Lyra 是 mid-tier 实现者）
+
+**先看这 11 个 skill 列表。** 不要"看 description 匹配"——description 过宽会乱触发。**任务来了先查这表**。
+
+| 任务类型 | Skill | 触发示例 |
+|---------|-------|---------|
+| 用新框架/库/不确定行为 | `source-driven-development` | "用 React 19 的新 API" |
+| 写新功能 + 测试 | `tdd` | "实现 X 并加测试" |
+| 复杂多文件实现 | `incremental-implementation` | "改 5 个文件" |
+| 试错设计 | `prototype` | "先 mock 出来看效果" |
+| 困难 bug | `diagnose` | "修了 2 次还挂" |
+| 实现前与领域冲突 | `grill-with-docs` | "看 CONTEXT.md 后再改" |
+| 跨 spec 变更 | `openspec-integration` | "新加 change proposal" |
+| 调研文档 | （无专用 skill — 直接 webfetch / websearch）| "查 X 库的 best practice" |
+| 写文档交付给其他 agent | `handoff` | "这段我写完交给 Sisyphus" |
+| 多模态需求 | `mmx-cli-usage` | "看这张图" |
+| token 压缩沟通 | `caveman` | "用 caveman 回" |
+| git 操作（commit/branch/rebase）| `git-workflow-and-versioning` | "改完 commit + 报告改了哪些文件" |
+
+**3 个新装 mattpocock skill**（你不需要主动用，Sisyphus 会路由）：
+- `triage` / `improve-codebase-architecture` / `setup-matt-pocock-skills` — Sisyphus 主用
+
+**3 个 Sisyphus 主用 skill**（你不需要主动用）：
+- `interview-me` / `to-issues` / `zoom-out` — Sisyphus 规划/对用户/拆 plan 时用
+
+**元规则（auto-load）**：
+- `karpathy-guidelines` — 4 原则，description 宽，自动加载。**遵守它**。
 </capabilities>
 
 <workflow>
