@@ -70,6 +70,24 @@ permission:
 2. **Simplicity First**: 拒绝过度抽象；不为单次使用造轮子
 3. **Surgical Changes**: 改什么就改什么；不顺手重构
 4. **Goal-Driven Execution**: 把命令式任务转成可验证的成功标准
+
+## 📚 项目记忆（跨 session 持久化）
+
+**Session 开始时**，如果项目有 `CONTEXT.md` / `AGENTS.md` / `docs/adr/`，**先读取**：
+- `CONTEXT.md`：核心术语和概念
+- `AGENTS.md`：项目约定和规范
+- `docs/adr/`：架构决策记录
+
+**好处**：恢复项目上下文，避免重复解释。
+
+**开发过程中**，发现新术语/决策/约定时，委派 `update` agent 更新项目记忆：
+- 新术语 → `CONTEXT.md`
+- 新约定 → `AGENTS.md`
+- 架构决策 → `docs/adr/NNNN-xxx.md`
+
+**命令**：`/updateProjectMeta`（或手动委派 update agent）
+
+**最佳实践**：关闭 session 前执行 `/updateProjectMeta`，保存本次 session 的关键信息。
 </role>
 
 <skill_routing>

@@ -53,9 +53,9 @@
   "compaction": {
     "auto": true,
     "prune": true,
-    "reserved": 100000,
-    "preserve_recent_tokens": 40000,
-    "tail_turns": 1
+    "reserved": 50000,
+    "preserve_recent_tokens": 50000,
+    "tail_turns": 2
   },
   "plugin": [
     "superpowers@git+https://github.com/obra/superpowers.git",

@@ -906,16 +906,16 @@ The `compaction` block has **5 official fields**. There is **no "compaction thre
 trigger ≈ model_context - reserved - preserve_recent_tokens
 ```
 
-### Our Default Config
+### Our Default Config (512K Model Optimized)
 
 ```jsonc
 {
   "compaction": {
     "auto": true,                  // automatic trigger
     "prune": true,                 // drop old tool outputs
-    "reserved": 100000,            // ⬇ from 300K (was eating 30% of window)
-    "preserve_recent_tokens": 40000,  // ⬇ from 64K
-    "tail_turns": 1                // ⬇ from default 2
+    "reserved": 50000,             // ⬇ from 100K (agent prompts streamlined -40%)
+    "preserve_recent_tokens": 50000,  // ⬆ from 40K (more recent context)
+    "tail_turns": 2                // ⬆ from 1 (better multi-step tracking)
   },
   "agent": {
     "compaction": {
@@ -929,12 +929,12 @@ trigger ≈ model_context - reserved - preserve_recent_tokens
 
 | Model | Context | Trigger | Notes |
 |-------|---------|---------|-------|
-| **MiniMax-M3** (high-tier: Sisyphus / Architect / Planner / Reviewer / Update) | 512K | **~372K** | ✅ Matches 340K target |
-| **deepseek-v4-flash** (mid/low: Lyra / Hephaestus) | 1M | ~860K | Aggressive prompt keeps session far below 860K |
+| **MiniMax-M3** (high-tier: Sisyphus / Architect / Planner / Reviewer / Update) | 512K | **~422K** | ✅ Optimized for 512K (reserved 50K + preserve 50K) |
+| **deepseek-v4-flash** (mid/low: Lyra / Hephaestus) | 1M | ~910K | Aggressive prompt keeps session far below 910K |
 
-For high-tier agents (Sisyphus primary), **372K trigger ≈ 340K target** — your specified sweet spot.
+For high-tier agents (Sisyphus primary), **422K trigger** — optimized for 512K context models.
 
-For 1M models, schema can't trigger below ~860K. We use **aggressive compaction prompt** as workaround: compresses session to 30K, so it takes 5x longer to grow back.
+For 1M models, schema can't trigger below ~910K. We use **aggressive compaction prompt** as workaround: compresses session to 30K, so it takes 5x longer to grow back.
 
 ### Why This Matters
 
@@ -945,6 +945,52 @@ For 1M models, schema can't trigger below ~860K. We use **aggressive compaction 
 | Attention decay past 400K | Attention fidelity throughout |
 
 See [Compaction Strategy doc](docs/2026-06-11-compaction-strategy-340k.md) for full details.
+
+---
+
+## 🧠 Project Memory (Cross-Session Persistence)
+
+> **Why**: Sessions are ephemeral, but project knowledge should persist. Our project memory system saves key decisions, terminology, and conventions across sessions.
+
+### How It Works
+
+| File | Purpose | When Updated |
+|------|---------|--------------|
+| `CONTEXT.md` | Core terminology and concepts | New terms discovered |
+| `AGENTS.md` | Project conventions and norms | New conventions established |
+| `docs/adr/NNNN-xxx.md` | Architecture Decision Records | Architecture decisions made |
+
+### Workflow
+
+**1. First-time setup** (one-time):
+```bash
+/setup  # Initialize CONTEXT.md / AGENTS.md / docs/adr/
+```
+
+**2. During development**:
+```bash
+/updateProjectMeta  # Record new terms/decisions/conventions
+```
+
+**3. Before closing session** (recommended):
+```bash
+/updateProjectMeta  # Save this session's key information
+```
+
+**4. Next session starts**:
+- Sisyphus automatically reads `CONTEXT.md` / `AGENTS.md` / `docs/adr/`
+- Project context is restored — no need to re-explain
+
+### Best Practice
+
+> 💡 **Before closing a session**, run `/updateProjectMeta` to save key information. This ensures the next session can pick up where you left off.
+
+### Benefits
+
+- ✅ Cross-session context persistence
+- ✅ New agents can quickly understand project background
+- ✅ Decisions are traceable (ADR)
+- ✅ Terminology is consistent across sessions
 
 ---
 
