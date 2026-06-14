@@ -9,11 +9,7 @@
     },
     "sisyphus": {
       "model": "minimax-cn-coding-plan/MiniMax-M3",
-      "prompt": "{file:./agents/sisyphus.md}",
-      "tools": {
-        "bash": true,
-        "edit": true
-      }
+      "prompt": "{file:./agents/sisyphus.md}"
     },
     "lyra": {
       "model": "minimax-cn-coding-plan/MiniMax-M3",
