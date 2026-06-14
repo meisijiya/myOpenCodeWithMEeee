@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
 # uninstall.sh — Remove ohMeisijiyaCode files from ~/.config/opencode/
 #
-# Removes only files this project installed, and the matching entry from
+# Removes only files this project installed, and matches entry from
 # opencode.json's `plugin` array (if it was registered by install.sh).
 # Does NOT touch:
 # - oh-my-openagent.json or any other plugin config
 # - Existing opencode plugins (rtk.ts, etc.)
 # - Existing AGENTS.md
-# - Existing tools that we did not create (e.g., the user may have their own)
+# - Existing CLIs that we did not create (mmx / ctx7 / playwright-cli)
 # - Existing MCPs that were added before install.sh (e.g., MiniMax via /connect)
 #
 # Idempotent: safe to run multiple times.
@@ -16,7 +16,6 @@ set -euo pipefail
 
 TARGET_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/opencode"
 OPENCODE_CONFIG="${TARGET_DIR}/opencode.json"
-PLUGIN_ENTRY="plugins/orchestrator.js"
 
 echo "Uninstalling ohMeisijiyaCode from ${TARGET_DIR}"
 echo ""
@@ -37,70 +36,53 @@ rm_target_dir() {
   fi
 }
 
-# Our specific agents
+# Our 7 agents (v2.2: sisyphus/lyra/hephaestus + update/architect/planner/reviewer)
 rm_target "agents/sisyphus.md"
 rm_target "agents/lyra.md"
 rm_target "agents/hephaestus.md"
+rm_target "agents/update.md"
+rm_target "agents/architect.md"
+rm_target "agents/planner.md"
+rm_target "agents/reviewer.md"
 
-# Our specific skills
+# Our 19 skills (v2.2: same count as v2.1, but composition shifted)
+#  - 3 self-built: karpathy-guidelines / openspec-integration / mmx-cli-usage
+#  - 1 self-built utility: update-project-meta
+#  - 11 verbatim imports: mattpocock (10) + addyosmani (1)
+#  - 4 mattpocock-managed: improve-codebase-architecture / setup-matt-pocock-skills /
+#                          triage / update-project-meta
+#  - remaining: incremental-implementation / interview-me / source-driven-development /
+#               git-workflow-and-versioning
 rm_target_dir "skills/caveman"
 rm_target_dir "skills/diagnose"
 rm_target_dir "skills/git-workflow-and-versioning"
 rm_target_dir "skills/grill-with-docs"
 rm_target_dir "skills/handoff"
+rm_target_dir "skills/improve-codebase-architecture"
 rm_target_dir "skills/incremental-implementation"
 rm_target_dir "skills/interview-me"
 rm_target_dir "skills/karpathy-guidelines"
 rm_target_dir "skills/mmx-cli-usage"
 rm_target_dir "skills/openspec-integration"
 rm_target_dir "skills/prototype"
+rm_target_dir "skills/setup-matt-pocock-skills"
 rm_target_dir "skills/source-driven-development"
 rm_target_dir "skills/tdd"
 rm_target_dir "skills/to-issues"
+rm_target_dir "skills/triage"
+rm_target_dir "skills/update-project-meta"
 rm_target_dir "skills/zoom-out"
 
-# Our specific tools (only those we created)
-rm_target "tools/hashline-edit.js"
-rm_target "tools/task-dispatch.js"
+# Our 21 commands (v2.2: slash-command files in ~/.config/opencode/commands/)
+for cmd in brainstorm caveman code-review diagnose finish-branch git-workflow grill \
+           handoff improve-arch interview mmx plan prototype setup tdd to-issues \
+           triage updateProjectMeta verify write-skill zoom-out; do
+  rm_target "commands/${cmd}.md"
+done
 
-# Our specific plugin file
-rm_target "plugins/orchestrator.js"
-
-# Unregister plugin from opencode.json (if present)
-if [[ -f "${OPENCODE_CONFIG}" ]]; then
-  DEREGISTER_OUTPUT="$(python3 - "${OPENCODE_CONFIG}" "${PLUGIN_ENTRY}" <<'PY_EOF' 2>&1
-import json, sys
-
-config_path, plugin_entry = sys.argv[1], sys.argv[2]
-try:
-    with open(config_path, "r", encoding="utf-8") as f:
-        config = json.load(f)
-except (json.JSONDecodeError, OSError) as e:
-    print(f"WARN: could not read {config_path}: {e}")
-    sys.exit(0)
-
-plugins = config.get("plugin", [])
-if not isinstance(plugins, list):
-    print(f"WARN: 'plugin' field is not a list; skipping")
-    sys.exit(0)
-
-if plugin_entry not in plugins:
-    print(f"not-registered: {plugin_entry} (not in opencode.json)")
-    sys.exit(0)
-
-plugins = [p for p in plugins if p != plugin_entry]
-config["plugin"] = plugins
-
-with open(config_path, "w", encoding="utf-8") as f:
-    json.dump(config, f, indent=2, ensure_ascii=False)
-    f.write("\n")
-print(f"unregistered: {plugin_entry}")
-PY_EOF
-  )"
-  echo "opencode.json: ${DEREGISTER_OUTPUT}"
-else
-  echo "opencode.json: not found (nothing to unregister)"
-fi
+# Note: v2.2 retired both custom tools (hashline-edit / task-dispatch) and the
+# orchestrator plugin. We do not delete them here — they no longer exist in
+# v2.2 install paths. If you upgraded from v2.1, run v2.1's uninstall.sh first.
 
 # Remove compaction block (only if it matches our template — preserve user's custom settings)
 if [[ -f "${OPENCODE_CONFIG}" ]]; then
