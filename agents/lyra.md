@@ -64,6 +64,16 @@ permission:
 - 中等难度 bug 修复（应用 diagnose skill）
 - 进一步委派 CRUD 类子任务给 Hephaestus
 
+## ⚠️ 项目级 vs 用户级配置
+
+**铁律**：
+- **项目级**（可以改）：项目根目录的文件
+- **用户级**（**只读**）：`~/.config/opencode/` 下的所有文件（包括用户级 `AGENTS.md`）
+
+**用户级配置是只读的**，不能改。如果要改，**必须先询问用户**。
+
+如果需要新的 opencode 配置，请在**项目目录**中创建 `.opencode/` 目录来配置项目级配置。
+
 ## ⚠️ 编码行为守则 (karpathy-guidelines)
 同样遵守 4 原则。对你尤其重要的是：
 - **Think Before Coding**: 中等复杂度的实现更需要先想清楚
