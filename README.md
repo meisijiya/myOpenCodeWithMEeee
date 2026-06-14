@@ -881,14 +881,14 @@ done
 
 ## 🔄 Maintenance: Upstream Skill Sync
 
-> **11 of our 15 global skills come from upstream** (mattpocock/skills, addyosmani/agent-skills). We track every source in [`skills/SOURCES.yaml`](skills/SOURCES.yaml) and provide a check-and-update script.
+> **14 of our 19 global skills come from upstream** (mattpocock/skills, addyosmani/agent-skills). We track every source in [`skills/SOURCES.yaml`](skills/SOURCES.yaml) and provide a check-and-update script.
 
 ### Skill Provenance Summary
 
 | Type | Count | Update Strategy |
 |------|-------|-----------------|
-| **self** (no upstream) | 3 (karpathy, openspec, mmx-cli) | N/A |
-| **verbatim** (100% as-is) | 11 (mattpocock + addyosmani) | ✅ Auto-check + safe apply |
+| **self** (no upstream) | 4 (karpathy, openspec, mmx-cli, update-project-meta) | N/A |
+| **verbatim** (100% as-is) | 14 (mattpocock + addyosmani) | ✅ Auto-check + safe apply |
 | **reimpl** (lightweight) | 1 (source-driven-development) | ⚠️ Manual review required |
 
 ### Check for Upstream Drift
@@ -955,7 +955,7 @@ The 10 files in [`skills-registry/`](skills-registry/) recommend domain-specific
 ### Real-World Maintenance Workflow
 
 ```bash
-# Monthly: check if our 15 global skills have upstream updates
+# Monthly: check if our 19 global skills have upstream updates
 bash scripts/update-skills.sh
 
 # If drift found, preview the changes
@@ -974,7 +974,7 @@ git add skills/ && git commit -m "chore(skills): sync N verbatim skills with ups
 **Last run (this session)**:
 - Detected: 2 drifts (caveman, interview-me)
 - Applied: 2 verbatim updates
-- Re-checked: 0 drift, 11/11 verbatim up-to-date ✅
+- Re-checked: 0 drift, 14/14 verbatim up-to-date ✅
 
 ---
 
