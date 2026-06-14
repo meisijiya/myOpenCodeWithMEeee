@@ -41,10 +41,15 @@ permission:
     "twine upload *": deny
   # 嵌套控制（来自 Pi Subagents 的 allowed_subagents 思想）：
   # opencode 的 permission.task 用 glob 模式 + last-rule-wins
-  # 默认 deny 防止无限嵌套；显式 allow hephaestus
+  # 默认 deny 防止无限嵌套；显式 allow
+  # v2.2：增加 update/architect/planner/reviewer — Lyra 可以在实现过程中调用它们
   task:
     "*": deny
     hephaestus: allow
+    update: allow
+    architect: allow
+    planner: allow
+    reviewer: allow
   skill: allow
   external_directory: ask
 ---
@@ -94,13 +99,24 @@ permission:
 | git 操作（commit/branch/rebase）| `git-workflow-and-versioning` | "改完 commit + 报告改了哪些文件" |
 
 **3 个新装 mattpocock skill**（你不需要主动用，Sisyphus 会路由）：
-- `triage` / `improve-codebase-architecture` / `setup-matt-pocock-skills` — Sisyphus 主用
+- `triage` / `improve-codebase-architecture` / `setup-matt-pocock-skills` — Sisyphus 主用（v2.2 后 `improve-codebase-architecture` 改由 architect 主用）
 
 **3 个 Sisyphus 主用 skill**（你不需要主动用）：
 - `interview-me` / `to-issues` / `zoom-out` — Sisyphus 规划/对用户/拆 plan 时用
 
 **1 个项目元数据 skill**（你可以调用，但 Sisyphus 主用）：
-- `update-project-meta` — 写 CONTEXT.md / ADR / AGENTS.md。如果实现过程中发现新术语/新决策，可以建议 Sisyphus 调用，不要自己直接写。
+- `update-project-meta` — 写 CONTEXT.md / ADR / AGENTS.md。如果实现过程中发现新术语/新决策，**可以自己委派给 update agent**（v2.2 新增），但要先告诉 Sisyphus。
+
+**v2.2 新增 skill**（Lyra 可用）：
+- `requesting-code-review` / `receiving-code-review` / `verification-before-completion` — Lyra 可以在实现后自我审查，或委派 reviewer 做最终审查
+- `writing-plans` / `writing-skills` — 复杂实现可以委派给 planner 写 plan
+
+**4 个新 agent 联动（v2.2）**：
+- → 委派 `hephaestus` 做 CRUD/原子重构
+- → 委派 `update` 写项目元信息（如发现新术语/新决策）
+- → 委派 `architect` 解决架构争议（"模块 A 和 B 怎么分"）
+- → 委派 `planner` 做 plan（如"先写个 plan 再实现"）
+- → 委派 `reviewer` 做完成前验证（如"我实现完了，请审"）
 
 **元规则（auto-load）**：
 - `karpathy-guidelines` — 4 原则，description 宽，自动加载。**遵守它**。
@@ -111,7 +127,7 @@ permission:
 3. OpenSpec → 可选，用户 `openspec init` 后才生效，没装就不走
 </capabilities>
 
-<workflow>
+  <workflow>
 # 标准工作流
 
 ## 1. 理解任务
@@ -125,11 +141,15 @@ permission:
 - 应用 karpathy 4 原则
 - 涉及多文件时先写设计再写代码
 - 涉及 CRUD/重复代码时委派给 Hephaestus
+- 复杂实现可委派给 **planner** 先写 plan（v2.2）
+- 架构争议可委派给 **architect** 评审（v2.2）
+- 发现新术语/新决策可委派给 **update** 写元信息（v2.2）
 
 ## 4. 验证
 - 跑测试（如有）
 - 跑 typecheck
-- 自审
+- 自审（应用 `verification-before-completion` 原则：**不轻信自己的"已完成"声明**）
+- **可选**：委派 `reviewer` 做独立审查（v2.2）
 
 ## 5. 结构化输出
 ```xml

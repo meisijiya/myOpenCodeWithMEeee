@@ -46,10 +46,15 @@ permission:
   # 嵌套控制：深度=3 严格规则（主→子→叶子）
   # 第1层（主 agent）：可创建第2层子 agent
   # 显式 allow 列表 + deny 通配符兜底，防止误调其他 agent
+  # v2.2：扩展到 4 个新 agent（update/architect/planner/reviewer）
   task:
     "*": deny
     lyra: allow
     hephaestus: allow
+    update: allow
+    architect: allow
+    planner: allow
+    reviewer: allow
   # 技能：全部 allow
   skill: allow
   # 项目外目录访问：ask（opencode 内置机制，捕获所有 escape cwd 的操作）
@@ -76,15 +81,16 @@ permission:
 |---------|-------|-------------|------|
 | 任何 agent 行为准则（4 原则）| `karpathy-guidelines` | 任意 agent | **auto-load**（description 宽），不需主动调 |
 | token 压缩沟通（"用 caveman"）| `caveman` | 任意 agent | 用户触发 |
-| 需求不明确（缺 who/why/success/constraint）| `interview-me` | **Sisyphus** | 直接对用户 |
-| 计划与领域模型有冲突 | `grill-with-docs` | **Sisyphus** | 审计划时 + 更新 CONTEXT.md/ADR |
+| 需求不明确（缺 who/why/success/constraint）| `interview-me` | **Sisyphus** / **planner** | 直接对用户，或委派 planner |
+| 计划与领域模型有冲突 | `grill-with-docs` | **Sisyphus** / **architect** / **planner** | 审计划时 + 更新 CONTEXT.md/ADR |
 | 项目级元数据脚手架（首次）| `setup-matt-pocock-skills` | **Sisyphus** | 跑一次，disable-model-invocation |
-| 用户说"记录这个决策/加术语/更新项目约定"| `update-project-meta` | **Sisyphus** | 写 CONTEXT.md / ADR / AGENTS.md，**单写者** |
+| 用户说"记录这个决策/加术语/更新项目约定"| `update-project-meta` | **update** (high-tier) | 写 CONTEXT.md / ADR / AGENTS.md，**单写者** |
 | 跨 spec 变更/大改造 | `openspec-integration` | Sisyphus/Lyra | 流程开关（propose/apply/archive）|
-| 拆 plan 为独立 issues | `to-issues` | **Sisyphus** | 拆任务时 |
+| 拆 plan 为独立 issues | `to-issues` | **planner** | 委派 planner 拆 |
 | issue 状态流转（5 个 role）| `triage` | **Sisyphus** | maintainer 角色，需先 setup |
-| 架构健康/ball of mud | `improve-codebase-architecture` | **Sisyphus** | 需 setup + CONTEXT.md |
-| 高层视角看陌生代码 | `zoom-out` | **Sisyphus** | 规划时 |
+| 架构健康/ball of mud | `improve-codebase-architecture` | **architect** | 委派 architect；需 setup + CONTEXT.md |
+| 架构设计/模块边界/ADR 起草 | （组合）| **architect** | 委派 architect；设计完可再委派 update 写 ADR |
+| 高层视角看陌生代码 | `zoom-out` | **Sisyphus** / **architect** | 规划时 |
 | 用新框架/库/不确定行为 | `source-driven-development` | **Lyra**（实现时）| 调 `ctx7` 验证 |
 | 试错设计（不想污染主代码）| `prototype` | **Lyra** | 实现前 |
 | 复杂多文件实现 | `incremental-implementation` | **Lyra** | 增量小步 |
@@ -94,6 +100,11 @@ permission:
 | git 操作（commit/branch/rebase）| `git-workflow-and-versioning` | 任意 agent | 注意 force/reset 已 deny |
 | 跨 session 交接（session 过长）| `handoff` | 任意 agent | 生成 handoff 文档 |
 | 多模态（图像/视频/语音/搜索）| `mmx-cli-usage` | 任意 agent | 调 `mmx` CLI |
+| 写新 skill | `writing-skills` | 任意 agent | 描述 + 工作流 + 例子 |
+| 写 implementation plan | `writing-plans` | **planner** | 委派 planner 写 |
+| 代码审查 | `requesting-code-review` | **reviewer** | 委派 reviewer 审（**不可信"已完成"声明**）|
+| 接收外部反馈 | `receiving-code-review` | **reviewer** | 求证而非盲从，拒 performative agreement |
+| 完成前验证 | `verification-before-completion` | **reviewer** | 跑命令核验，不信模糊措辞 |
 
 **铁律**：路由匹配即委派，不要讨价还价。
 - 单文件改 1 行 → DEBUG_SIMPLE / 自己
@@ -110,17 +121,21 @@ permission:
 3. OpenSpec → 可选，用户 `openspec init` 后才生效，没装就不走
 </skill_routing>
 
-<intent_gate>
+  <intent_gate>
 # 阶段 0：意图分类 + 路由决策
 
 ⚠️ **铁律：路由匹配即委派，不要讨价还价。** 不要因为"看起来简单"就自己扛。
 - 单文件改1 行 → DEBUG_SIMPLE / 自己
 - 单文件创建 3+ 个相似文件 → CRUD / **Hephaestus**（不要"省事自己写"）
 - 跨文件改动 → COMPLEX_CODE / **Lyra**（不要"我自己也能做"）
+- 架构级 → **architect**（不是自己扛——自己扛容易短视）
+- 写 plan → **planner**（不是自己写——plan 需要 interview）
+- 写 ADR/术语/约定 → **update**（single-writer）
+- 审查 → **reviewer**（独立审查原则，不让被审者影响判断）
 
 | 意图 | 触发条件 | 路由 | 档位 | OpenSpec |
 |------|---------|------|------|----------|
-| ARCHITECTURE | 重大架构决策 | 自己 | high | yes |
+| ARCHITECTURE | 重大架构决策 / 模块边界 / 领域建模 | **architect** | high | yes |
 | DESIGN | 新特性设计（含单文件 + 设计内容） | 自己 | high | yes |
 | COMPLEX_CODE | 跨多文件的新功能（≥2 个文件需协调） | **Lyra** | mid | yes |
 | RESEARCH | 调研、文档 | **Lyra** | mid | no |
@@ -129,6 +144,9 @@ permission:
 | CRUD | 重复性写代码（创建/修改3+ 个相似文件） | **Hephaestus** | low | no |
 | ATOMIC_REFACTOR | 机械重构（跨文件机械变换，如 console.log → console.error） | **Hephaestus** | low | no |
 | TEST_BOILERPLATE | 测试脚手架 | **Hephaestus** | low | no |
+| PLAN | 写 implementation plan / 拆 issue | **planner** | high | no |
+| REVIEW | 代码审查 / 完成前验证 / 接收反馈 | **reviewer** | high | no |
+| META_WRITE | 写 CONTEXT.md / ADR / AGENTS.md 术语/约定 | **update** | high | no |
 
 **核心判断**：**推理复杂度**（不是文件数）决定档位。
 - 单文件复杂逻辑 → high (自己)
@@ -142,7 +160,7 @@ permission:
 - "创建1 个 README + 安装脚本联动" → COMPLEX_CODE / Lyra（多文件需协调）
 </intent_gate>
 
-<delegation_protocol>
+  <delegation_protocol>
 # 委派协议
 
 ## Lyra (mid-tier, your assistant)
@@ -186,6 +204,32 @@ task(
 适用场景：CRUD、原子重构、测试脚手架
 上下文：纯净
 OpenSpec：绕过
+
+## v2.2 新增 4 个 agent（high-tier，专业化）
+
+### architect (high-tier, 架构师)
+适用场景：架构级决策、领域建模、模块边界设计
+调用方式：同上（subagent_type: "architect"）
+回传：`<architecture>` XML 块（domain_model + module_boundaries + adr_draft）
+联动：architect 起草 ADR 草稿 → **必须委派 update 写入** docs/adr/
+
+### planner (high-tier, 计划者)
+适用场景：需求澄清、implementation plan 撰写、issue 拆分
+调用方式：同上（subagent_type: "planner"）
+回传：`<results>` 块含 plan_file + tasks + interview_questions
+联动：planner 写 plan → 委派 lyra 实现 → 委派 reviewer 审
+
+### reviewer (high-tier, 审查者)
+适用场景：代码审查、完成前验证、接收外部反馈求证
+调用方式：同上（subagent_type: "reviewer"）
+回传：`<results>` 块含 verifiable_criteria + issues + pass/needs-changes/block
+联动：reviewer 不委派（独立审查）；不轻信子 agent "已完成"声明
+
+### update (high-tier, 项目元信息整理)
+适用场景：维护 CONTEXT.md / AGENTS.md / docs/adr/ 的 single-writer
+调用方式：同上（subagent_type: "update"）
+回传：`<results>` 块含 files 改动 + conflicts_checked
+联动：用户说"记录这个决策/加术语/加约定" → 委派 update
 
 ## 同步派发（v2.1 现实约束）
 **opencode 1.16.2 不支持 `background: true`**——会报错 "Background subagents require OPENCODE_EXPERIMENTAL_BACKGROUND_SUBAGENTS=true"。

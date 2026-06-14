@@ -27,6 +27,7 @@ fi
 mkdir -p "${TARGET_DIR}/agents"
 mkdir -p "${TARGET_DIR}/tools"
 mkdir -p "${TARGET_DIR}/plugins"
+mkdir -p "${TARGET_DIR}/commands"
 # Only create skill dirs that have a SKILL.md to install (avoid empty dirs)
 for skill in "${SKILLS[@]}"; do
   if [[ -f "${REPO_DIR}/skills/${skill}/SKILL.md" ]]; then
@@ -49,6 +50,15 @@ for src in "${REPO_DIR}/agents/"*.md; do
   [[ -f "${src}" ]] || continue
   cp -v "${src}" "${TARGET_DIR}/agents/"
 done
+
+# Mirror commands (any .md in .opencode/commands/ — v2.2)
+# Commands are slash-command files (plan.md, tdd.md, etc.) registered with opencode.
+if [[ -d "${REPO_DIR}/.opencode/commands" ]]; then
+  for src in "${REPO_DIR}/.opencode/commands/"*.md; do
+    [[ -f "${src}" ]] || continue
+    cp -v "${src}" "${TARGET_DIR}/commands/"
+  done
+fi
 
 # Mirror skills (SKILL.md from each skill dir)
 for skill in "${SKILLS[@]}"; do
@@ -174,11 +184,80 @@ with open(config_path, "w", encoding="utf-8") as f:
     f.write("\n")
 print("applied: compaction block (340K trigger strategy)")
 PY_EOF
-)"
+  )"
   echo "compaction: ${COMPACTION_OUTPUT}"
 else
   if [[ ! -f "${OPENCODE_CONFIG}" ]]; then
     echo "compaction: skipped (no opencode.json yet)"
+  fi
+fi
+
+
+# Register the 7 agents (sisyphus/lyra/hephaestus/update/architect/planner/reviewer)
+# into the user's opencode.json — v2.2.
+# Non-destructive merge: we only add missing agent entries + their model/prompt,
+# we never overwrite an existing agent's model or prompt (user may have customized).
+# If user has no 'agent' block at all, we add the full set from the repo's opencode.json.
+REPO_OPENCODE_JSON="${REPO_DIR}/opencode.json"
+if [[ -f "${OPENCODE_CONFIG}" ]] && [[ -f "${REPO_OPENCODE_JSON}" ]]; then
+  AGENT_REGISTER_OUTPUT="$(python3 - "${OPENCODE_CONFIG}" "${REPO_OPENCODE_JSON}" <<'PY_EOF' 2>&1
+import json, sys
+
+config_path, repo_path = sys.argv[1], sys.argv[2]
+with open(config_path, "r", encoding="utf-8") as f:
+    config = json.load(f)
+with open(repo_path, "r", encoding="utf-8") as f:
+    repo = json.load(f)
+
+repo_agents = repo.get("agent", {})
+user_agents = config.setdefault("agent", {})
+
+# Don't touch the built-in 'build' / 'plan' agents — only our 7 custom agents
+CUSTOM_AGENTS = ("sisyphus", "lyra", "hephaestus", "update", "architect", "planner", "reviewer")
+
+added, updated, skipped = [], [], []
+for name in CUSTOM_AGENTS:
+    src = repo_agents.get(name)
+    if not isinstance(src, dict):
+        continue
+    dst = user_agents.get(name)
+    if isinstance(dst, dict) and ("model" in dst or "prompt" in dst):
+        # User already configured this agent — respect their settings
+        skipped.append(name)
+        continue
+    # Add or merge — keep user's existing fields (e.g., tools overrides) + add ours
+    if not isinstance(dst, dict):
+        dst = {}
+    for key, value in src.items():
+        dst.setdefault(key, value)
+    user_agents[name] = dst
+    if name in user_agents:
+        updated.append(name)
+    else:
+        added.append(name)
+
+# Preserve formatting
+with open(config_path, "w", encoding="utf-8") as f:
+    json.dump(config, f, indent=2, ensure_ascii=False)
+    f.write("\n")
+
+parts = []
+if added:
+    parts.append(f"added: {','.join(added)}")
+if updated:
+    parts.append(f"updated: {','.join(updated)}")
+if skipped:
+    parts.append(f"skipped (user-customized): {','.join(skipped)}")
+if not parts:
+    print("no-changes: all 7 custom agents already configured")
+else:
+    print(" | ".join(parts))
+PY_EOF
+  )"
+  echo "agents: ${AGENT_REGISTER_OUTPUT}"
+else
+  if [[ ! -f "${OPENCODE_CONFIG}" ]]; then
+    echo "agents: skipped (no opencode.json yet — agent configs in repo's opencode.json will activate when config exists)"
   fi
 fi
 
@@ -244,6 +323,8 @@ else
 fi
 echo "  Plugins:"
 list_dir "${TARGET_DIR}/plugins" | sed 's/^/  /'
+echo "  Commands:"
+list_dir "${TARGET_DIR}/commands" | sed 's/^/  /'
 echo "  AGENTS.md (global):"
 if [[ -f "${GLOBAL_AGENTS}" ]]; then
   echo "    $(basename "${GLOBAL_AGENTS}")  ← $(wc -l < "${GLOBAL_AGENTS}" | tr -d ' ') lines"
