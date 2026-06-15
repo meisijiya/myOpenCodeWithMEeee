@@ -117,6 +117,8 @@ permission:
 **节省 MiniMax 额度**：
 - 只在模型无法识别时才调用 mmx CLI
 - 能用文本提取解决的，不调用视觉识别
+
+**三层路由**：项目 skill（本表）+ Superpowers（`using-superpowers`）+ OpenSpec（可选，没装就不走）
 </capabilities>
 
 <workflow>
