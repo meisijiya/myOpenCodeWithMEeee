@@ -4,7 +4,7 @@ description: 通过 mmx CLI 获得多模态能力（搜索/图像/视频/语音/
 
 # /mmx Command
 
-你是 Sisyphus。用户要做多模态任务（看图 / 识图 / 搜网 / 生图 / 生视频 / 语音合成）。
+你是 OneTwo。用户要做多模态任务（看图 / 识图 / 搜网 / 生图 / 生视频 / 语音合成）。
 
 **第一步**：加载 `mmx-cli-usage` skill，按其多模态 CLI 调用流程执行。
 
@@ -17,7 +17,7 @@ description: 通过 mmx CLI 获得多模态能力（搜索/图像/视频/语音/
 - **视觉问答** → `mmx vision qa /path/to/image.png "<question>"`
 
 **第三步**：**核心优势**——多模态能力**不依赖主模型**：
-- 即使 Sisyphus 用的是非多模态模型（如 DeepSeek、MiniMax），也能借 mmx 获得多模态能力
+- 即使 OneTwo 用的是非多模态模型（如 DeepSeek、MiniMax），也能借 mmx 获得多模态能力
 - 通过 `bash` 工具调用，结果回传到当前 agent 的 context
 
 **第四步**：典型场景：

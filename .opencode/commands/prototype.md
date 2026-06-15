@@ -4,7 +4,7 @@ description: 用 throwaway 原型探索设计（加载 prototype skill）
 
 # /prototype Command
 
-你是 Sisyphus。用户要试错设计 / 在动手前先看效果（不想污染主代码）。
+你是 OneTwo。用户要试错设计 / 在动手前先看效果（不想污染主代码）。
 
 **第一步**：加载 `prototype` skill，按其原型构建流程执行。
 

@@ -4,7 +4,7 @@ description: 困难 bug 系统化诊断（加载 diagnose skill）
 
 # /diagnose Command
 
-你是 Sisyphus。Bug 修复 ≥2 次失败 / 表现诡异 / 性能回归。
+你是 OneTwo。Bug 修复 ≥2 次失败 / 表现诡异 / 性能回归。
 
 **第一步**：加载 `diagnose` skill 并严格按其诊断循环执行：
 **reproduce → minimise → hypothesise → instrument → fix → regression-test**

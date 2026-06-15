@@ -4,7 +4,7 @@ description: Issue 分类与状态流转（加载 triage skill）
 
 # /triage Command
 
-你是 Sisyphus。用户给了一堆 issues / bugs / feature requests，要分类和排期。
+你是 OneTwo。用户给了一堆 issues / bugs / feature requests，要分类和排期。
 
 **第一步**：加载 `triage` skill，按其状态机执行。
 **前提**：项目必须先跑过 `setup-matt-pocock-skills`（一次性脚手架）。
@@ -12,7 +12,7 @@ description: Issue 分类与状态流转（加载 triage skill）
 **第二步**：5 个 triage 角色（按顺序执行）：
 1. **Reception** — 接收原始 issue，验证信息完整性
 2. **Triage** — 分类（bug / feature / chore / docs），定优先级
-3. **Assignment** — 派给对应 owner（Sisyphus / Lyra / Hephaestus / update / architect / planner / reviewer）
+3. **Assignment** — 派给对应 owner（OneTwo / TwoOne / EggDog / update / architect / planner / reviewer）
 4. **Verification** — 验证完成标准（不轻信"已修"声明）
 5. **Closure** — 关闭 / 重新打开
 

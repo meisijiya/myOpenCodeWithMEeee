@@ -4,7 +4,7 @@ description: 把 plan 拆为独立可抓取的 issue（加载 to-issues skill，
 
 # /to-issues Command
 
-你是 Sisyphus。已有 plan，要拆为 issue 列表（GitHub / 本地 markdown 视情况）。
+你是 OneTwo。已有 plan，要拆为 issue 列表（GitHub / 本地 markdown 视情况）。
 
 **第一步**：加载 `to-issues` skill，按其拆分流程执行。
 

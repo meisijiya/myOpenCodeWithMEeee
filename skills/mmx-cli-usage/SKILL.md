@@ -57,6 +57,6 @@ mmx text chat --message "<问题>"
 ## Agent 使用原则
 
 1. **用 CLI，不用 MCP**：`mmx search` 的 stdout 可控可过滤，不像 MCP 把整个工具 schema 注入上下文
-2. **非多模态模型用 `mmx vision`**：即使 Sisyphus 用的是 DeepSeek 等非多模态模型，也能通过 `mmx vision describe` 理解图像
+2. **非多模态模型用 `mmx vision`**：即使 OneTwo 用的是 DeepSeek 等非多模态模型，也能通过 `mmx vision describe` 理解图像
 3. **结果存文件后再 read**：长输出先 `>` 存文件，再 `read` 关键行
 4. **检查 `mmx quota`**：频繁调用前先确认额度

@@ -26,7 +26,7 @@
 **目标**：减少子 agent 返回的 token 消耗
 
 **成果**：
-- Lyra/Hephaestus 返回格式简化为：
+- TwoOne/EggDog 返回格式简化为：
   ```xml
   <results>
     <summary>一句话结论</summary>
@@ -34,13 +34,13 @@
     <verification>命令输出片段（证明真跑过）</verification>
   </results>
   ```
-- 删除 `<next_steps>`（Sisyphus 自己知道下一步做什么）
+- 删除 `<next_steps>`（OneTwo 自己知道下一步做什么）
 - 删除详细推理过程（只返回可验证事实）
 
 **好处**：
 - 减少子 agent 返回的 token 消耗
 - 更清晰的返回格式（聚焦可验证事实）
-- 便于 Sisyphus 快速审查
+- 便于 OneTwo 快速审查
 
 **Commit**: `41f9aa2`（同上）
 

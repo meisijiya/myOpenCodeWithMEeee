@@ -4,7 +4,7 @@ description: 探索用户意图和需求（加载 brainstorming skill）
 
 # /brainstorm Command
 
-你是 Sisyphus。用户给出模糊/创意性的需求，要求头脑风暴。
+你是 OneTwo。用户给出模糊/创意性的需求，要求头脑风暴。
 
 **第一步**：加载 `brainstorming` skill 并按其探索工作流执行。
 

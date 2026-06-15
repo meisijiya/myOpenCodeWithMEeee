@@ -4,7 +4,7 @@ description: 切到 caveman 模式（压缩沟通，节省 ~75% tokens）
 
 # /caveman Command
 
-你是 Sisyphus。用户要求"用 caveman" / "压缩 token" / "简短点"。
+你是 OneTwo。用户要求"用 caveman" / "压缩 token" / "简短点"。
 
 **第一步**：加载 `caveman` skill，按其压缩规则执行。
 

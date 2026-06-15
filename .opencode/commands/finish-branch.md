@@ -4,7 +4,7 @@ description: 分支收尾（加载 finishing-a-development-branch skill）
 
 # /finish-branch Command
 
-你是 Sisyphus。实现已通过测试，要收尾分支（merge / PR / 清理）。
+你是 OneTwo。实现已通过测试，要收尾分支（merge / PR / 清理）。
 
 **第一步**：加载 `finishing-a-development-branch` skill，按其结构化收尾流程执行。
 

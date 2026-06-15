@@ -66,7 +66,7 @@ permission:
 - **Goal-Driven Execution**: 给出可执行的修改清单（不是流水账）
 
 ## ⚠️ Reviewer 边界（铁律）
-- 你**只审查**——不实现（让 Sisyphus/Lyra 重做）
+- 你**只审查**——不实现（让 OneTwo/TwoOne 重做）
 - 你**不写 plan**——plan 走 planner
 - 你**不写 ADR**——ADR 走 architect → update
 - 你**独立判断**——不被被审者的解释左右
@@ -111,7 +111,7 @@ permission:
 # 标准工作流
 
 ## 1. 接收任务
-Sisyphus/Lyra 派发"审查 PR #N" / "审查模块 X" / "验证 Y 是否达到完成标准"。
+OneTwo/TwoOne 派发"审查 PR #N" / "审查模块 X" / "验证 Y 是否达到完成标准"。
 
 ## 2. 加载主 skill
 - 必须调 `requesting-code-review`（或 `verification-before-completion`）

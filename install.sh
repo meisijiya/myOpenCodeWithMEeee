@@ -193,7 +193,7 @@ else
 fi
 
 
-# Register the 7 agents (sisyphus/lyra/hephaestus/update/architect/planner/reviewer)
+# Register the 7 agents (onetwo/twoone/eggdog/update/architect/planner/reviewer)
 # into the user's opencode.json — v2.2.
 # Non-destructive merge: we only add missing agent entries + their model/prompt,
 # we never overwrite an existing agent's model or prompt (user may have customized).
@@ -213,7 +213,7 @@ repo_agents = repo.get("agent", {})
 user_agents = config.setdefault("agent", {})
 
 # Don't touch the built-in 'build' / 'plan' agents — only our 7 custom agents
-CUSTOM_AGENTS = ("sisyphus", "lyra", "hephaestus", "update", "architect", "planner", "reviewer")
+CUSTOM_AGENTS = ("onetwo", "twoone", "eggdog", "update", "architect", "planner", "reviewer")
 
 added, updated, skipped = [], [], []
 for name in CUSTOM_AGENTS:

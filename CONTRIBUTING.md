@@ -54,9 +54,9 @@ Feature request 请注明使用场景和期望的交互方式。
 
 | Agent | 档位 | 职责 | 委派权限 |
 |-------|------|------|----------|
-| Sisyphus | high | 主编排者：路由委派 + 原子任务拆分 | 可调 Lyra / Hephaestus / update / architect / planner / reviewer |
-| Lyra | mid | 跨文件实现、研究 | 可调 Hephaestus / update / architect / planner / reviewer |
-| Hephaestus | low | CRUD、重构、测试脚手架 | 不可委派（叶子节点） |
+| OneTwo | high | 主编排者：路由委派 + 原子任务拆分 | 可调 TwoOne / EggDog / update / architect / planner / reviewer |
+| TwoOne | mid | 跨文件实现、研究 | 可调 EggDog / update / architect / planner / reviewer |
+| EggDog | low | CRUD、重构、测试脚手架 | 不可委派（叶子节点） |
 | update | high | 项目元信息 single-writer（CONTEXT.md / ADR / AGENTS.md） | 不可委派（叶子节点） |
 | architect | high | 架构设计 + 领域建模 + ADR 起草 | 不可委派（叶子节点） |
 | planner | high | 实现计划 + 任务拆分 + 需求澄清 | 不可委派（叶子节点） |

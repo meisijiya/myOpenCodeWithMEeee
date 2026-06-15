@@ -79,7 +79,7 @@ curl -fsSL https://opencode.ai/install.sh | bash
 
 ### 2. Superpowers Workflow Skill System (Strongly Recommended)
 
-Superpowers provides 14 workflow orchestration skills (brainstorming → writing-plans → subagent-driven-dev → review → finish). Sisyphus's `<openspec_protocol>` routing depends on it for the default workflow.
+Superpowers provides 14 workflow orchestration skills (brainstorming → writing-plans → subagent-driven-dev → review → finish). OneTwo's `<openspec_protocol>` routing depends on it for the default workflow.
 
 ```bash
 # Method A: opencode plugin install (recommended)
@@ -90,7 +90,7 @@ git clone https://github.com/obra/superpowers.git \
   ~/.config/opencode/superpowers
 ```
 
-> Without Superpowers, Sisyphus will skip these skills and fall back to opencode built-in tools.
+> Without Superpowers, OneTwo will skip these skills and fall back to opencode built-in tools.
 
 ### 3. OpenSpec CLI (Optional — only for spec-driven changes)
 
@@ -171,11 +171,11 @@ Without this, nothing works.
 
 | Component | Why | Install |
 |-----------|-----|---------|
-| **Superpowers (14 skills)** | Provides the default workflow (`brainstorming → writing-plans → subagent-driven-dev → review → finish`) that Sisyphus uses as its backbone | `opencode plugin install superpowers` |
+| **Superpowers (14 skills)** | Provides the default workflow (`brainstorming → writing-plans → subagent-driven-dev → review → finish`) that OneTwo uses as its backbone | `opencode plugin install superpowers` |
 | **RTK (Rust Token Killer)** | Saves 60-90% tokens on common commands (`git status`/`ls`/`grep`/`cargo test`/...) | `brew install rtk && rtk init -g --opencode` |
 
-Without these, Sisyphus still works but:
-- No Superpowers → Sisyphus's `<openspec_protocol>` defaults fall back to built-in tools, less structured workflow
+Without these, OneTwo still works but:
+- No Superpowers → OneTwo's `<openspec_protocol>` defaults fall back to built-in tools, less structured workflow
 - No RTK → every command uses standard output, more tokens
 
 ### Tier 3: Optional (For specific advanced features)
@@ -269,9 +269,9 @@ After install, edit `~/.config/opencode/opencode.json` to add the 7-agent model 
 
 | Tier | Role | Agents | Recommended Models (Examples) | Monthly Estimate |
 |------|------|--------|------------------------------|-----------------|
-| **high** | Architecture / planning / review / meta-writes | Sisyphus · Architect · Planner · Reviewer · Update | `anthropic/claude-opus-4-20250514` or `deepseek/deepseek-v4-pro` | ~$200 |
-| **mid** | Complex implementation, research, mid-difficulty bugs | Lyra | `anthropic/claude-sonnet-4-20250514` or `deepseek/deepseek-v4-flash` | ~$20 |
-| **low** | CRUD, mechanical refactor, test boilerplate | Hephaestus | `anthropic/claude-haiku-4-20250514` or `deepseek/deepseek-v4-flash-free` | ~$0 |
+| **high** | Architecture / planning / review / meta-writes | OneTwo · Architect · Planner · Reviewer · Update | `anthropic/claude-opus-4-20250514` or `deepseek/deepseek-v4-pro` | ~$200 |
+| **mid** | Complex implementation, research, mid-difficulty bugs | TwoOne | `anthropic/claude-sonnet-4-20250514` or `deepseek/deepseek-v4-flash` | ~$20 |
+| **low** | CRUD, mechanical refactor, test boilerplate | EggDog | `anthropic/claude-haiku-4-20250514` or `deepseek/deepseek-v4-flash-free` | ~$0 |
 
 > See [Architecture](#architecture) for the full delegation map and tier rationale.
 
@@ -291,26 +291,26 @@ If you don't want to configure 7 agents, just set the global model:
 
 Provider / API Key is configured via opencode's `/connect` command (in TUI), or directly in the `provider` section of `opencode.json`. This project **does not** manage provider configuration — it reuses your existing opencode environment.
 
-### Prefer Sisyphus Over build
+### Prefer OneTwo Over build
 
-After install, opencode defaults to two primary agents: **build** and **plan**. With our project installed, **Sisyphus** (also primary) becomes available, and the 6 sub-agents (Lyra / Hephaestus / Architect / Planner / Reviewer / Update) are reachable via `@<agent>` or `task()`.
+After install, opencode defaults to two primary agents: **build** and **plan**. With our project installed, **OneTwo** (also primary) becomes available, and the 6 sub-agents (TwoOne / EggDog / Architect / Planner / Reviewer / Update) are reachable via `@<agent>` or `task()`.
 
 **On first opencode launch** (press **Tab** to cycle primary agents):
 
 ```
 ┌─ build (opencode native)         ← Full-featured but no 7-agent routing
 ├─ plan (opencode native)          ← Read-only planning
-├─ Sisyphus (our project)          ← ★ Recommended entry
+├─ OneTwo (our project)          ← ★ Recommended entry
 └─ (other built-in subagents)
 ```
 
 | Agent | When to Use |
 |-------|-------------|
-| **Sisyphus** | 99% of tasks — architecture, delegation, cross-file, complex implementations |
-| **build** | Just want to run a single shell command / quick read file, no need for Sisyphus's 7-agent routing |
+| **OneTwo** | 99% of tasks — architecture, delegation, cross-file, complex implementations |
+| **build** | Just want to run a single shell command / quick read file, no need for OneTwo's 7-agent routing |
 | **plan** | Read-only analysis, zero modifications |
 
-**Quick switch**: In TUI press **Tab** (or `switch_agent` keybind) to cycle Sisyphus and build.
+**Quick switch**: In TUI press **Tab** (or `switch_agent` keybind) to cycle OneTwo and build.
 
 **@ delegate to sub-agents**:
 ```
@@ -322,7 +322,7 @@ After install, opencode defaults to two primary agents: **build** and **plan**. 
 @update add this decision to docs/adr/
 ```
 
-You can also let Sisyphus delegate directly in conversation (it auto-selects based on its 12-row intent_gate routing table — see [Architecture](#architecture) below).
+You can also let OneTwo delegate directly in conversation (it auto-selects based on its 12-row intent_gate routing table — see [Architecture](#architecture) below).
 
 ---
 
@@ -350,9 +350,9 @@ We apply insights from [BV1v9ER68EJE](https://www.bilibili.com/video/BV1v9ER68EJ
 
 | Insight | Applied |
 |---------|--------|
-| **U-shape attention curve** (>50% context → only end matters) | `<style_guide>` is the LAST segment in all 7 agent prompts; HTML comment block at Sisyphus tail emphasizes "关键尾部提示词" |
+| **U-shape attention curve** (>50% context → only end matters) | `<style_guide>` is the LAST segment in all 7 agent prompts; HTML comment block at OneTwo tail emphasizes "关键尾部提示词" |
 | **Hard constraints (never/always/must/绝对不要)** | Rewrote all 7 agents' `style_guide` with strong vocabulary + 反例/正例 |
-| **Skill files ≤ 300-500 lines** | All skills under 250 lines; Sisyphus.md at 432 (acceptable) |
+| **Skill files ≤ 300-500 lines** | All skills under 250 lines; OneTwo.md at 432 (acceptable) |
 | **Solutions 1+2+3+4** (AGENTS.md + Scan + Hooks + SubAgent isolation) | All present: `karpathy-guidelines` auto-loaded as meta-skill is our "Hook"; subagent isolation is core to 7-agent architecture |
 | **Anti-compaction-passive** (don't wait for quality to drop) | 3-piece verification (`<delegation_review>`) catches issues early per-call |
 | **Soft constraints = no constraints** | `bash: *: allow` (project-internal trust) + hard deny blacklists (not "尽量") |
@@ -361,11 +361,11 @@ We apply insights from [BV1v9ER68EJE](https://www.bilibili.com/video/BV1v9ER68EJ
 
 ## 🏗️ Architecture
 
-The **7-agent system** is organized as a tiered delegation tree. **Sisyphus** is the primary entry; everything else is a sub-agent invoked via opencode's `task()` tool.
+The **7-agent system** is organized as a tiered delegation tree. **OneTwo** is the primary entry; everything else is a sub-agent invoked via opencode's `task()` tool.
 
 ```
                         ┌──────────────────────────────────────┐
-                        │  Sisyphus (primary, high-tier)       │
+                        │  OneTwo (primary, high-tier)       │
                         │  • Intent routing (12-row gate)      │
                         │  • Owns OpenSpec, skill discovery    │
                         │  • Coordinates 6 sub-agents          │
@@ -375,7 +375,7 @@ The **7-agent system** is organized as a tiered delegation tree. **Sisyphus** is
         │                            │     │     │                            │
         ▼                            ▼     ▼     ▼                            ▼
 ┌───────────────┐         ┌───────────────┐ ┌───────────────┐ ┌───────────────┐ ┌───────────────┐
-│ Architect     │         │ Planner       │ │ Reviewer      │ │ Update        │ │ Lyra          │
+│ Architect     │         │ Planner       │ │ Reviewer      │ │ Update        │ │ TwoOne          │
 │ (high-tier)   │         │ (high-tier)   │ │ (high-tier)   │ │ (high-tier)   │ │ (mid-tier)    │
 │ Domain model  │         │ Plans +       │ │ Code review + │ │ CONTEXT.md /  │ │ Complex impl  │
 │ + ADR drafts  │         │ to-issues     │ │ verification  │ │ ADR / AGENTS  │ │ + research    │
@@ -385,7 +385,7 @@ The **7-agent system** is organized as a tiered delegation tree. **Sisyphus** is
        └──── write ADR ─────────┘                                                       │
                                                                                        ▼
                                                                           ┌─────────────────────┐
-                                                                          │ Hephaestus          │
+                                                                          │ EggDog          │
                                                                           │ (low-tier)          │
                                                                           │ CRUD / refactor /   │
                                                                           │ test boilerplate    │
@@ -393,33 +393,33 @@ The **7-agent system** is organized as a tiered delegation tree. **Sisyphus** is
                                                                           └─────────────────────┘
 ```
 
-**Strict depth=3 rule**: Hephaestus + Update + Architect + Planner + Reviewer all have `task: false` (opencode's hard guarantee — the Task tool is **physically removed**). Lyra + Sisyphus can spawn sub-agents, but Lyra is **forbidden from spawning Hephaestus directly** without going through Sisyphus intent_gate. No infinite recursion.
+**Strict depth=3 rule**: EggDog + Update + Architect + Planner + Reviewer all have `task: false` (opencode's hard guarantee — the Task tool is **physically removed**). TwoOne + OneTwo can spawn sub-agents, but TwoOne is **forbidden from spawning EggDog directly** without going through OneTwo intent_gate. No infinite recursion.
 
 ### Agent Roles (TL;DR)
 
 | Agent | Tier | What it does | What it does NOT do |
 |-------|------|--------------|---------------------|
-| **Sisyphus** | high | Intent routing, OpenSpec orchestration, skill discovery | Implementation, code review, meta-writes |
+| **OneTwo** | high | Intent routing, OpenSpec orchestration, skill discovery | Implementation, code review, meta-writes |
 | **Architect** | high | Domain modeling, module boundaries, ADR drafts | Code review, code writing, plan writing |
 | **Planner** | high | Implementation plans, issue breakdown | Architecture design, code review, code writing |
 | **Reviewer** | high | Independent code review, pre-completion verification | Writing code, planning, architecture |
 | **Update** | high | Single-writer for CONTEXT.md / ADR / AGENTS.md | Implementation, planning, review |
-| **Lyra** | mid | Complex implementation, research, mid-difficulty bugs | Architecture design, code review, plan writing |
-| **Hephaestus** | low | CRUD, atomic refactor, test scaffolding | Architecture, planning, review, meta-writes |
+| **TwoOne** | mid | Complex implementation, research, mid-difficulty bugs | Architecture design, code review, plan writing |
+| **EggDog** | low | CRUD, atomic refactor, test scaffolding | Architecture, planning, review, meta-writes |
 
 ### Routing Logic (12-row intent_gate)
 
 | Intent | Trigger | Route | Tier | OpenSpec |
 |--------|---------|-------|------|----------|
 | ARCHITECTURE | Major architecture decision / module boundary / domain modeling | **Architect** | high | yes |
-| DESIGN | New feature design (incl. single-file + design content) | Sisyphus (self) | high | yes |
-| COMPLEX_CODE | Cross-file new feature (≥2 files need coordination) | **Lyra** | mid | yes |
-| RESEARCH | Investigation, documentation | **Lyra** | mid | no |
-| DEBUG_HARD | Complex bug (diagnose + fix + test verify) | **Lyra** | mid | no |
-| DEBUG_SIMPLE | Obvious bug (single-file ≤10 lines) | Sisyphus (self) | high | no |
-| CRUD | Repetitive writes (3+ similar files) | **Hephaestus** | low | no |
-| ATOMIC_REFACTOR | Mechanical transform (cross-file rename) | **Hephaestus** | low | no |
-| TEST_BOILERPLATE | Test scaffolding | **Hephaestus** | low | no |
+| DESIGN | New feature design (incl. single-file + design content) | OneTwo (self) | high | yes |
+| COMPLEX_CODE | Cross-file new feature (≥2 files need coordination) | **TwoOne** | mid | yes |
+| RESEARCH | Investigation, documentation | **TwoOne** | mid | no |
+| DEBUG_HARD | Complex bug (diagnose + fix + test verify) | **TwoOne** | mid | no |
+| DEBUG_SIMPLE | Obvious bug (single-file ≤10 lines) | OneTwo (self) | high | no |
+| CRUD | Repetitive writes (3+ similar files) | **EggDog** | low | no |
+| ATOMIC_REFACTOR | Mechanical transform (cross-file rename) | **EggDog** | low | no |
+| TEST_BOILERPLATE | Test scaffolding | **EggDog** | low | no |
 | PLAN | Implementation plan / issue breakdown | **Planner** | high | no |
 | REVIEW | Code review / pre-completion verification / receive feedback | **Reviewer** | high | no |
 | META_WRITE | Write CONTEXT.md / ADR / AGENTS.md (terms / conventions) | **Update** | high | no |
@@ -427,10 +427,10 @@ The **7-agent system** is organized as a tiered delegation tree. **Sisyphus** is
 **Core principle**: **Reasoning complexity** (not file count) determines the tier.
 
 **Edge cases** (avoid "I'll do it myself" temptation):
-- "Modify 1 file + run quick command" → DEBUG_SIMPLE / Sisyphus (self)
-- "Modify 1 file + run full test suite" → DEBUG_HARD / Lyra (verification IS research)
-- "Create 1 design doc (CONTRIBUTING.md)" → DESIGN / Sisyphus (self)
-- "Create README + install script联动" → COMPLEX_CODE / Lyra (multi-file coordination)
+- "Modify 1 file + run quick command" → DEBUG_SIMPLE / OneTwo (self)
+- "Modify 1 file + run full test suite" → DEBUG_HARD / TwoOne (verification IS research)
+- "Create 1 design doc (CONTRIBUTING.md)" → DESIGN / OneTwo (self)
+- "Create README + install script联动" → COMPLEX_CODE / TwoOne (multi-file coordination)
 
 > See `VIBECODING.md` for full delegation flowcharts and decision trees.
 
@@ -456,7 +456,7 @@ If you're ever worried an agent is doing something risky, **switch to `build` or
 
 ### Permission Matrix
 
-| Operation | Sisyphus | Lyra | Hephaestus | Architect | Planner | Reviewer | Update |
+| Operation | OneTwo | TwoOne | EggDog | Architect | Planner | Reviewer | Update |
 |-----------|:--------:|:----:|:----------:|:---------:|:-------:|:--------:|:------:|
 | `read / grep / glob / webfetch / websearch` | ✅ allow | ✅ allow | ✅ allow (websearch deny) | ✅ allow | ✅ allow | ✅ allow | ✅ allow |
 | `edit / write` project-internal | ✅ allow | ✅ allow | ✅ allow | ✅ allow (design docs only) | ✅ allow (plans only) | ❌ deny (read-only) | ✅ allow (meta files only) |
@@ -480,13 +480,13 @@ If you're ever worried an agent is doing something risky, **switch to `build` or
 
 | Aspect | v1 (older) | v2 (current) |
 |--------|------------|--------------|
-| `bash` default for Sisyphus/Lyra | `ask` (too cautious) | **`allow`** (project trust) |
+| `bash` default for OneTwo/TwoOne | `ask` (too cautious) | **`allow`** (project trust) |
 | Project-external `edit`/`write` | Custom `**/../**` glob (leaky) | `external_directory: ask` (opencode native) |
 | Safety mechanism | Multiple ask prompts | Switch agent to `build`/`plan` |
 
 ### Design Intent (insights from omo-slim)
 
-- **Role-based permission tiers**: Different agents have different default trust levels. omo-slim does this with read-only agents (`explorer`/`librarian`/`oracle`/`observer`) vs read-write agents (`designer`/`fixer`). We do the same: **Hephaestus** is most permissive (worker needs many commands), **Lyra** is mid-permissive (default allow + hard denies), **Architect/Planner/Reviewer/Update** are restrictive (scope-limited writes), and `build`/`plan` are the most conservative (opencode factory defaults).
+- **Role-based permission tiers**: Different agents have different default trust levels. omo-slim does this with read-only agents (`explorer`/`librarian`/`oracle`/`observer`) vs read-write agents (`designer`/`fixer`). We do the same: **EggDog** is most permissive (worker needs many commands), **TwoOne** is mid-permissive (default allow + hard denies), **Architect/Planner/Reviewer/Update** are restrictive (scope-limited writes), and `build`/`plan` are the most conservative (opencode factory defaults).
 - **Don't make the agent cautious — make the safety net accessible**: The user can always switch to a more cautious agent. Don't punish normal flow with constant prompts.
 - **Hard denies are irreplaceable**: Even the most permissive agent must have hard `rm -rf /`/`sudo`/`npm publish` denies. These are the only rules that truly cannot be overridden.
 
@@ -522,23 +522,23 @@ bash install.sh   # Re-mirror to ~/.config/opencode/
 | Skill | Source | Trigger Condition | Primary Agent |
 |-------|--------|-------------------|---------------|
 | **karpathy-guidelines** | multica-ai/andrej-karpathy-skills | All LLM calls (auto-loaded as meta-skill) | All |
-| **grill-with-docs** | mattpocock/skills | Stress-test plan vs domain model consistency | Sisyphus / Architect / Planner |
+| **grill-with-docs** | mattpocock/skills | Stress-test plan vs domain model consistency | OneTwo / Architect / Planner |
 | **caveman** | mattpocock/skills | Ultra-compressed comms (-75% tokens) | All (user-triggered) |
-| **diagnose** | mattpocock/skills | Hard bugs, performance regressions (6-phase loop) | Lyra |
-| **prototype** | mattpocock/skills | Throwaway prototype for early design exploration | Lyra |
+| **diagnose** | mattpocock/skills | Hard bugs, performance regressions (6-phase loop) | TwoOne |
+| **prototype** | mattpocock/skills | Throwaway prototype for early design exploration | TwoOne |
 | **to-issues** | mattpocock/skills | Break down plan/spec into independent issues | Planner |
 | **improve-codebase-architecture** | mattpocock/skills | Identify "ball of mud" + architecture improvement opportunities | Architect |
-| **triage** | mattpocock/skills | Issue state-machine driven by 5 triage roles | Sisyphus (maintainer) |
-| **setup-matt-pocock-skills** | mattpocock/skills | One-time scaffolding of issue tracker + triage labels | Sisyphus (run once) |
+| **triage** | mattpocock/skills | Issue state-machine driven by 5 triage roles | OneTwo (maintainer) |
+| **setup-matt-pocock-skills** | mattpocock/skills | One-time scaffolding of issue tracker + triage labels | OneTwo (run once) |
 | **update-project-meta** | Self-built | User says "记录决策 / 加术语 / 加约定" — write CONTEXT.md / ADR / AGENTS.md | Update (single-writer) |
 | **git-workflow-and-versioning** | addyosmani/agent-skills (verbatim) | Git workflow: atomic commits, branch strategy, conflict resolution | All |
-| **incremental-implementation** | addyosmani/agent-skills (verbatim) | Vertical-slice implementation, complements tdd | Lyra |
-| **interview-me** | addyosmani/agent-skills (verbatim) | Underspecified ask — interview one-question-at-a-time to 95% confidence | Sisyphus / Planner |
-| **source-driven-development** | addyosmani/agent-skills (lightweight re-implementation) | Framework/API decision needs official doc verification via `ctx7` CLI | Lyra |
+| **incremental-implementation** | addyosmani/agent-skills (verbatim) | Vertical-slice implementation, complements tdd | TwoOne |
+| **interview-me** | addyosmani/agent-skills (verbatim) | Underspecified ask — interview one-question-at-a-time to 95% confidence | OneTwo / Planner |
+| **source-driven-development** | addyosmani/agent-skills (lightweight re-implementation) | Framework/API decision needs official doc verification via `ctx7` CLI | TwoOne |
 | **handoff** | mattpocock/skills (verbatim) | Compact conversation into handoff document for next agent | All (user-triggered) |
-| **tdd** | mattpocock/skills (verbatim) | Test-driven development with red-green-refactor loop | Lyra / Hephaestus |
+| **tdd** | mattpocock/skills (verbatim) | Test-driven development with red-green-refactor loop | TwoOne / EggDog |
 | **zoom-out** | mattpocock/skills (verbatim) | Zoom out for broader context and higher-level perspective | All (user-triggered) |
-| **openspec-integration** | Self-built (routing bridge) | Cross-spec change / multi-step spec-driven work — propose/explore/apply/sync/archive | Sisyphus / Lyra |
+| **openspec-integration** | Self-built (routing bridge) | Cross-spec change / multi-step spec-driven work — propose/explore/apply/sync/archive | OneTwo / TwoOne |
 | **mmx-cli-usage** | Self-built (mmx guide) | Multimodal (image/video/speech) + web search needs | All (via `mmx` CLI) |
 
 > Full operator's manual with **when-to-use** flowcharts: see [`VIBECODING.md`](./VIBECODING.md).
@@ -558,7 +558,7 @@ These two skills are **for the user, not the agent system**. They bridge the gap
 - 👥 **Handing off to a human**: Another developer needs to take over
 
 **When NOT to use it** (anti-patterns):
-- ❌ **Subagent delegation** — that's Sisyphus → Lyra / Architect / Planner / Reviewer / Update / Hephaestus, which uses `<delegation_protocol>` (not handoff)
+- ❌ **Subagent delegation** — that's OneTwo → TwoOne / Architect / Planner / Reviewer / Update / EggDog, which uses `<delegation_protocol>` (not handoff)
 - ❌ **Task summaries in current session** — just ask the agent to summarize
 - ❌ **"Save my work"** — git commits handle that (`git-workflow-and-versioning`)
 
@@ -611,13 +611,13 @@ Both have `disable-model-invocation: true` (or are user-named actions) — the a
 
 | Command | Function | Who Uses |
 |---------|----------|----------|
-| `/opsx:propose` | Create change proposal | Sisyphus / Lyra |
-| `/opsx:explore` | Free exploration | Sisyphus / Lyra |
-| `/opsx:apply` | Implement tasks.md | Lyra (delegated execution) |
-| `/opsx:sync` | Merge delta → main spec | Sisyphus |
-| `/opsx:archive` | Archive completed change | Sisyphus |
+| `/opsx:propose` | Create change proposal | OneTwo / TwoOne |
+| `/opsx:explore` | Free exploration | OneTwo / TwoOne |
+| `/opsx:apply` | Implement tasks.md | TwoOne (delegated execution) |
+| `/opsx:sync` | Merge delta → main spec | OneTwo |
+| `/opsx:archive` | Archive completed change | OneTwo |
 
-**Hephaestus bypasses OpenSpec entirely** — CRUD doesn't need specs.
+**EggDog bypasses OpenSpec entirely** — CRUD doesn't need specs.
 
 ### 🛡️ Why We Don't Lean Fully Into OpenSpec
 
@@ -626,7 +626,7 @@ OpenSpec is one of three **orthogonal layers** in our architecture. We don't dep
 ```
 ┌──────────────────────────────────────────────────────────────┐
 │ Layer 1: Scheduling (our 7 agents)                             │
-│  Sisyphus / Lyra / Hephaestus / Architect / Planner /         │
+│  OneTwo / TwoOne / EggDog / Architect / Planner /         │
 │  Reviewer / Update — intent routing + delegation               │
 │  "Who does what?"                                              │
 ├──────────────────────────────────────────────────────────────┤
@@ -658,8 +658,8 @@ OpenSpec is one of three **orthogonal layers** in our architecture. We don't dep
 |-----------|---|-------------|
 | Daily CRUD (read/edit/write) | 60% | Layer 2 (Superpowers) |
 | Research / simple impl | 25% | Layer 2 (karpathy + source-driven) |
-| Cross-file implementation | 10% | Layer 1 (Lyra / Architect / Planner) |
-| Hard bugs | 3% | Layer 1 (Lyra + diagnose) |
+| Cross-file implementation | 10% | Layer 1 (TwoOne / Architect / Planner) |
+| Hard bugs | 3% | Layer 1 (TwoOne + diagnose) |
 | **Multi-spec change + audit** | **1%** | **Layer 3 (OpenSpec)** |
 
 Even if the 5 `openspec-*` skills load on every LLM call, the *operations* (when triggered) are <1% of work. Token budget is dominated by Layer 2.
@@ -683,7 +683,7 @@ The `openspec-integration` skill uses a **two-layer trigger** to balance accurac
 - Multiple parallel changes
 - New project initialization
 
-**SUGGEST template** (Sisyphus says this when Layer 2 matches):
+**SUGGEST template** (OneTwo says this when Layer 2 matches):
 > "This task looks like [multi-step change / cross-spec / ...] — OpenSpec handles this well.
 > Go OpenSpec (write proposal.md first) or Superpowers (brainstorming → plans)?
 > - OpenSpec: I'll create `openspec/changes/X/` with proposal.md
@@ -698,7 +698,7 @@ The `openspec-integration` skill uses a **two-layer trigger** to balance accurac
 
 ### Foundation: Superpowers (14 skills, used in full)
 
-The **full workflow foundation** of this project. Superpowers provides end-to-end process orchestration from idea to merge (brainstorming → writing-plans → subagent-driven-dev → review → finish). Sisyphus's `<openspec_protocol>` segment handles routing: OpenSpec keyword mentioned → go OpenSpec; default → go Superpowers.
+The **full workflow foundation** of this project. Superpowers provides end-to-end process orchestration from idea to merge (brainstorming → writing-plans → subagent-driven-dev → review → finish). OneTwo's `<openspec_protocol>` segment handles routing: OpenSpec keyword mentioned → go OpenSpec; default → go Superpowers.
 
 > Requires separate install: `opencode plugin install superpowers` (see [Prerequisites](#3-openspec-clioptional--only-for-spec-driven-changes)). This project **does not** ship Superpowers skill files.
 
@@ -820,7 +820,7 @@ cat > AGENTS.md <<'EOF'
 - tests/ - Unit tests
 
 ## Skill Routing (Project-Level)
-This project uses Sisyphus (not build). Default workflow:
+This project uses OneTwo (not build). Default workflow:
 - Start a requirement → Superpowers `brainstorming`
 - Write code → `lyra` subagent (mid-tier)
 - Repetitive tasks → `hephaestus` subagent (low-tier)
@@ -929,10 +929,10 @@ trigger ≈ model_context - reserved - preserve_recent_tokens
 
 | Model | Context | Trigger | Notes |
 |-------|---------|---------|-------|
-| **MiniMax-M3** (high-tier: Sisyphus / Architect / Planner / Reviewer / Update) | 512K | **~422K** | ✅ Optimized for 512K (reserved 50K + preserve 50K) |
-| **deepseek-v4-flash** (mid/low: Lyra / Hephaestus) | 1M | ~910K | Aggressive prompt keeps session far below 910K |
+| **MiniMax-M3** (high-tier: OneTwo / Architect / Planner / Reviewer / Update) | 512K | **~422K** | ✅ Optimized for 512K (reserved 50K + preserve 50K) |
+| **deepseek-v4-flash** (mid/low: TwoOne / EggDog) | 1M | ~910K | Aggressive prompt keeps session far below 910K |
 
-For high-tier agents (Sisyphus primary), **422K trigger** — optimized for 512K context models.
+For high-tier agents (OneTwo primary), **422K trigger** — optimized for 512K context models.
 
 For 1M models, schema can't trigger below ~910K. We use **aggressive compaction prompt** as workaround: compresses session to 30K, so it takes 5x longer to grow back.
 
@@ -978,7 +978,7 @@ See [Compaction Strategy doc](docs/2026-06-11-compaction-strategy-340k.md) for f
 ```
 
 **4. Next session starts**:
-- Sisyphus automatically reads `CONTEXT.md` / `AGENTS.md` / `docs/adr/`
+- OneTwo automatically reads `CONTEXT.md` / `AGENTS.md` / `docs/adr/`
 - Project context is restored — no need to re-explain
 
 ### Best Practice
@@ -1101,7 +1101,7 @@ git add skills/ && git commit -m "chore(skills): sync N verbatim skills with ups
 myOpenCodeWithMEeee/
 ├── agents/                 # 7 agent prompt files
 │   ├── sisyphus.md         # primary (high-tier) — 7 XML segments + 12-row intent_gate
-│   ├── lyra.md             # subagent (mid-tier) — can delegate to Hephaestus
+│   ├── lyra.md             # subagent (mid-tier) — can delegate to EggDog
 │   ├── hephaestus.md       # subagent (low-tier) — task:deny, bash safe-glob
 │   ├── architect.md        # subagent (high-tier) — domain model + ADR drafts
 │   ├── planner.md          # subagent (high-tier) — implementation plans + to-issues

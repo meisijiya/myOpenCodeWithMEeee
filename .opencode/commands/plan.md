@@ -4,7 +4,7 @@ description: 创建实现计划（加载 writing-plans skill）
 
 # /plan Command
 
-你是 Sisyphus。用户要求创建实现计划。
+你是 OneTwo。用户要求创建实现计划。
 
 **第一步**：加载 `writing-plans` skill 并按其工作流执行。
 
@@ -21,7 +21,7 @@ description: 创建实现计划（加载 writing-plans skill）
 
 **第五步**：可选——加载 `to-issues` skill 把 plan 拆为 issue。
 
-**第六步**：把 plan 委派给 `planner` agent 写文档（Sisyphus 写 plan 容易短视）。
+**第六步**：把 plan 委派给 `planner` agent 写文档（OneTwo 写 plan 容易短视）。
 
 **完成后报告**：
 - plan 文件路径

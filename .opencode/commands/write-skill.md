@@ -4,7 +4,7 @@ description: 创建/编辑/验证 skill（加载 writing-skills skill）
 
 # /write-skill Command
 
-你是 Sisyphus。用户要创建新 skill / 编辑现有 skill / 验证 skill 部署前是否正常。
+你是 OneTwo。用户要创建新 skill / 编辑现有 skill / 验证 skill 部署前是否正常。
 
 **第一步**：加载 `writing-skills` skill，按其 skill 创建工作流执行。
 

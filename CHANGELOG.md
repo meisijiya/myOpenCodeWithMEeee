@@ -1,7 +1,37 @@
 # Changelog
 
 > **myOpenCodeWithMEeee** — 定制化多 Agent 协作系统 for opencode。  
-> 从 v1 (Sisyphus + Oracle, 9 自建工具) 演进至 v2 (Sisyphus + Lyra + Hephaestus, 2 自建工具 + 3 MCP)，再到 v2.2 (7 Agents + 20 Commands + 项目记忆系统)。
+> 从 v1 (Sisyphus + Oracle, 9 自建工具) 演进至 v2 (Sisyphus + Lyra + Hephaestus, 2 自建工具 + 3 MCP)，再到 v2.2 (7 Agents + 20 Commands + 项目记忆系统)，最终到 v2.3 (家庭化重命名：OneTwo/TwoOne/EggDog)。
+
+## [v2.3] — 2026-06-15
+
+### 🏠 家庭化重命名
+
+本次更新将核心 Agent 重命名为家庭角色，更直观地表达各自的职责定位。
+
+| 旧名称 | 新名称 | 角色 | 定位 |
+|--------|--------|------|------|
+| Sisyphus | **OneTwo** | 管家（老婆） | 高理解力、高指令遵循、编排全家 |
+| Lyra | **TwoOne** | 赚钱（老公） | 编码能力强、处理高难度活、技术专家 |
+| Hephaestus | **EggDog** | 小孩 | 精力无限、简单重复工作、CRUD |
+
+**家庭比喻**：
+- **OneTwo**（管家）：负责理解需求、编排全家，不一定是最强的模型但一定是高理解能力、高指令遵循能力
+- **TwoOne**（赚钱）：负责高难度编码、技术攻关，编码能力一定比 OneTwo 强
+- **EggDog**（小孩）：精力无限但能力有限，简单重复的工作交给它
+- **update/architect/planner/reviewer**：维修工，只有特定情况才会呼叫
+
+### 📝 更新内容
+
+- **Agent 文件重命名**：`sisyphus.md` → `onetwo.md`, `lyra.md` → `twoone.md`, `hephaestus.md` → `eggdog.md`
+- **Agent Prompt 更新**：所有 agent prompt 添加家庭比喻说明，更新角色定位
+- **opencode.json 更新**：agent 名称和配置同步更新
+- **install.sh / uninstall.sh 更新**：agent 列表同步更新
+- **README.md / README.zh-CN.md 更新**：所有 agent 名称引用同步更新
+- **VIBECODING.md 更新**：所有 agent 名称引用同步更新
+- **所有 command 文件更新**：agent 名称引用同步更新
+
+---
 
 ## [v2.2] — 2026-06-15
 

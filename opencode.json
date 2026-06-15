@@ -3,17 +3,17 @@
   "agent": {
     "build": {},
     "plan": {},
-    "sisyphus": {
+    "onetwo": {
       "model": "minimax-cn-coding-plan/MiniMax-M3",
-      "prompt": "{file:./agents/sisyphus.md}"
+      "prompt": "{file:./agents/onetwo.md}"
     },
-    "lyra": {
+    "twoone": {
       "model": "minimax-cn-coding-plan/MiniMax-M3",
-      "prompt": "{file:./agents/lyra.md}"
+      "prompt": "{file:./agents/twoone.md}"
     },
-    "hephaestus": {
+    "eggdog": {
       "model": "minimax-cn-coding-plan/MiniMax-M3",
-      "prompt": "{file:./agents/hephaestus.md}",
+      "prompt": "{file:./agents/eggdog.md}",
       "tools": {
         "task": false
       }

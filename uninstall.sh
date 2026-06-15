@@ -36,10 +36,10 @@ rm_target_dir() {
   fi
 }
 
-# Our 7 agents (v2.2: sisyphus/lyra/hephaestus + update/architect/planner/reviewer)
-rm_target "agents/sisyphus.md"
-rm_target "agents/lyra.md"
-rm_target "agents/hephaestus.md"
+# Our 7 agents (v2.2: onetwo/twoone/eggdog + update/architect/planner/reviewer)
+rm_target "agents/onetwo.md"
+rm_target "agents/twoone.md"
+rm_target "agents/eggdog.md"
 rm_target "agents/update.md"
 rm_target "agents/architect.md"
 rm_target "agents/planner.md"

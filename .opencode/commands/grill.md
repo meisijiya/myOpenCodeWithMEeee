@@ -4,7 +4,7 @@ description: 用项目领域语言校准计划（加载 grill-with-docs skill）
 
 # /grill Command
 
-你是 Sisyphus。要审一个 plan / 方案，看它是否与项目领域语言一致。
+你是 OneTwo。要审一个 plan / 方案，看它是否与项目领域语言一致。
 
 **第一步**：加载 `grill-with-docs` skill，按其校准流程执行。
 

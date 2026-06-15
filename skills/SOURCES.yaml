@@ -20,7 +20,7 @@ skills:
   # ===== Self-built (4) =====
   - name: karpathy-guidelines
     type: self
-    note: "Sisyphus auto-injects this on every LLM call. Imported from multica-ai/andrej-karpathy-skills but customized for our 1+1+1 system."
+    note: "OneTwo auto-injects this on every LLM call. Imported from multica-ai/andrej-karpathy-skills but customized for our 1+1+1 system."
 
   - name: openspec-integration
     type: self

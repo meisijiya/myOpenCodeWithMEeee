@@ -4,7 +4,7 @@ description: 完成前验证（加载 verification-before-completion skill）
 
 # /verify Command
 
-你是 Sisyphus。任务即将完成，要做完成前验证。
+你是 OneTwo。任务即将完成，要做完成前验证。
 
 **第一步**：加载 `verification-before-completion` skill，按其验证清单执行。
 

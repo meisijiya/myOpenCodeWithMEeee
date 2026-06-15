@@ -4,13 +4,13 @@
 >
 > Companion to [`README.md`](./README.md) (architecture overview) and [`README.zh-CN.md`](./README.zh-CN.md) (Chinese version).
 >
-> Audience: human operators and Sisyphus when it routes ambiguous requests.
+> Audience: human operators and OneTwo when it routes ambiguous requests.
 
 ---
 
 ## 0. TL;DR — 30-Second Decision
 
-When Sisyphus gets your request, it follows this routing (full table in §4):
+When OneTwo gets your request, it follows this routing (full table in §4):
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -40,24 +40,24 @@ When Sisyphus gets your request, it follows this routing (full table in §4):
 
 ## 1. Architecture Quick Reference (7 Agents)
 
-The system is a tiered delegation tree. Read this once, then forget it (Sisyphus routes automatically):
+The system is a tiered delegation tree. Read this once, then forget it (OneTwo routes automatically):
 
 ```
                         ┌─────────────────────────┐
-                        │  Sisyphus (high-tier)   │
+                        │  OneTwo (high-tier)   │
                         │  primary; intent router │
                         └────┬─────┬─────┬─────┬───┘
                              │     │     │     │
         ┌────────────┬───────┘     │     │     └────────────┬────────────┐
         ▼            ▼             ▼     ▼                  ▼            ▼
    ┌─────────┐ ┌─────────┐  ┌─────────┐ ┌─────────┐    ┌─────────┐ ┌─────────┐
-   │Architect│ │ Planner │  │ Reviewer│ │ Update  │    │   Lyra  │ │Hephaes… │
+   │Architect│ │ Planner │  │ Reviewer│ │ Update  │    │   TwoOne  │ │Hephaes… │
    │ (high)  │ │ (high)  │  │ (high)  │ │ (high)  │    │  (mid)  │ │  (low)  │
    └────┬────┘ └────┬────┘  └─────────┘ └─────────┘    └────┬────┘ └─────────┘
         │           │                                         │
         └─write ADR─┘                                         ▼
        (delegated to Update)                       ┌──────────────────┐
-                                                    │ Hephaestus (low)  │
+                                                    │ EggDog (low)  │
                                                     │ CRUD / refactor   │
                                                     │ task: deny (leaf) │
                                                     └──────────────────┘
@@ -65,15 +65,15 @@ The system is a tiered delegation tree. Read this once, then forget it (Sisyphus
 
 | Agent | Tier | One-liner | Don't ask it to... |
 |-------|------|-----------|-------------------|
-| **Sisyphus** | high | Intent router + OpenSpec owner | write code directly, do reviews, write meta-docs |
+| **OneTwo** | high | Intent router + OpenSpec owner | write code directly, do reviews, write meta-docs |
 | **Architect** | high | Domain model + ADR drafts | write code, review, plan |
 | **Planner** | high | Implementation plans + issue breakdown | design, review, code |
 | **Reviewer** | high | Independent code review (read-only) | write code, plan, design |
 | **Update** | high | Single-writer for CONTEXT.md / ADR / AGENTS.md | implement, plan, review |
-| **Lyra** | mid | Complex implementation, research, mid bugs | design, review, plan |
-| **Hephaestus** | low | CRUD, atomic refactor, test scaffolding | design, plan, review, meta-writes |
+| **TwoOne** | mid | Complex implementation, research, mid bugs | design, review, plan |
+| **EggDog** | low | CRUD, atomic refactor, test scaffolding | design, plan, review, meta-writes |
 
-**Strict depth=3 rule**: Hephaestus / Update / Architect / Planner / Reviewer all have `task: false` (opencode physically removes the Task tool). Only Sisyphus and Lyra can spawn sub-agents.
+**Strict depth=3 rule**: EggDog / Update / Architect / Planner / Reviewer all have `task: false` (opencode physically removes the Task tool). Only OneTwo and TwoOne can spawn sub-agents.
 
 ---
 
@@ -143,28 +143,28 @@ I want to understand unfamiliar code     → /zoom-out
 
 Skills are loaded **on-demand** by commands or by agent intent_gate routing. Loading a skill injects prompt content — don't pre-load.
 
-### 3.1 Process skills (Sisyphus + Planner territory)
+### 3.1 Process skills (OneTwo + Planner territory)
 
 | Skill | Trigger | Primary agent |
 |-------|---------|---------------|
-| `interview-me` | Underspecified ask (missing who/why/success/constraint) | Sisyphus / Planner |
-| `grill-with-docs` | Plan conflicts with domain model | Sisyphus / Architect / Planner |
-| `setup-matt-pocock-skills` | **First-time scaffolding** (issue tracker, triage labels, AGENTS.md block) | Sisyphus (run once) |
+| `interview-me` | Underspecified ask (missing who/why/success/constraint) | OneTwo / Planner |
+| `grill-with-docs` | Plan conflicts with domain model | OneTwo / Architect / Planner |
+| `setup-matt-pocock-skills` | **First-time scaffolding** (issue tracker, triage labels, AGENTS.md block) | OneTwo (run once) |
 | `update-project-meta` | User says "记录决策 / 加术语 / 加约定" — write CONTEXT.md / ADR / AGENTS.md | **Update agent** (single-writer) |
-| `openspec-integration` | Cross-spec change / multi-step spec-driven work | Sisyphus / Lyra |
+| `openspec-integration` | Cross-spec change / multi-step spec-driven work | OneTwo / TwoOne |
 | `improve-codebase-architecture` | Identify "ball of mud" + architecture improvement opportunities | Architect |
-| `triage` | Issue state-machine driven by 5 triage roles | Sisyphus (maintainer) |
+| `triage` | Issue state-machine driven by 5 triage roles | OneTwo (maintainer) |
 | `to-issues` | Break plan into independent issues | Planner |
 
-### 3.2 Implementation skills (Lyra / Hephaestus territory)
+### 3.2 Implementation skills (TwoOne / EggDog territory)
 
 | Skill | Trigger | Primary agent |
 |-------|---------|---------------|
-| `tdd` | Test-driven development (red-green-refactor) | Lyra / Hephaestus |
-| `incremental-implementation` | Vertical-slice implementation, complements TDD | Lyra |
-| `source-driven-development` | Framework/API decision needs official doc verification via `ctx7` CLI | Lyra |
-| `prototype` | Throwaway prototype for early design exploration | Lyra |
-| `diagnose` | Hard bugs, performance regressions (≥2 failed fixes; 6-phase loop) | Lyra |
+| `tdd` | Test-driven development (red-green-refactor) | TwoOne / EggDog |
+| `incremental-implementation` | Vertical-slice implementation, complements TDD | TwoOne |
+| `source-driven-development` | Framework/API decision needs official doc verification via `ctx7` CLI | TwoOne |
+| `prototype` | Throwaway prototype for early design exploration | TwoOne |
+| `diagnose` | Hard bugs, performance regressions (≥2 failed fixes; 6-phase loop) | TwoOne |
 | `git-workflow-and-versioning` | Git ops (atomic commits, branches, conflicts) | All (with care for force/reset deny) |
 
 ### 3.3 Meta / cross-cutting skills
@@ -191,7 +191,7 @@ All three have `disable-model-invocation: true`.
 - Agent intent_gate matched the skill
 - User explicitly invoked via command
 
-If unsure → Sisyphus reads intent_gate table first, then loads.
+If unsure → OneTwo reads intent_gate table first, then loads.
 
 ---
 
@@ -239,7 +239,7 @@ This project integrates **three orthogonal skill sources**. They don't conflict 
 
 OpenSpec is the **spec-driven change management** layer. It's powerful but heavy. Use only when:
 
-### Two-layer trigger (Sisyphus applies automatically)
+### Two-layer trigger (OneTwo applies automatically)
 
 | Layer | Type | Trigger | Behavior |
 |-------|------|---------|----------|
@@ -265,7 +265,7 @@ OpenSpec is the **spec-driven change management** layer. It's powerful but heavy
 - ✅ semantic → SUGGEST once with reason
 - ✅ default → silently Superpowers
 
-### SUGGEST template (Sisyphus says this when Layer 2 matches)
+### SUGGEST template (OneTwo says this when Layer 2 matches)
 
 > "This task looks like [multi-step change / cross-spec / ...] — OpenSpec handles this well.
 > Go OpenSpec (write proposal.md first) or Superpowers (brainstorming → plans)?
@@ -306,12 +306,12 @@ Are requirements clear? (who/why/success/constraint)
 
 ```
 Single-line fix, obvious cause?
-├─ YES → DEBUG_SIMPLE (Sisyphus does it)
+├─ YES → DEBUG_SIMPLE (OneTwo does it)
 └─ NO
    │
    Has first fix attempt already failed?
-   ├─ NO → Sisyphus tries one fix
-   └─ YES (≥2 failed fixes) → /diagnose (Lyra)
+   ├─ NO → OneTwo tries one fix
+   └─ YES (≥2 failed fixes) → /diagnose (TwoOne)
                                 │
                                 reproduce → minimise → hypothesise → instrument → fix → regression-test
                                 │
@@ -327,7 +327,7 @@ Mechanical rename across many files?
 └─ NO
    │
    Affects module boundaries / contracts?
-   ├─ NO → incremental-implementation (Lyra)
+   ├─ NO → incremental-implementation (TwoOne)
    └─ YES → @architect → /plan → @lyra implements → @reviewer audits
 ```
 
@@ -372,7 +372,7 @@ Have you run the actual commands / tests / checks?
 
 | Scenario | Flow | Command(s) |
 |----------|------|------------|
-| New feature (clear req) | Sisyphus → @lyra → @reviewer | (auto) |
+| New feature (clear req) | OneTwo → @lyra → @reviewer | (auto) |
 | New feature (unclear req) | /brainstorm → /plan → @lyra → @reviewer | `/brainstorm /plan` |
 | New feature (multi-spec) | /opsx:propose → @lyra → /opsx:apply → @reviewer → /opsx:sync | `/opsx:*` |
 | Hard bug (≥2 fix attempts) | /diagnose → /tdd around fix → /verify | `/diagnose /tdd /verify` |
@@ -400,13 +400,13 @@ Things that look right but break the system. Memorize these:
 
 | Anti-pattern | Why it's wrong | What to do instead |
 |--------------|----------------|-------------------|
-| **"I'll just do this myself"** (when intent_gate matched Hephaestus/Lyra) | Bypasses delegation; future sessions won't have the same shortcut | Trust intent_gate. Delegate. |
+| **"I'll just do this myself"** (when intent_gate matched EggDog/TwoOne) | Bypasses delegation; future sessions won't have the same shortcut | Trust intent_gate. Delegate. |
 | **"The skill description tells me what to do, I'll skip reading the body"** | Description is for triggering; body has the workflow | Read the skill body when it loads. |
 | **"OpenSpec is overkill, let's just plan informally"** | OpenSpec handles cross-spec tracking; informal plans drift | Use OpenSpec when Layer 2 triggers (semantic match). |
 | **"I'll claim 'done' without running commands"** | Self-claims are unreliable; verification-before-completion exists for a reason | Run `/verify` — actual `bash` / `bun test` / `git diff` output. |
-| **"Hephaestus should review this PR"** | Hephaestus has no review capability; review needs independent perspective | Use `/code-review` or `@reviewer`. |
+| **"EggDog should review this PR"** | EggDog has no review capability; review needs independent perspective | Use `/code-review` or `@reviewer`. |
 | **"Let me load every skill upfront to be safe"** | Skills cost context; pre-loading wastes tokens | Load on-demand via intent_gate or commands. |
-| **"Sisyphus → Lyra → Lyra → Lyra"** | Depth=3 is hard limit; Lyra spawning Lyra breaks it | Sisyphus routes directly. No nested dispatch. |
+| **"OneTwo → TwoOne → TwoOne → TwoOne"** | Depth=3 is hard limit; TwoOne spawning TwoOne breaks it | OneTwo routes directly. No nested dispatch. |
 | **"Update agent wrote the ADR, let me also commit it"** | Update is single-writer; merge conflicts arise | Update writes; others only read. |
 | **"I'll add a domain skill to the registry"** | We deleted skills-registry/ — install via `npx skills add` directly | See [README §Domain Skills](./README.md#📖-domain-skills-install-on-demand). |
 | **"Force-push to fix my mistake"** | opencode `bash` permission denies `git push --force` | Use `git revert` or new commit. |
@@ -422,13 +422,13 @@ Things that look right but break the system. Memorize these:
 When something breaks:
 
 ```
-Sisyphus misroutes?
+OneTwo misroutes?
   → Check intent_gate table (§1) — maybe intent didn't match cleanly
   → Manually invoke correct command (e.g., `/diagnose` instead of `/tdd`)
-  → Tell Sisyphus "that's wrong, route to X"
+  → Tell OneTwo "that's wrong, route to X"
 
-Lyra's "I'm done" is suspicious?
-  → /verify — run the commands Lyra claims succeeded
+TwoOne's "I'm done" is suspicious?
+  → /verify — run the commands TwoOne claims succeeded
   → /code-review — independent audit
   → If output doesn't match claim, push back
 
@@ -459,7 +459,7 @@ Compaction ate important context?
 ┌──────────────────────────────────────────────────────────────────────┐
 │  myOpenCodeWithMEeee — VIBECODING QUICK CARD (v2.2)                  │
 ├──────────────────────────────────────────────────────────────────────┤
-│  7 AGENTS: Sisyphus (router) │ Lyra (mid) │ Hephaestus (low) │       │
+│  7 AGENTS: OneTwo (router) │ TwoOne (mid) │ EggDog (low) │       │
 │            Architect │ Planner │ Reviewer │ Update (high)             │
 │                                                                      │
 │  19 SKILLS (project) + 14 SUPERPOWERS + 5 OPENSPEC (opt)             │
@@ -474,7 +474,7 @@ Compaction ate important context?
 │                                                                      │
 │  5-SEC RULE: <10 lines → do yourself. ≥10 lines → delegate.          │
 │                                                                      │
-│  DEPTH=3: Hephaestus/Update/Architect/Planner/Reviewer all task:deny │
+│  DEPTH=3: EggDog/Update/Architect/Planner/Reviewer all task:deny │
 │                                                                      │
 │  OPENSPEC: keyword → always; semantic → suggest; default → silent.   │
 │                                                                      │

@@ -4,7 +4,7 @@ description: 代码审查（加载 requesting-code-review skill，委派 reviewe
 
 # /code-review Command
 
-你是 Sisyphus。用户要求审查代码（PR / 模块 / 提交）。
+你是 OneTwo。用户要求审查代码（PR / 模块 / 提交）。
 
 **第一步**：加载 `requesting-code-review` skill 拿到审查清单。
 

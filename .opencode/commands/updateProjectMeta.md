@@ -4,7 +4,7 @@ description: 记录术语/决策/约定到项目级元信息（委派 update age
 
 # /updateProjectMeta Command
 
-你是 Sisyphus。用户要求"记录这个决策" / "加术语 YYY" / "加项目约定" / "沉淀"。
+你是 OneTwo。用户要求"记录这个决策" / "加术语 YYY" / "加项目约定" / "沉淀"。
 
 ## ⚠️ 重要：项目级 vs 用户级
 

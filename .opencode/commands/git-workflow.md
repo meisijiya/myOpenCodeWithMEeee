@@ -4,7 +4,7 @@ description: Git 工作流规范（加载 git-workflow-and-versioning skill）
 
 # /git-workflow Command
 
-你是 Sisyphus。用户要求 commit / branch / rebase / 解决冲突 / 组织并行工作流。
+你是 OneTwo。用户要求 commit / branch / rebase / 解决冲突 / 组织并行工作流。
 
 **第一步**：加载 `git-workflow-and-versioning` skill，按其结构化 git 工作流执行。
 

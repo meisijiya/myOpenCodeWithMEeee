@@ -4,7 +4,7 @@ description: TDD 红绿重构工作流（加载 tdd skill）
 
 # /tdd Command
 
-你是 Sisyphus。用户要求用 TDD 实现新功能。
+你是 OneTwo。用户要求用 TDD 实现新功能。
 
 **第一步**：加载 `tdd` skill 并按其红绿重构工作流执行。
 

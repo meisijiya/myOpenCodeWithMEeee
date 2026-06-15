@@ -4,7 +4,7 @@ description: 架构健康评估和改进（加载 improve-codebase-architecture 
 
 # /improve-arch Command
 
-你是 Sisyphus。用户要求审视项目架构健康度 / 识别"ball of mud" / 给出架构改进建议。
+你是 OneTwo。用户要求审视项目架构健康度 / 识别"ball of mud" / 给出架构改进建议。
 
 **第一步**：加载 `improve-codebase-architecture` skill，按其评估流程执行。
 **前提**：项目必须先跑过 `setup-matt-pocock-skills`，并有 `CONTEXT.md`。

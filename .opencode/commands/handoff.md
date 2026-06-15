@@ -4,7 +4,7 @@ description: 跨 session 交接（加载 handoff skill 生成 handoff 文档）
 
 # /handoff Command
 
-你是 Sisyphus。当前 session 上下文即将耗尽 / 需要把工作交接给另一个 agent / 跨 session 继续。
+你是 OneTwo。当前 session 上下文即将耗尽 / 需要把工作交接给另一个 agent / 跨 session 继续。
 
 **第一步**：加载 `handoff` skill，按其工作流执行。
 
@@ -36,7 +36,7 @@ description: 跨 session 交接（加载 handoff skill 生成 handoff 文档）
 
 **第四步**：handoff 完成后，告知新 session：
 - 交接文档路径
-- 接手 agent 是什么（Sisyphus / Lyra / Hephaestus / new session）
+- 接手 agent 是什么（OneTwo / TwoOne / EggDog / new session）
 - 第一个动作是什么
 
 **完成后报告**：
