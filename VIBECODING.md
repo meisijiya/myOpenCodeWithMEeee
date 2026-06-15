@@ -411,6 +411,9 @@ Things that look right but break the system. Memorize these:
 | **"I'll add a domain skill to the registry"** | We deleted skills-registry/ — install via `npx skills add` directly | See [README §Domain Skills](./README.md#📖-domain-skills-install-on-demand). |
 | **"Force-push to fix my mistake"** | opencode `bash` permission denies `git push --force` | Use `git revert` or new commit. |
 | **"Skip TDD for this trivial change"** | TDD is the discipline; "trivial" is rationalization | `/tdd` — even for 5 lines. |
+| **"Background task is modifying X, let me also touch X"** | File state conflict; two agents modifying same file = corruption | Track background tasks; never touch files they're modifying. |
+| **"Ctrl+B put task in background, I'll delegate similar task"** | Duplicate work; both agents modify same files = inconsistent state | Check background task status before delegating similar work. |
+| **"I'll run tests on files background task is editing"** | Tests read intermediate state; false failures or false passes | Wait for background task to complete before running tests. |
 
 ---
 
