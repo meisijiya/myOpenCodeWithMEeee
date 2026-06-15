@@ -32,6 +32,6 @@
 **卸载**：`bash uninstall.sh` **不会删除** AGENTS.md——它是你的个人配置，不是本项目安装的文件。
 
 **与本项目的关系**：
-- 本项目 3 个 agent 的 `.md`（sisyphus/lyra/hephaestus）不定义语言/系统/编码风格
+- 本项目 7 个 agent 的 `.md`（sisyphus/lyra/hephaestus/update/architect/planner/reviewer）不定义语言/系统/编码风格
 - 这些偏好由你的 AGENTS.md 提供
 - 两层互补，不冲突

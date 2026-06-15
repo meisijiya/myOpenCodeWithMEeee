@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# scripts/update-skills.sh — Check for upstream drift in our 15 global skills
+# scripts/update-skills.sh — Check for upstream drift in our 19 global skills
 #
 # Usage:
 #   bash scripts/update-skills.sh                # Check only (default)
