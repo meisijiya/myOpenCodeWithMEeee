@@ -3,9 +3,47 @@
 > **myOpenCodeWithMEeee** — 定制化多 Agent 协作系统 for opencode。  
 > 从 v1 (Sisyphus + Oracle, 9 自建工具) 演进至 v2 (Sisyphus + Lyra + Hephaestus, 2 自建工具 + 3 MCP)，再到 v2.2 (7 Agents + 20 Commands + 项目记忆系统)，最终到 v2.3 (家庭化重命名：OneTwo/TwoOne/EggDog)。
 
-## [v2.3] — 2026-06-15
+## [v2.4] — 2026-06-15
 
-### 🏠 家庭化重命名
+### 📚 新增 Librarian Agent（图书管理员）
+
+新增第 8 个 Agent：**Librarian**（图书管理员），专门处理文档相关工作。
+
+**家庭比喻**：
+- **Librarian**（图书管理员）：多模态文档处理专家，能识别文档中的图片、图表、流程图
+- **定位**：维修工（特定情况才呼叫）
+- **模型**：多模态（视觉 + 文本）
+
+**专有 Skill（仅 Librarian 可用）**：
+- `pdf` — PDF 读取/解析（来自 anthropics/skills）
+- `docx` — DOCX 读取/创建（来自 anthropics/skills）
+- `pptx` — PPTX 读取/创建（来自 anthropics/skills）
+- `xlsx` — XLSX 读取/创建（来自 anthropics/skills）
+
+**Skill 隔离**：
+- 这些文档 skill **仅暴露给 Librarian**
+- 其他 Agent 不会加载这些 skill，**避免 token 浪费**
+- 实现方式：skill 只在 Librarian 的 prompt 中列出
+
+**多模态策略**：
+- 优先使用模型自身能力（如果模型有视觉能力）
+- 模型没有视觉能力时，调用 `mmx vision describe` 辅助识别
+- 节省 MiniMax 额度
+
+**依赖管理**：
+- `markitdown`：文本提取（pip install markitdown）
+- `poppler`：PDF 转图片（apt install poppler-utils）
+- `libreoffice`：格式转换（apt install libreoffice）
+- 如果依赖缺失，Librarian 会提示 OneTwo 安装
+
+### 📝 更新内容
+
+- **新增 Agent**：`librarian.md`（图书管理员，多模态文档处理专家）
+- **新增 Skill**：`pdf`、`docx`、`pptx`、`xlsx`（来自 anthropics/skills）
+- **opencode.json**：添加 librarian agent 配置
+- **install.sh / uninstall.sh**：添加 librarian 和文档 skill
+
+---
 
 本次更新将核心 Agent 重命名为家庭角色，更直观地表达各自的职责定位。
 

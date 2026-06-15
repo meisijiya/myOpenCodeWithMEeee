@@ -12,7 +12,7 @@ set -euo pipefail
 
 REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 TARGET_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/opencode"
-SKILLS=(caveman diagnose git-workflow-and-versioning grill-with-docs handoff improve-codebase-architecture incremental-implementation interview-me karpathy-guidelines mmx-cli-usage openspec-integration prototype setup-matt-pocock-skills source-driven-development tdd to-issues triage update-project-meta zoom-out)
+SKILLS=(caveman diagnose docx git-workflow-and-versioning grill-with-docs handoff improve-codebase-architecture incremental-implementation interview-me karpathy-guidelines mmx-cli-usage openspec-integration pdf pptx prototype setup-matt-pocock-skills source-driven-development tdd to-issues triage update-project-meta xlsx zoom-out)
 
 echo "Installing ohMeisijiyaCode → ${TARGET_DIR}"
 echo ""
@@ -213,7 +213,7 @@ repo_agents = repo.get("agent", {})
 user_agents = config.setdefault("agent", {})
 
 # Don't touch the built-in 'build' / 'plan' agents — only our 7 custom agents
-CUSTOM_AGENTS = ("onetwo", "twoone", "eggdog", "update", "architect", "planner", "reviewer")
+CUSTOM_AGENTS = ("onetwo", "twoone", "eggdog", "librarian", "update", "architect", "planner", "reviewer")
 
 added, updated, skipped = [], [], []
 for name in CUSTOM_AGENTS:

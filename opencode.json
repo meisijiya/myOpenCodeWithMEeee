@@ -18,6 +18,13 @@
         "task": false
       }
     },
+    "librarian": {
+      "model": "minimax-cn-coding-plan/MiniMax-M3",
+      "prompt": "{file:./agents/librarian.md}",
+      "tools": {
+        "task": false
+      }
+    },
     "update": {
       "model": "minimax-cn-coding-plan/MiniMax-M3",
       "prompt": "{file:./agents/update.md}",

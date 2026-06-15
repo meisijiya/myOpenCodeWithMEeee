@@ -4,7 +4,7 @@
 [![English](https://img.shields.io/badge/EN-English-blue)](./README.md)
 [![中文](https://img.shields.io/badge/中文-Chinese-red)](./README.zh-CN.md)
 
-> A lightweight opencode Agent system built on **[Superpowers](https://github.com/obra/superpowers)** (14 workflow orchestration skills) — featuring **7-agent architecture** + **3-tier model routing** (high / mid / low) + **CLI-first external capabilities**. Synthesizing ideas from [Pi Subagents](https://github.com/mattpocock/skills) (frontmatter nesting + bash safety), [Matt Pocock's diagnostic suite](https://github.com/mattpocock/skills), [karpathy-guidelines](https://github.com/multica-ai/andrej-karpathy-skills) (coding discipline), [OpenSpec](https://github.com/Fission-AI/OpenSpec) (spec-driven changes), [oh-my-openagent](https://github.com/code-yeongyu/oh-my-openagent) (architecture inspiration), and [RTK](https://github.com/rtk-ai/rtk) (token compression).
+> A lightweight opencode Agent system built on **[Superpowers](https://github.com/obra/superpowers)** (14 workflow orchestration skills) — featuring **8-agent architecture** + **3-tier model routing** (high / mid / low) + **CLI-first external capabilities**. Synthesizing ideas from [Pi Subagents](https://github.com/mattpocock/skills) (frontmatter nesting + bash safety), [Matt Pocock's diagnostic suite](https://github.com/mattpocock/skills), [karpathy-guidelines](https://github.com/multica-ai/andrej-karpathy-skills) (coding discipline), [OpenSpec](https://github.com/Fission-AI/OpenSpec) (spec-driven changes), [oh-my-openagent](https://github.com/code-yeongyu/oh-my-openagent) (architecture inspiration), and [RTK](https://github.com/rtk-ai/rtk) (token compression).
 
 ---
 
@@ -40,8 +40,8 @@ bash install.sh
 
 | Automated Item | Details |
 |---------------|---------|
-| **7 agents** | `onetwo.md` / `twoone.md` / `eggdog.md` / `update.md` / `architect.md` / `planner.md` / `reviewer.md` → `~/.config/opencode/agents/` |
-| **19 skills** | caveman / diagnose / git-workflow-and-versioning / grill-with-docs / handoff / improve-codebase-architecture / incremental-implementation / interview-me / karpathy-guidelines / mmx-cli-usage / openspec-integration / prototype / setup-matt-pocock-skills / source-driven-development / tdd / to-issues / triage / update-project-meta / zoom-out |
+| **8 agents** | `onetwo.md` / `twoone.md` / `eggdog.md` / `librarian.md` / `update.md` / `architect.md` / `planner.md` / `reviewer.md` → `~/.config/opencode/agents/` |
+| **23 skills** | caveman / diagnose / docx / git-workflow-and-versioning / grill-with-docs / handoff / improve-codebase-architecture / incremental-implementation / interview-me / karpathy-guidelines / mmx-cli-usage / openspec-integration / pdf / pptx / prototype / setup-matt-pocock-skills / source-driven-development / tdd / to-issues / triage / update-project-meta / xlsx / zoom-out |
 | **21 commands** | brainstorm / caveman / code-review / diagnose / finish-branch / git-workflow / grill / handoff / improve-arch / interview / mmx / plan / prototype / **setup** / tdd / to-issues / triage / updateProjectMeta / verify / write-skill / zoom-out → `~/.config/opencode/commands/` |
 | **0 tools** | (None — all custom tools retired; CLI-based workflow instead) |
 | **0 plugins** | (None — karpathy-guidelines auto-loaded via prompt injection; no runtime plugin needed) |
@@ -273,7 +273,7 @@ After install, edit `~/.config/opencode/opencode.json` to add the 7-agent model 
 }
 ```
 
-> Note: `install.sh` automatically registers all 7 agents (with prompt + tool config); you only need to fill in **model IDs** per tier.
+> Note: `install.sh` automatically registers all 8 agents (with prompt + tool config); you only need to fill in **model IDs** per tier.
 
 ### Recommended Pairings
 
@@ -287,7 +287,7 @@ After install, edit `~/.config/opencode/opencode.json` to add the 7-agent model 
 
 ### Global Default Model (Lazy Option)
 
-If you don't want to configure 7 agents, just set the global model:
+If you don't want to configure 8 agents, just set the global model:
 
 ```json
 {
@@ -360,10 +360,10 @@ We apply insights from [BV1v9ER68EJE](https://www.bilibili.com/video/BV1v9ER68EJ
 
 | Insight | Applied |
 |---------|--------|
-| **U-shape attention curve** (>50% context → only end matters) | `<style_guide>` is the LAST segment in all 7 agent prompts; HTML comment block at OneTwo tail emphasizes "关键尾部提示词" |
-| **Hard constraints (never/always/must/绝对不要)** | Rewrote all 7 agents' `style_guide` with strong vocabulary + 反例/正例 |
+| **U-shape attention curve** (>50% context → only end matters) | `<style_guide>` is the LAST segment in all 8 agent prompts; HTML comment block at OneTwo tail emphasizes "关键尾部提示词" |
+| **Hard constraints (never/always/must/绝对不要)** | Rewrote all 8 agents' `style_guide` with strong vocabulary + 反例/正例 |
 | **Skill files ≤ 300-500 lines** | All skills under 250 lines; OneTwo.md at 432 (acceptable) |
-| **Solutions 1+2+3+4** (AGENTS.md + Scan + Hooks + SubAgent isolation) | All present: `karpathy-guidelines` auto-loaded as meta-skill is our "Hook"; subagent isolation is core to 7-agent architecture |
+| **Solutions 1+2+3+4** (AGENTS.md + Scan + Hooks + SubAgent isolation) | All present: `karpathy-guidelines` auto-loaded as meta-skill is our "Hook"; subagent isolation is core to 8-agent architecture |
 | **Anti-compaction-passive** (don't wait for quality to drop) | 3-piece verification (`<delegation_review>`) catches issues early per-call |
 | **Soft constraints = no constraints** | `bash: *: allow` (project-internal trust) + hard deny blacklists (not "尽量") |
 
@@ -635,12 +635,12 @@ OpenSpec is one of three **orthogonal layers** in our architecture. We don't dep
 
 ```
 ┌──────────────────────────────────────────────────────────────┐
-│ Layer 1: Scheduling (our 7 agents)                             │
+│ Layer 1: Scheduling (our 8 agents)                             │
 │  OneTwo / TwoOne / EggDog / Architect / Planner /         │
 │  Reviewer / Update — intent routing + delegation               │
 │  "Who does what?"                                              │
 ├──────────────────────────────────────────────────────────────┤
-│ Layer 2: Workflow (our 19 skills + Superpowers)                │
+│ Layer 2: Workflow (our 23 skills + Superpowers)                │
 │  karpathy / grill-with-docs / diagnose / interview-me /        │
 │  tdd / source-driven / openspec-integration / ...              │
 │  Superpowers (14 skills, opencode plugin)                      │
@@ -888,7 +888,7 @@ opencode by default scans 6 paths:
 
 #### 4. Project-Level Agent Override
 
-If a project wants to override the behavior of one of our 7 agents, place a same-name `.md` in `.opencode/agents/`:
+If a project wants to override the behavior of one of our 8 agents, place a same-name `.md` in `.opencode/agents/`:
 
 ```bash
 mkdir -p .opencode/agents
@@ -1015,7 +1015,7 @@ for cmd in mmx ctx7 playwright-cli; do
   command -v $cmd && echo "  ✅ $cmd" || echo "  ⬜ $cmd"
 done
 
-# Confirm 7 agents + 19 skills + 21 commands are mirrored
+# Confirm 8 agents + 23 skills + 21 commands are mirrored
 ls ~/.config/opencode/agents/     # should list 7 .md files
 ls ~/.config/opencode/skills/     # should list 19 directories
 ls ~/.config/opencode/commands/   # should list 20 .md files
@@ -1060,7 +1060,7 @@ bash scripts/update-skills.sh --skill grill-with-docs
 
 ### How It Works
 
-1. **Reads** `skills/SOURCES.yaml` (19 skills, each with source_repo + source_path)
+1. **Reads** `skills/SOURCES.yaml` (23 skills, each with source_repo + source_path)
 2. **Fetches** latest SKILL.md from each upstream via `api.github.com` (works around `raw.githubusercontent.com` timeouts)
 3. **Compares** SHA-256 of local + upstream content
 4. **Reports** drift (or applies with `--apply`)
@@ -1109,7 +1109,7 @@ git add skills/ && git commit -m "chore(skills): sync N verbatim skills with ups
 
 ```
 myOpenCodeWithMEeee/
-├── agents/                 # 7 agent prompt files
+├── agents/                 # 8 agent prompt files
 │   ├── onetwo.md         # primary (high-tier) — 7 XML segments + 12-row intent_gate
 │   ├── twoone.md             # subagent (mid-tier) — can delegate to EggDog
 │   ├── eggdog.md       # subagent (low-tier) — task:deny, bash safe-glob
@@ -1117,7 +1117,7 @@ myOpenCodeWithMEeee/
 │   ├── planner.md          # subagent (high-tier) — implementation plans + to-issues
 │   ├── reviewer.md         # subagent (high-tier) — read-only code review
 │   └── update.md           # subagent (high-tier) — single-writer for CONTEXT.md/ADR/AGENTS.md
-├── skills/                 # 19 skills (SKILL.md)
+├── skills/                 # 23 skills (SKILL.md)
 │   ├── caveman/                   # from mattpocock (ultra-compressed comms)
 │   ├── diagnose/                  # from mattpocock (6-phase bug loop)
 │   ├── git-workflow-and-versioning/ # from addyosmani (git workflow)
@@ -1149,7 +1149,7 @@ myOpenCodeWithMEeee/
 │   └── opencode-compaction.jsonc # 340K-trigger compaction defaults
 ├── scripts/                # Helper scripts
 │   └── update-skills.sh    # Upstream drift checker
-├── install.sh              # One-click install (idempotent) — 7 agents + 19 skills + 21 commands
+├── install.sh              # One-click install (idempotent) — 8 agents + 23 skills + 21 commands
 ├── uninstall.sh            # One-click uninstall
 ├── CHANGELOG.md            # Changelog
 ├── CONTRIBUTING.md         # Contribution guide

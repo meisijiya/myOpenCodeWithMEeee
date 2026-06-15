@@ -4,7 +4,7 @@
 [![English](https://img.shields.io/badge/EN-English-blue)](./README.md)
 [![中文](https://img.shields.io/badge/中文-Chinese-red)](./README.zh-CN.md)
 
-> 基于 **[Superpowers](https://github.com/obra/superpowers)**（14 个流程编排 skill）的轻量 opencode Agent 系统——**7 agent 架构**（OneTwo + 6 个 subagent）+ **3 档模型路由**（high / mid / low）+ **CLI-first 外部能力** + **职责就近原则**（每个 agent 在自己的 prompt 里声明职责边界，不依赖外部 AGENTS.md）+ **项目记忆系统**（CONTEXT.md / AGENTS.md / ADR 跨 session 持久化）。融合 [Pi Subagents](https://github.com/mattpocock/skills)（前端嵌套 + bash 安全）、[Matt Pocock 诊断三件套](https://github.com/mattpocock/skills)、[karpathy-guidelines](https://github.com/multica-ai/andrej-karpathy-skills)（编码纪律）、[OpenSpec](https://github.com/Fission-AI/OpenSpec)（规约驱动）、[oh-my-openagent](https://github.com/code-yeongyu/oh-my-openagent)（架构灵感）、[RTK](https://github.com/rtk-ai/rtk)（token 压缩）。
+> 基于 **[Superpowers](https://github.com/obra/superpowers)**（14 个流程编排 skill）的轻量 opencode Agent 系统——**8 agent 架构**（OneTwo + 6 个 subagent）+ **3 档模型路由**（high / mid / low）+ **CLI-first 外部能力** + **职责就近原则**（每个 agent 在自己的 prompt 里声明职责边界，不依赖外部 AGENTS.md）+ **项目记忆系统**（CONTEXT.md / AGENTS.md / ADR 跨 session 持久化）。融合 [Pi Subagents](https://github.com/mattpocock/skills)（前端嵌套 + bash 安全）、[Matt Pocock 诊断三件套](https://github.com/mattpocock/skills)、[karpathy-guidelines](https://github.com/multica-ai/andrej-karpathy-skills)（编码纪律）、[OpenSpec](https://github.com/Fission-AI/OpenSpec)（规约驱动）、[oh-my-openagent](https://github.com/code-yeongyu/oh-my-openagent)（架构灵感）、[RTK](https://github.com/rtk-ai/rtk)（token 压缩）。
 
 ---
 
@@ -40,8 +40,8 @@ bash install.sh
 
 | 自动化项 | 详情 |
 |---------|------|
-| **7 agents** | `onetwo.md` / `twoone.md` / `eggdog.md` / `update.md` / `architect.md` / `planner.md` / `reviewer.md` → `~/.config/opencode/agents/` |
-| **19 skills** | caveman / diagnose / git-workflow-and-versioning / grill-with-docs / handoff / improve-codebase-architecture / incremental-implementation / interview-me / karpathy-guidelines / mmx-cli-usage / openspec-integration / prototype / setup-matt-pocock-skills / source-driven-development / tdd / to-issues / triage / update-project-meta / zoom-out |
+| **8 agents** | `onetwo.md` / `twoone.md` / `eggdog.md` / `update.md` / `architect.md` / `planner.md` / `reviewer.md` → `~/.config/opencode/agents/` |
+| **23 skills** | caveman / diagnose / docx / git-workflow-and-versioning / grill-with-docs / handoff / improve-codebase-architecture / incremental-implementation / interview-me / karpathy-guidelines / mmx-cli-usage / openspec-integration / pdf / pptx / prototype / setup-matt-pocock-skills / source-driven-development / tdd / to-issues / triage / update-project-meta / xlsx / zoom-out |
 | **21 commands** | brainstorm / caveman / code-review / diagnose / finish-branch / git-workflow / grill / handoff / improve-arch / interview / mmx / plan / prototype / **setup** / tdd / to-issues / triage / updateProjectMeta / verify / write-skill / zoom-out → `~/.config/opencode/commands/` |
 | **0 tools** | （无——所有自研工具已退役；改用 CLI 工作流） |
 | **0 plugins** | （无——karpathy-guidelines 通过 meta-skill prompt 注入自动加载；不需要运行时 plugin） |
@@ -289,7 +289,7 @@ command -v playwright-cli && echo "✅ playwright-cli" || echo "❌ playwright-c
 }
 ```
 
-> ⚠️ 这种情况下，`install.sh` 的 `agent.compaction.prompt` 仍生效，但 7 agent 档位映射不会做成本感知路由。推荐完整配置以获得最佳性价比。
+> ⚠️ 这种情况下，`install.sh` 的 `agent.compaction.prompt` 仍生效，但 8 agent 档位映射不会做成本感知路由。推荐完整配置以获得最佳性价比。
 
 ### Provider 配置
 
@@ -1048,7 +1048,7 @@ for cmd in mmx ctx7 playwright-cli; do
   command -v $cmd && echo "  ✅ $cmd" || echo "  ⬜ $cmd"
 done
 
-# 确认 7 agents + 19 skills + 21 commands 都镜像成功
+# 确认 8 agents + 23 skills + 21 commands 都镜像成功
 ls ~/.config/opencode/agents/     # 应该列 7 个 .md 文件
 ls ~/.config/opencode/skills/     # 应该列 19 个目录
 ls ~/.config/opencode/commands/   # 应该列 20 个 .md 文件
@@ -1202,7 +1202,7 @@ ohMeisijiyaCode/
 │   └── opencode-compaction.jsonc # 340K 触发压缩默认值
 ├── scripts/                # 辅助脚本
 │   └── update-skills.sh    # 上游 drift 检查器
-├── install.sh              # 一键安装（幂等）— 7 agents + 19 skills + 21 commands
+├── install.sh              # 一键安装（幂等）— 8 agents + 23 skills + 21 commands
 ├── uninstall.sh            # 一键卸载
 ├── CHANGELOG.md            # 变更日志
 ├── CONTRIBUTING.md         # 贡献指南
