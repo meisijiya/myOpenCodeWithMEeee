@@ -65,15 +65,18 @@ The system is a tiered delegation tree. Read this once, then forget it (OneTwo r
 
 | Agent | Tier | One-liner | Don't ask it to... |
 |-------|------|-----------|-------------------|
-| **OneTwo** | high | Intent router + OpenSpec owner | write code directly, do reviews, write meta-docs |
+| **OneTwo** | high | Intent router + OpenSpec owner + atomic task orchestrator | write code directly, do reviews, write meta-docs |
 | **Architect** | high | Domain model + ADR drafts | write code, review, plan |
 | **Planner** | high | Implementation plans + issue breakdown | design, review, code |
 | **Reviewer** | high | Independent code review (read-only) | write code, plan, design |
 | **Update** | high | Single-writer for CONTEXT.md / ADR / AGENTS.md | implement, plan, review |
 | **TwoOne** | mid | Complex implementation, research, mid bugs | design, review, plan |
 | **EggDog** | low | CRUD, atomic refactor, test scaffolding | design, plan, review, meta-writes |
+| **Librarian** | specialist | Multimodal document processing (PDF/DOC/PPT/XLS) | write code, design, plan |
 
-**Strict depth=3 rule**: EggDog / Update / Architect / Planner / Reviewer all have `task: false` (opencode physically removes the Task tool). Only OneTwo and TwoOne can spawn sub-agents.
+**Strict depth=3 rule**: EggDog / Update / Architect / Planner / Reviewer / Librarian all have `task: false` (opencode physically removes the Task tool). Only OneTwo and TwoOne can spawn sub-agents.
+
+**Atomic Task Orchestration**: OneTwo uses `todowrite` to track subtask progress. Large tasks are decomposed into atomic tasks (single file + clear boundary + verifiable criteria), assigned to TwoOne/EggDog based on difficulty, reviewed with karpathy 4 principles, and integrated upon completion.
 
 ---
 

@@ -40,7 +40,7 @@ bash install.sh
 
 | 自动化项 | 详情 |
 |---------|------|
-| **8 agents** | `onetwo.md` / `twoone.md` / `eggdog.md` / `update.md` / `architect.md` / `planner.md` / `reviewer.md` → `~/.config/opencode/agents/` |
+| **8 agents** | `onetwo.md` / `twoone.md` / `eggdog.md` / `librarian.md` / `update.md` / `architect.md` / `planner.md` / `reviewer.md` → `~/.config/opencode/agents/` |
 | **23 skills** | caveman / diagnose / docx / git-workflow-and-versioning / grill-with-docs / handoff / improve-codebase-architecture / incremental-implementation / interview-me / karpathy-guidelines / mmx-cli-usage / openspec-integration / pdf / pptx / prototype / setup-matt-pocock-skills / source-driven-development / tdd / to-issues / triage / update-project-meta / xlsx / zoom-out |
 | **21 commands** | brainstorm / caveman / code-review / diagnose / finish-branch / git-workflow / grill / handoff / improve-arch / interview / mmx / plan / prototype / **setup** / tdd / to-issues / triage / updateProjectMeta / verify / write-skill / zoom-out → `~/.config/opencode/commands/` |
 | **0 tools** | （无——所有自研工具已退役；改用 CLI 工作流） |
@@ -777,7 +777,7 @@ OpenSpec 是我们架构中**三层正交**之一。我们**不依赖**它，而
 
 | 组件 | 类型 | 数量 | 来源 |
 |------|------|------|------|
-| Agents | `.md` prompt 文件 | **7** | 自研（onetwo/twoone/eggdog + update/architect/planner/reviewer） |
+| Agents | `.md` prompt 文件 | **8** | 自研（onetwo/twoone/eggdog + update/architect/planner/reviewer） |
 | Skills | `SKILL.md` 文件 | **19** | 4 自研 + 15 外部导入（11 来自 mattpocock + 3 来自 addyosmani + 1 轻量复刻 addyosmani） |
 | Commands | slash-command 文件 | **21** | 自研，每个 skill 一个用户入口（plan/tdd/code-review/brainstorm/diagnose/verify/...） |
 | Tools | TypeScript → `.js` | **0** | （v2.2 退役；改用 CLIs + opencode 内置工具） |

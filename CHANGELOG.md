@@ -1,7 +1,40 @@
 # Changelog
 
 > **myOpenCodeWithMEeee** — 定制化多 Agent 协作系统 for opencode。  
-> 从 v1 (Sisyphus + Oracle, 9 自建工具) 演进至 v2 (Sisyphus + Lyra + Hephaestus, 2 自建工具 + 3 MCP)，再到 v2.2 (7 Agents + 20 Commands + 项目记忆系统)，最终到 v2.3 (家庭化重命名：OneTwo/TwoOne/EggDog)。
+> 从 v1 (Sisyphus + Oracle, 9 自建工具) 演进至 v2 (Sisyphus + Lyra + Hephaestus, 2 自建工具 + 3 MCP)，再到 v2.2 (7 Agents + 20 Commands + 项目记忆系统)，最终到 v2.3 (家庭化重命名：OneTwo/TwoOne/EggDog) + v2.4 (Librarian 多模态文档处理) + v2.5 (原子任务编排增强)。
+
+## [v2.5] — 2026-06-15
+
+### 🎯 原子任务编排增强
+
+增强 OneTwo 的原子任务编排能力，使大型任务的拆分、分配、追踪、纠正更加系统化。
+
+**新增能力**：
+- **拆分（Decompose）**：收到大任务后，用 `todowrite` 生成子任务清单
+- **分配策略（Assign）**：根据子任务难易程度选择执行者
+  - 简单 → EggDog（CRUD、机械变换）
+  - 中等 → TwoOne（多文件实现、研究）
+  - 困难 → TwoOne（复杂逻辑、架构设计）
+  - 极简 → OneTwo 自己（≤10 行修改）
+  - 元信息 → update / 架构 → architect / 计划 → planner / 审查 → reviewer
+- **进度追踪（Track）**：通过 `todowrite` 追踪每个子任务状态（pending/in_progress/completed）
+- **后台调度（ctrl+B）**：用户将任务挂后台后，OneTwo 查看 todowrite 找下一个不冲突的子任务
+- **文件冲突检测**：确保不会让多个子 Agent 修改同个文件
+- **纠正（Correct）**：轻度/重度/极重三级修复策略
+- **整合（Integrate）**：所有子任务完成后，跑测试 + 委派 reviewer 审查
+
+**好处**：
+- OneTwo 随时知道进度（1/N, 2/N, ...）
+- 用户可以看到进度
+- 出错时知道从哪里重做
+- 后台模式下可以继续委派不冲突的子任务
+
+### 📝 文档更新
+
+- **VIBECODING.md**：添加 Librarian agent + 原子任务编排增强说明
+- **README.zh-CN.md**：修复 agent 列表遗漏 librarian + agent 数量 7→8
+
+---
 
 ## [v2.4] — 2026-06-15
 
