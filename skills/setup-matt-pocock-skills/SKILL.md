@@ -26,6 +26,7 @@ Look at the current repo to understand its starting state. Read whatever exists;
 - `docs/adr/` and any `src/*/docs/adr/` directories
 - `docs/agents/` — does this skill's prior output already exist?
 - `.scratch/` — sign that a local-markdown issue tracker convention is already in use
+- `.gitignore` — does it exist? What rules are already configured?
 
 ### 2. Present findings and ask
 
@@ -66,6 +67,56 @@ Confirm the layout:
 
 - **Single-context** — one `CONTEXT.md` + `docs/adr/` at the repo root. Most repos are this.
 - **Multi-context** — `CONTEXT-MAP.md` at the root pointing to per-context `CONTEXT.md` files (typically a monorepo).
+
+**Section D — .gitignore configuration.**
+
+> Explainer: `.gitignore` tells Git which files to ignore (not track). This prevents accidentally committing sensitive files (like `.env` with API keys), build outputs (like `dist/`), or runtime artifacts (like `node_modules/`). We'll configure standard rules for this project.
+
+If `.gitignore` doesn't exist, we'll create it with standard rules:
+
+```gitignore
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Build outputs
+dist/
+build/
+*.log
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Editor directories and files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# OpenCode runtime artifacts
+data/
+session-*.md
+
+# OpenSpec auto-generated (per-project)
+.opencode/skills/openspec-*/
+.opencode/commands/opsx-*
+openspec/
+```
+
+If `.gitignore` already exists:
+- **Don't overwrite** existing rules
+- **Append** missing standard rules (like `.env`, `node_modules/`, `dist/`)
+- **Preserve** user-defined rules
+
+Ask the user if they want to add any project-specific ignore rules (e.g., `*.pyc` for Python, `target/` for Java/Maven).
 
 ### 3. Confirm and edit
 
@@ -116,6 +167,42 @@ Then write the three docs files using the seed templates in this skill folder as
 
 For "other" issue trackers, write `docs/agents/issue-tracker.md` from scratch using the user's description.
 
+**Write .gitignore:**
+
+If `.gitignore` doesn't exist, create it with the standard rules from Section D.
+
+If `.gitignore` already exists:
+1. Read the current content
+2. Check which standard rules are missing
+3. Append missing rules (don't overwrite existing rules)
+4. Add any project-specific rules the user requested
+
+Standard rules to check/add:
+- `node_modules/`
+- `dist/`
+- `build/`
+- `.env`
+- `.env.local`
+- `.env.*.local`
+- `.vscode/`
+- `.idea/`
+- `*.swp`
+- `*.swo`
+- `.DS_Store`
+- `data/`
+- `session-*.md`
+
+Add a comment header before appending:
+```gitignore
+
+# Added by setup-matt-pocock-skills (standard rules)
+```
+
 ### 5. Done
 
 Tell the user the setup is complete and which engineering skills will now read from these files. Mention they can edit `docs/agents/*.md` directly later — re-running this skill is only necessary if they want to switch issue trackers or restart from scratch.
+
+Also mention:
+- `.gitignore` has been configured with standard rules (or updated if it already existed)
+- They can edit `.gitignore` directly to add project-specific rules
+- Re-running this skill will not overwrite existing `.gitignore` rules
