@@ -8,6 +8,16 @@
 
 ---
 
+## 💑 The Story Behind This Project
+
+> *"I built this agent team system for my girlfriend and me."*
+>
+> When my girlfriend and I started working on projects together, we realized we needed a coding assistant that could handle different types of tasks — from high-level architecture decisions to repetitive CRUD work. We wanted something that felt like a **family**: a manager who understands our needs, a technical expert who handles the hard stuff, and energetic helpers who do the grunt work.
+>
+> So we created **OneTwo** (the house manager), **TwoOne** (the breadwinner), and **EggDog** (the energetic kid) — plus a team of specialists (update/architect/planner/reviewer) for when things get specific. It's not just a tool; it's our little coding family that helps us build the future together. 🏠💻
+
+---
+
 ## 🛒 Looking for Domain-Specific Skills? (React, Java, Docker, etc.)
 
 > Our project ships **19 general-purpose skills** (process/workflow oriented, see `VIBECODING.md` for the operator's manual). For **domain-specific skills** (frameworks, databases, languages), browse community catalogs and install via the `npx skills` CLI.
@@ -30,7 +40,7 @@ bash install.sh
 
 | Automated Item | Details |
 |---------------|---------|
-| **7 agents** | `sisyphus.md` / `lyra.md` / `hephaestus.md` / `update.md` / `architect.md` / `planner.md` / `reviewer.md` → `~/.config/opencode/agents/` |
+| **7 agents** | `onetwo.md` / `twoone.md` / `eggdog.md` / `update.md` / `architect.md` / `planner.md` / `reviewer.md` → `~/.config/opencode/agents/` |
 | **19 skills** | caveman / diagnose / git-workflow-and-versioning / grill-with-docs / handoff / improve-codebase-architecture / incremental-implementation / interview-me / karpathy-guidelines / mmx-cli-usage / openspec-integration / prototype / setup-matt-pocock-skills / source-driven-development / tdd / to-issues / triage / update-project-meta / zoom-out |
 | **21 commands** | brainstorm / caveman / code-review / diagnose / finish-branch / git-workflow / grill / handoff / improve-arch / interview / mmx / plan / prototype / **setup** / tdd / to-issues / triage / updateProjectMeta / verify / write-skill / zoom-out → `~/.config/opencode/commands/` |
 | **0 tools** | (None — all custom tools retired; CLI-based workflow instead) |
@@ -252,9 +262,9 @@ After install, edit `~/.config/opencode/opencode.json` to add the 7-agent model 
 ```json
 {
   "agent": {
-    "sisyphus":   { "model": "<provider>/<high-tier-model-id>" },
-    "lyra":       { "model": "<provider>/<mid-tier-model-id>" },
-    "hephaestus": { "model": "<provider>/<low-tier-model-id>" },
+    "onetwo":   { "model": "<provider>/<high-tier-model-id>" },
+    "twoone":       { "model": "<provider>/<mid-tier-model-id>" },
+    "eggdog": { "model": "<provider>/<low-tier-model-id>" },
     "update":     { "model": "<provider>/<high-tier-model-id>" },
     "architect":  { "model": "<provider>/<high-tier-model-id>" },
     "planner":    { "model": "<provider>/<high-tier-model-id>" },
@@ -314,8 +324,8 @@ After install, opencode defaults to two primary agents: **build** and **plan**. 
 
 **@ delegate to sub-agents**:
 ```
-@lyra help me implement this feature
-@hephaestus create 5 CRUD files
+@twoone help me implement this feature
+@eggdog create 5 CRUD files
 @architect design the module boundaries for this new subsystem
 @planner write an implementation plan with issue breakdown
 @reviewer audit this PR before merge
@@ -381,7 +391,7 @@ The **7-agent system** is organized as a tiered delegation tree. **OneTwo** is t
 │ + ADR drafts  │         │ to-issues     │ │ verification  │ │ ADR / AGENTS  │ │ + research    │
 └──────┬────────┘         └──────┬────────┘ └───────────────┘ └───────────────┘ └──────┬────────┘
        │                        │                                                       │
-       │  (architect → update)  │  (planner → lyra → hephaestus)                       │
+       │  (architect → update)  │  (planner → twoone → eggdog)                       │
        └──── write ADR ─────────┘                                                       │
                                                                                        ▼
                                                                           ┌─────────────────────┐
@@ -466,7 +476,7 @@ If you're ever worried an agent is doing something risky, **switch to `build` or
 | `bash` dangerous (`rm -rf /`, `sudo`, `mkfs`, `dd`, `chmod -R 777`) | ❌ deny | ❌ deny | ❌ deny | ❌ deny | ❌ deny | ❌ deny | ❌ deny |
 | `bash` git force push / hard reset / clean -fd | ❌ deny | ❌ deny | ❌ deny | ❌ deny | ❌ deny | ❌ deny | ❌ deny |
 | `bash` package publish (`npm/pnpm/yarn/cargo publish`) | ❌ deny | ❌ deny | ❌ deny | ❌ deny | ❌ deny | ❌ deny | ❌ deny |
-| `task` delegation | lyra/hephaestus/architect/planner/reviewer/update | hephaestus | ❌ deny (leaf) | update/lyra | architect/update/hephaestus | ❌ deny (independent review) | ❌ deny (single-writer) |
+| `task` delegation | twoone/eggdog/architect/planner/reviewer/update | eggdog | ❌ deny (leaf) | update/twoone | architect/update/eggdog | ❌ deny (independent review) | ❌ deny (single-writer) |
 | `external_directory` (project-external access) | ⚠️ ask | ⚠️ ask | ⚠️ ask | ⚠️ ask | ⚠️ ask | ⚠️ ask | ⚠️ ask |
 | `doom_loop` (3x identical call) | ⚠️ ask (default) | ⚠️ ask (default) | ⚠️ ask (default) | ⚠️ ask (default) | ⚠️ ask (default) | ⚠️ ask (default) | ⚠️ ask (default) |
 
@@ -728,7 +738,7 @@ These domain skills are **complementary knowledge** — they don't overlap with 
 
 | Component | Type | Count | Source |
 |-----------|------|-------|--------|
-| Agents | `.md` prompt files | **7** | Self-built (sisyphus/lyra/hephaestus + update/architect/planner/reviewer) |
+| Agents | `.md` prompt files | **7** | Self-built (onetwo/twoone/eggdog + update/architect/planner/reviewer) |
 | Skills | `SKILL.md` files | **19** | 4 self-built + 15 imported (11 from mattpocock + 3 from addyosmani + 1 re-implemented from addyosmani) |
 | Commands | Slash-command files | **20** | Self-built, one-per-skill (plan/tdd/code-review/brainstorm/diagnose/verify/...) |
 | Tools | TypeScript → `.js` | **0** | (Retired in v2.2; replaced by CLIs + native opencode tools) |
@@ -746,7 +756,7 @@ These domain skills are **complementary knowledge** — they don't overlap with 
 Edit `agents/<agent>.md`, then re-run install:
 
 ```bash
-vim agents/sisyphus.md   # Edit routing rules, delegation protocol, style_guide
+vim agents/onetwo.md   # Edit routing rules, delegation protocol, style_guide
 bash install.sh           # Mirror to ~/.config/opencode/
 ```
 
@@ -822,8 +832,8 @@ cat > AGENTS.md <<'EOF'
 ## Skill Routing (Project-Level)
 This project uses OneTwo (not build). Default workflow:
 - Start a requirement → Superpowers `brainstorming`
-- Write code → `lyra` subagent (mid-tier)
-- Repetitive tasks → `hephaestus` subagent (low-tier)
+- Write code → `twoone` subagent (mid-tier)
+- Repetitive tasks → `eggdog` subagent (low-tier)
 - Complex changes → OpenSpec `/opsx:propose`
 - Hard bugs → Superpowers `systematic-debugging` or `diagnose` skill
 EOF
@@ -843,7 +853,7 @@ Create `opencode.json` at the project root, **merged with global `~/.config/open
 {
   "$schema": "https://opencode.ai/config.json",
   "agent": {
-    "sisyphus": { "model": "anthropic/claude-opus-4-20250514" }
+    "onetwo": { "model": "anthropic/claude-opus-4-20250514" }
   }
 }
 ```
@@ -882,13 +892,13 @@ If a project wants to override the behavior of one of our 7 agents, place a same
 
 ```bash
 mkdir -p .opencode/agents
-cp ~/.config/opencode/agents/sisyphus.md .opencode/agents/sisyphus.md
-# Edit project-level sisyphus.md (modify intent_gate routing, etc.)
+cp ~/.config/opencode/agents/onetwo.md .opencode/agents/onetwo.md
+# Edit project-level onetwo.md (modify intent_gate routing, etc.)
 ```
 
 **Loading rules**: Project-level same-name agent overrides global. Our `install.sh` only installs to `~/.config/opencode/agents/` — **doesn't pollute project directories**.
 
-> Override any of the 7: sisyphus / lyra / hephaestus / update / architect / planner / reviewer.
+> Override any of the 7: onetwo / twoone / eggdog / update / architect / planner / reviewer.
 
 ---
 
@@ -1100,9 +1110,9 @@ git add skills/ && git commit -m "chore(skills): sync N verbatim skills with ups
 ```
 myOpenCodeWithMEeee/
 ├── agents/                 # 7 agent prompt files
-│   ├── sisyphus.md         # primary (high-tier) — 7 XML segments + 12-row intent_gate
-│   ├── lyra.md             # subagent (mid-tier) — can delegate to EggDog
-│   ├── hephaestus.md       # subagent (low-tier) — task:deny, bash safe-glob
+│   ├── onetwo.md         # primary (high-tier) — 7 XML segments + 12-row intent_gate
+│   ├── twoone.md             # subagent (mid-tier) — can delegate to EggDog
+│   ├── eggdog.md       # subagent (low-tier) — task:deny, bash safe-glob
 │   ├── architect.md        # subagent (high-tier) — domain model + ADR drafts
 │   ├── planner.md          # subagent (high-tier) — implementation plans + to-issues
 │   ├── reviewer.md         # subagent (high-tier) — read-only code review
